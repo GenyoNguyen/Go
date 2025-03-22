@@ -46,7 +46,7 @@ import com.example.projectse104.ui.screens.auth.ResetPasswordSuccessfulScreen
 import com.example.projectse104.ui.screens.auth.LoginSuccessfulScreen
 
 @Composable
-fun AppNavigation1(navController: NavHostController) {
+fun AppNavigation(navController: NavHostController) {
     NavHost(navController, startDestination = Screen.Welcome.route) {
         composable(Screen.Welcome.route) { WelcomeScreen(navController) }
         composable(Screen.OnBoarding1.route) { OnBoardingScreen1(navController) }
