@@ -21,10 +21,11 @@ import com.example.projectse104.R
 import com.example.projectse104.ui.navigation.Screen
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
+import com.example.projectse104.*
 
 @Composable
 fun OfferDetailsScreen(navController: NavController,
-                       userName:String,
+                       userId:String,
                        rideNo: String,
                        estimatedDeparture: String,
                        fromLocation: String,
@@ -37,37 +38,12 @@ fun OfferDetailsScreen(navController: NavController,
         listOf(R.drawable.avatar_1,"Nguyễn Hữu Dũng"),
         listOf(R.drawable.avatar_2,"Độ PC")
     )
-    //Để tránh lỗi hiểu value/value thành 2 đặc trưng
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 5.dp), // Thêm padding để căn chỉnh
-            verticalAlignment = Alignment.CenterVertically, // Căn giữa theo chiều dọc
-            horizontalArrangement = Arrangement.Start // Căn trái để mũi tên ở góc trái
-        ) {
-            // Mũi tên quay lại
-            IconButton(onClick = { navController.popBackStack() }) {
-                Icon(
-                    imageVector = Icons.Filled.ArrowBack,
-                    contentDescription = "Back",
-                    tint = Color.Black
-                )
-            }
-            Text(
-                text = "Details of Ride No. $rideNo",
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier
-                    .fillMaxWidth() // Căn giữa theo chiều ngang
-                    .wrapContentWidth(Alignment.CenterHorizontally)
-                    .offset(x = -15.dp) // Căn giữa hoàn toàn
-            )
-        }
+        BackArrowWithText(navController,"Details of Ride No. $rideNo")
         Spacer(modifier = Modifier.height(24.dp))
 
         // Map image (Use the uploaded map image here)
@@ -174,72 +150,9 @@ fun OfferDetailsScreen(navController: NavController,
                 }
                 var passengerName: String = request[1].toString()
                 PassengerItem(navController, avatarResId, passengerName, {
-                    navController.navigate("confirm_request/$passengerName/$rideNo/$userName")
+                    navController.navigate("confirm_request/$passengerName/$rideNo/$userId")
                 })
             }
         }
-    }
-}
-@Composable
-fun PassengerItem(
-    navController: NavController,
-    avatarResId: Int,
-    passengerName: String,
-    onAcceptClick: () -> Unit // Hành động khi nhấn "Accept"
-) {
-    Column(
-        modifier = Modifier.fillMaxWidth() // Đảm bảo column chiếm hết chiều rộng
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp), // Căn chỉnh và thêm khoảng cách giữa các dòng
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            // Avatar
-            Image(
-                painter = painterResource(id = avatarResId), // Avatar người dùng
-                contentDescription = "Passenger Avatar",
-                modifier = Modifier
-                    .size(100.dp)
-                    .clip(RoundedCornerShape(25.dp)) // Bo tròn ảnh avatar
-            )
-
-            // Tên hành khách
-            Text(
-                text = passengerName,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold
-            )
-
-            // Nút Accept
-            Button(
-                onClick = { onAcceptClick() }, // Xử lý khi nhấn Accept
-                modifier = Modifier
-                    .width(100.dp)
-                    .height(30.dp),
-                shape = RoundedCornerShape(25.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8FC79A)),
-                contentPadding = PaddingValues(0.dp)
-            ) {
-                Text(
-                    text = "Accept",
-                    fontSize = 16.sp,
-                    color = Color.White,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.align(Alignment.CenterVertically) // Căn giữa text theo chiều dọc
-                )
-            }
-        }
-
-        // Đường đứt nét ở cuối
-        Divider(
-            color = Color(0xFF8FC79A),
-            thickness = 1.dp,
-            modifier = Modifier
-                .fillMaxWidth() // Đảm bảo đường đứt nét dài bằng container
-                .padding(top = 8.dp), // Khoảng cách giữa phần trên và đường đứt nét
-        )
     }
 }

@@ -18,10 +18,10 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.projectse104.R
 import com.example.projectse104.ui.navigation.Screen
-import com.example.projectse104.ui.screens.home.BottomNavigationBar
+import com.example.projectse104.*
 
 @Composable
-fun SavedLocationScreen(navController: NavController, userName: String) {
+fun SavedLocationScreen(navController: NavController, userId: String) {
     var savedLocatons:List<List<Any>> = listOf(
         listOf(R.drawable.saved_location_home,"Home","KTX khu B, phường Linh Trung, thành phố Thủ Đức "),
         listOf(R.drawable.saved_location_work,"Work","Đại học Công nghệ Thông tin ĐHQG TP Hồ Chí Minh"),
@@ -91,7 +91,7 @@ fun SavedLocationScreen(navController: NavController, userName: String) {
             )
         }
         Spacer(modifier = Modifier.weight(1f)) // Ensuring the content is aligned above the navbar
-        BottomNavigationBar(navController, userName, 4)
+        BottomNavigationBar(navController, userId, 4)
     }
 }
 @Composable

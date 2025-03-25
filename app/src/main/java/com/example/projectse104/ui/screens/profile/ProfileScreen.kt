@@ -19,10 +19,10 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import com.example.projectse104.R
-import com.example.projectse104.ui.screens.home.BottomNavigationBar
+import com.example.projectse104.*
 
 @Composable
-fun ProfileScreen(navController: NavController, userName: String) {
+fun ProfileScreen(navController: NavController, userId: String) {
     var userFullName: String = "Nguyễn Xuân Phúc"
     var userGmail: String = "nguyenxuanphuc010205@gmail.com"
     var userID: String = "10000299"
@@ -84,7 +84,7 @@ fun ProfileScreen(navController: NavController, userName: String) {
                         RoundedCornerShape(8.dp)
 
                     )
-                    .clickable {navController.navigate("profile_view/$userName")} // Navigate to page1 when the column is clicked
+                    .clickable {navController.navigate("profile_view/$userID")} // Navigate to page1 when the column is clicked
             ) {
                 Spacer(modifier = Modifier.height(10.dp))
 
@@ -124,7 +124,7 @@ fun ProfileScreen(navController: NavController, userName: String) {
                         painter = painterResource(id = R.drawable.change_icon), // Đổi lại với icon của bạn
                         contentDescription = "Home Icon",
                         modifier = Modifier.size(30.dp)
-                            .clickable {navController.navigate("edit_profile/$userName")} // Navigate to page2 when change icon is clicked
+                            .clickable {navController.navigate("edit_profile/$userId")} // Navigate to page2 when change icon is clicked
 
                     )
                 }
@@ -138,17 +138,17 @@ fun ProfileScreen(navController: NavController, userName: String) {
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
             ) {
-                ProfileOption(navController=navController,title = "Saved Locations", avatarID = R.drawable.profile_icon_1,"saved_locations/$userName")
-                ProfileOption(navController=navController,title = "Promotions & Rewards", avatarID = R.drawable.profile_icon_2,"promotion_rewards/$userName")
-                ProfileOption(navController=navController,title = "My Ride Circle", avatarID = R.drawable.profile_icon_3,"ride_circle/$userName")
-                ProfileOption(navController=navController,title = "Help & Support", avatarID = R.drawable.profile_icon_4,"help_support/$userName")
+                ProfileOption(navController=navController,title = "Saved Locations", avatarID = R.drawable.profile_icon_1,"saved_locations/$userId")
+                ProfileOption(navController=navController,title = "Promotions & Rewards", avatarID = R.drawable.profile_icon_2,"promotion_rewards/$userId")
+                ProfileOption(navController=navController,title = "My Ride Circle", avatarID = R.drawable.profile_icon_3,"ride_circle/$userId")
+                ProfileOption(navController=navController,title = "Help & Support", avatarID = R.drawable.profile_icon_4,"help_support/$userId")
                 ProfileOption(navController=navController,title = "Sign out", avatarID = R.drawable.profile_icon_5)
             }
 
             // Bottom navigation bar
         }
         Spacer(modifier = Modifier.weight(1f)) // Ensuring the content is aligned above the navbar
-        BottomNavigationBar(navController, userName, 4)
+        BottomNavigationBar(navController, userId, 4)
 
     }
 }

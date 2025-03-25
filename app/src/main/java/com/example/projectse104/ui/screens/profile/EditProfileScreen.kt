@@ -27,10 +27,10 @@ import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import com.example.projectse104.R
 import com.example.projectse104.ui.navigation.Screen
-import com.example.projectse104.ui.screens.home.BottomNavigationBar
+import com.example.projectse104.*
 
 @Composable
-fun EditProfileScreen(navController: NavController, userName: String) {
+fun EditProfileScreen(navController: NavController, userId: String) {
     var userFullName: String = "Nguyễn Xuân Phúc"
     var userGmail: String = "nguyenxuanphuc010205@gmail.com"
     var location:String="Thủ Đức"
@@ -101,7 +101,7 @@ fun EditProfileScreen(navController: NavController, userName: String) {
             )
         }
         Spacer(modifier = Modifier.weight(1f)) // Ensuring the content is aligned above the navbar
-        BottomNavigationBar(navController, userName, 4)
+        BottomNavigationBar(navController, userId, 4)
 
     }
 }

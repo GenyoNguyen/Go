@@ -18,10 +18,10 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.projectse104.R
 import com.example.projectse104.ui.navigation.Screen
-import com.example.projectse104.ui.screens.home.BottomNavigationBar
+import com.example.projectse104.*
 
 @Composable
-fun HelpSupportScreen(navController: NavController, userName: String) {
+fun HelpSupportScreen(navController: NavController, userId: String) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -76,7 +76,7 @@ fun HelpSupportScreen(navController: NavController, userName: String) {
             }
 
             Button(
-                onClick = {navController.navigate("contact_us/$userName")},
+                onClick = {navController.navigate("contact_us/$userId")},
                 modifier = Modifier
                     .width(180.dp)
                     .height(30.dp),
@@ -100,7 +100,7 @@ fun HelpSupportScreen(navController: NavController, userName: String) {
         Section("4","Safety & Support")
 
         Spacer(modifier = Modifier.weight(1f)) // Ensuring the content is aligned above the navbar
-        BottomNavigationBar(navController, userName, 4)
+        BottomNavigationBar(navController, userId, 4)
     }
 }
 @Composable

@@ -20,10 +20,12 @@ import com.example.projectse104.ui.navigation.Screen
 import androidx.compose.material3.Card
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import com.example.projectse104.*
 
 
 @Composable
-fun OfferARideScreen(navController: NavController, userName: String) {
+fun OfferARideScreen(navController: NavController, userId: String) {
+    var userName="Phúc"
     var userFullName="Nguyễn Xuân Phúc"
     var userID="100000299"
     var rides:List<List<Any>> = listOf(
@@ -35,54 +37,8 @@ fun OfferARideScreen(navController: NavController, userName: String) {
             .fillMaxSize()
             .background(Color.White)
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 16.dp)
-                .clip(RoundedCornerShape(8.dp)) // Bo tròn 4 góc của header
-                .background(Color(0xFF8FC79A)), // Thêm background sau khi clip
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Spacer(modifier = Modifier.height(60.dp))
+        HomeHeader(userName)
 
-            // Row cho Home và Hi userName
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween, // Tạo khoảng cách giữa "Home" và "Hi, userName"
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                // Thêm icon ngôi nhà cạnh chữ Home
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "Home",
-                        fontSize = 30.sp,
-                        color = Color.White,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Spacer(modifier = Modifier.width(8.dp)) // Khoảng cách giữa icon và chữ "Home"
-                    Image(
-                        painter = painterResource(id = R.drawable.header_home), // Đổi lại với icon của bạn
-                        contentDescription = "Home Icon",
-                        modifier = Modifier.size(30.dp)
-                    )
-                }
-
-                // Text "Hi, userName"
-                Text(
-                    text = "Hi, $userName 👋",  // Sử dụng userName thay vì "Phúc"
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White
-                )
-            }
-
-            Spacer(modifier = Modifier.height(30.dp))
-        }
 
         // Spacer between header and main content
         Spacer(modifier = Modifier.height(0.dp))
@@ -94,35 +50,8 @@ fun OfferARideScreen(navController: NavController, userName: String) {
                 .padding(horizontal = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Row(
-                horizontalArrangement = Arrangement.Center,
-            ) {
-                Button(
-                    onClick = { navController.navigate("home/$userName") },
-                    modifier = Modifier,
-                    shape = RoundedCornerShape(16.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.White)
-                ) {
-                    Text(text = "Rides", color = Color(0xFFBFBFBF))
-                }
-                Spacer(modifier = Modifier.width(16.dp))
-                Button(
-                    onClick = { navController.navigate("find_a_ride/$userName") },
-                    modifier = Modifier,
-                    shape = RoundedCornerShape(16.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.White)
-                ) {
-                    Text(text = "Find a Ride", color = Color(0xFFBFBFBF))
-                }
-                Button(
-                    onClick = { /* Navigate to Offer a Ride Screen */ },
-                    modifier = Modifier,
-                    shape = RoundedCornerShape(16.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF3F8FE))
-                ) {
-                    Text(text = "Offer a Ride", color = Color(0xFF186FF0))
-                }
-            }
+            TopNavBar(navController,userId,3)
+
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -146,9 +75,9 @@ fun OfferARideScreen(navController: NavController, userName: String) {
                     toLocation=toLocation,
                     avatarResId=avatarResId,
                     route="offer_details",
-                    userName=userName,
-                    userFullName ="",
-                    userID = "",
+                    userId=userId,
+                    passengerFullName ="",
+                    passengerID = "",
                     riderName = userFullName,
                     riderId = userID,
                     coinsEarned=coinsEarned,
@@ -161,7 +90,7 @@ fun OfferARideScreen(navController: NavController, userName: String) {
                 .fillMaxWidth()
                 .padding(vertical = 24.dp)
                 .clickable {
-                    navController.navigate("add_new_offer1/$userName") // Điều hướng đến màn hình tạo chuyến đi mới
+                    navController.navigate("add_new_offer1/$userId") // Điều hướng đến màn hình tạo chuyến đi mới
                 },
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
@@ -184,6 +113,6 @@ fun OfferARideScreen(navController: NavController, userName: String) {
 
         // Bottom navigation bar (Updated to NavigationBar for Material3)
         Spacer(modifier = Modifier.weight(1f)) // Ensuring the content is aligned above the navbar
-        BottomNavigationBar(navController,userName,1)
+        BottomNavigationBar(navController,userId,1)
     }
 }

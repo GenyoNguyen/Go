@@ -22,10 +22,10 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import com.example.projectse104.R
-import com.example.projectse104.ui.screens.home.BottomNavigationBar
+import com.example.projectse104.*
 
 @Composable
-fun ProfileViewScreen(navController: NavController, userName: String) {
+fun ProfileViewScreen(navController: NavController, userId: String) {
     var userFullName: String = "Nguyễn Xuân Phúc"
     var rating:String="4.5"
     var postition:String="Dĩ An, Bình Dương"
@@ -209,7 +209,7 @@ fun ProfileViewScreen(navController: NavController, userName: String) {
             RecentAccompany(avatarResId,accompanyName)
         }
         Spacer(modifier = Modifier.weight(1f)) // Ensuring the content is aligned above the navbar
-        BottomNavigationBar(navController, userName, 4)
+        BottomNavigationBar(navController, userId, 4)
     }
 }
 @Composable

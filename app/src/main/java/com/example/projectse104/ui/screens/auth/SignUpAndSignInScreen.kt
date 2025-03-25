@@ -18,6 +18,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.navigation.NavController
 import com.example.projectse104.R
 import com.example.projectse104.ui.navigation.Screen
+import com.example.projectse104.*
 
 @Composable
 fun SignUpAndSignInScreen(navController: NavController) {
@@ -97,19 +98,8 @@ fun SignUpAndSignInScreen(navController: NavController) {
                 modifier = Modifier.padding(start = 35.dp, end = 35.dp, bottom = 30.dp) // Thêm padding dưới và ngang
                 // Thêm padding dưới
             )
-
-            // Nút Sign Up
-            Button(
-                onClick = { navController.navigate(Screen.SignUp.route) }, // Điều hướng tới màn hình Sign Up
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp)
-                    .padding(horizontal = 30.dp),
-                shape = RoundedCornerShape(50),
-                colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF8FC79A)) // Màu nền nút
-            ) {
-                Text(text = "SIGN UP", color = Color.White)
-            }
+            //Nút SIGN UP
+            BigButton(navController,"SIGN UP",{navController.navigate("sign_up")})
 
             // Dòng chuyển qua Sign In (hiển thị trên 1 hàng văn bản liên tục)
             Spacer(modifier = Modifier.height(10.dp)) // Giảm khoảng cách nếu cần
@@ -128,7 +118,7 @@ fun SignUpAndSignInScreen(navController: NavController) {
                     text = "Sign in.",
                     fontSize = 14.sp,
                     color = Color(0xFF8FC79A),
-                    modifier = Modifier.clickable { navController.navigate(Screen.SignIn.route) }
+                    modifier = Modifier.clickable { navController.navigate("sign_in") }
                 )
             }
 

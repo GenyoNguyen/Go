@@ -23,14 +23,16 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.projectse104.R
 import com.example.projectse104.ui.navigation.Screen
+import com.example.projectse104.*
+
 
 @Composable
-fun AddNewOfferScreen4(navController: NavController, userName: String) {
+fun AddNewOfferScreen4(navController: NavController, userId: String) {
     LaunchedEffect(true) {
         // Delay for 2 seconds
         kotlinx.coroutines.delay(1000)
         // Navigate to the specified route after delay
-        navController.navigate("add_new_offer_successfully/$userName")
+        navController.navigate("add_new_offer_successfully/$userId")
     }
     Column(
         modifier = Modifier

@@ -19,12 +19,11 @@ import androidx.navigation.NavController
 import com.example.projectse104.R
 import androidx.compose.material3.Text // For material3 Text
 import androidx.compose.ui.draw.clip
-import com.example.projectse104.ui.screens.home.BottomNavigationBar
-import com.example.projectse104.ui.screens.home.RideItem
+import com.example.projectse104.*
 
 
 @Composable
-fun HistoryScreen(navController: NavController,userName:String) {
+fun HistoryScreen(navController: NavController,userId:String) {
     var userFullName="Nguyễn Xuân Phúc"
     var userID="100000299"
     var rides:List<List<Any>> = listOf(
@@ -36,47 +35,7 @@ fun HistoryScreen(navController: NavController,userName:String) {
             .fillMaxSize()
             .background(Color.White)
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 16.dp)
-                .clip(RoundedCornerShape(8.dp)) // Bo tròn 4 góc của header
-                .background(Color(0xFF8FC79A)), // Thêm background sau khi clip
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Spacer(modifier = Modifier.height(60.dp))
-
-            // Row cho Home và Hi, {userName}
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.Start, // Tạo khoảng cách giữa "Home" và "Hi, {userName}"
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                // Thêm icon ngôi nhà cạnh chữ Home
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "History",
-                        fontSize = 30.sp,
-                        color = Color.White,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Spacer(modifier = Modifier.width(8.dp)) // Khoảng cách giữa icon và chữ "Home"
-                    Image(
-                        painter = painterResource(id = R.drawable.history_header_icon), // Đổi lại với icon của bạn
-                        contentDescription = "Home Icon",
-                        modifier = Modifier.size(30.dp)
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(30.dp))
-        }
-
+        Header("History",R.drawable.history_header_icon)
 
 
         // Main content (rides and offers)
@@ -109,9 +68,9 @@ fun HistoryScreen(navController: NavController,userName:String) {
                     toLocation=toLocation,
                     avatarResId=avatarResId,
                     route="ride_details_history",
-                    userName=userName,
-                    userFullName=userFullName,
-                    userID=userID,
+                    userId=userId,
+                    passengerFullName =userFullName,
+                    passengerID =userID,
                     riderName=riderName,
                     riderId=riderId,
                     coinsEarned=coinsEarned,
@@ -121,7 +80,7 @@ fun HistoryScreen(navController: NavController,userName:String) {
 
         // Bottom navigation bar (Updated to NavigationBar for Material3)
         Spacer(modifier = Modifier.weight(1f)) // Ensuring the content is aligned above the navbar
-        BottomNavigationBar(navController,userName,3)
+        BottomNavigationBar(navController,userId,3)
     }
 }
 

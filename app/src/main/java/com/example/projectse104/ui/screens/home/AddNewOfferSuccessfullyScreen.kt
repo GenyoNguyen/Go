@@ -18,15 +18,16 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.projectse104.R
 import com.example.projectse104.ui.navigation.Screen
+import com.example.projectse104.*
 
 @Composable
-fun AddNewOfferSuccessfullyScreen(navController: NavController, userName:String) {
+fun AddNewOfferSuccessfullyScreen(navController: NavController, userId:String) {
     // Automatically navigate to the provided route after 2 seconds
     LaunchedEffect(true) {
         // Delay for 2 seconds
         kotlinx.coroutines.delay(1000)
         // Navigate to the specified route after delay
-        navController.navigate("offer_a_ride/$userName")
+        navController.navigate("offer_a_ride/$userId")
     }
 
     Column(

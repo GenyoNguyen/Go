@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.projectse104.ui.navigation.Screen
+import com.example.projectse104.*
 
 @Composable
 fun ForgotPasswordScreen(navController: NavController) {
@@ -29,35 +30,7 @@ fun ForgotPasswordScreen(navController: NavController) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // Row chứa mũi tên và tiêu đề "Forgot password"
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 5.dp), // Thêm padding để căn chỉnh
-            verticalAlignment = Alignment.CenterVertically, // Căn giữa theo chiều dọc
-            horizontalArrangement = Arrangement.Start // Căn trái để mũi tên ở góc trái
-        ) {
-            // Mũi tên quay lại
-            IconButton(onClick = { navController.navigate(Screen.SignIn.route) }) {
-                Icon(
-                    imageVector = Icons.Filled.ArrowBack,
-                    contentDescription = "Back",
-                    tint = Color.Black
-                )
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // Tiêu đề "Forgot password"
-            Text(
-                text = "Forgot password",
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier
-                    .fillMaxWidth() // Căn giữa theo chiều ngang
-                    .wrapContentWidth(Alignment.CenterHorizontally)
-                    .offset(x = -15.dp) // Căn giữa hoàn toàn
-            )
-        }
+        BackArrowWithText(navController,"Forgot password")
 
         Spacer(modifier = Modifier.height(24.dp))
 
@@ -75,28 +48,9 @@ fun ForgotPasswordScreen(navController: NavController) {
         }
 
         Spacer(modifier = Modifier.height(24.dp)) // Tạo khoảng cách giữa EMAIL và SEND
-
-        // Nút "SEND"
-        Button(
-            onClick = {
-                // Điều hướng đến VerifyEmailScreen khi nhấn nút SEND
-                navController.navigate(Screen.VerifyEmail.route) // Chuyển đến VerifyEmailScreen
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp)
-                .padding(horizontal = 24.dp),
-            shape = RoundedCornerShape(25.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8FC79A))
-        ) {
-            Text(
-                text = "SEND",
-                fontSize = 16.sp,
-                color = Color.White,
-                fontWeight = FontWeight.Bold
-            )
-        }
+        Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp)){
+        BigButton(navController,"SEND",{navController.navigate("verify_email")})
 
         Spacer(modifier = Modifier.height(16.dp)) // Khoảng cách dưới nút SEND nếu cần
     }
-}
+}}
