@@ -23,7 +23,7 @@ sealed class Screen(val route: String) {
     object OfferARide : Screen("offer_a_ride/{userName}") // ✅ Thêm màn hình RideDetails
     object OfferDetails : Screen("offer_details/{userName}/{rideNo}/{estimatedDeparture}/{fromLocation}/{toLocation}/{riderName}/{riderUserId}/{cost}") // ✅ Thêm màn hình RideDetails
     object ConfirmRequest : Screen("confirm_request/{passengerName}/{rideID}/{riderName}") // ✅ Thêm màn hình RideDetails
-    object RideDetails : Screen("ride_details/{userName}/{rideNo}/{estimatedDeparture}/{fromLocation}/{toLocation}/{riderName}/{riderUserId}/{passengerName}/{passengerUserId}/{cost}")
+    object RideDetails : Screen("ride_details/{userName}/{rideNo}/{estimatedDeparture}/{fromLocation}/{toLocation}/{riderName}/{riderUserId}/{passengerName}/{passengerUserId}/{cost}/{addGoButton}")
     object AddNewOffer1 : Screen("add_new_offer1/{userName}")
     object AddNewOffer2 : Screen("add_new_offer2/{userName}")
     object AddNewOffer3 : Screen("add_new_offer3/{userName}")

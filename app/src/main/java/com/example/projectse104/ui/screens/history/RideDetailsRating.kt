@@ -53,7 +53,7 @@ fun RideDetailsRatingScreen(
             horizontalArrangement = Arrangement.Start
         ) {
             // Mũi tên quay lại
-            IconButton(onClick = { navController.popBackStack() }) {
+            IconButton(onClick = { navController.navigate("history/$userName") }) {
                 Icon(
                     imageVector = Icons.Filled.ArrowBack,
                     contentDescription = "Back",
