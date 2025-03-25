@@ -159,7 +159,8 @@ fun FindARideScreen(navController: NavController, userName: String) {
                     userID,
                     riderName,
                     riderId,
-                    coinsEarned
+                    coinsEarned,
+                    "yes"
                 )
             }
         }

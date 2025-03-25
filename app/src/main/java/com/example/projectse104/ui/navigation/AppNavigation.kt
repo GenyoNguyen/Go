@@ -124,7 +124,9 @@ fun AppNavigation(navController: NavHostController) {
                 navArgument("riderUserId") { type = NavType.StringType },
                 navArgument("passengerName") { type = NavType.StringType },
                 navArgument("passengerUserId") { type = NavType.StringType },
-                navArgument("cost") { type = NavType.StringType }
+                navArgument("cost") { type = NavType.StringType } ,
+                navArgument("addGoButton") { type = NavType.StringType }
+
             )
         ) { backStackEntry ->
             // Lấy các tham số từ backStackEntry
@@ -138,6 +140,7 @@ fun AppNavigation(navController: NavHostController) {
             val passengerName = backStackEntry.arguments?.getString("passengerName") ?: ""
             val passengerUserId = backStackEntry.arguments?.getString("passengerUserId") ?: ""
             val cost = backStackEntry.arguments?.getString("cost") ?: ""
+            val addGoButton = backStackEntry.arguments?.getString("addGoButton") ?: ""
 
             // Truyền tham số vào RideDetailsScreen
             RideDetailsScreen(
@@ -151,7 +154,8 @@ fun AppNavigation(navController: NavHostController) {
                 riderUserId = riderUserId,
                 passengerName = passengerName,
                 passengerUserId = passengerUserId,
-                cost = cost
+                cost = cost,
+                addGoButton=addGoButton
             )
         }
         composable(

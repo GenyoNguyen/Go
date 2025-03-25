@@ -33,8 +33,9 @@ fun RideDetailsScreen(
     riderUserId: String,
     passengerName: String,
     passengerUserId: String,
-    cost: String
-) {
+    cost: String,
+    addGoButton:String
+    ) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -158,24 +159,25 @@ fun RideDetailsScreen(
             }
 
             Spacer(modifier = Modifier.height(16.dp))
-
-            Button(
-                onClick = { navController.navigate("confirm_ride/$riderName/$rideNo/$userName") },
-                modifier = Modifier
-                    .width(100.dp)
-                    .height(30.dp)
-                    .align(Alignment.End), // Căn chỉnh button về bên phải
-                shape = RoundedCornerShape(25.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8FC79A)),
-                contentPadding = PaddingValues(0.dp) // Loại bỏ padding nội dung để text không bị cắt
-            ) {
-                Text(
-                    text = "GO!",
-                    fontSize = 16.sp,
-                    color = Color.White,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.align(Alignment.CenterVertically) // Căn giữa text theo chiều dọc
-                )
+            if(addGoButton=="yes") {
+                Button(
+                    onClick = { navController.navigate("confirm_ride/$riderName/$rideNo/$userName") },
+                    modifier = Modifier
+                        .width(100.dp)
+                        .height(30.dp)
+                        .align(Alignment.End), // Căn chỉnh button về bên phải
+                    shape = RoundedCornerShape(25.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8FC79A)),
+                    contentPadding = PaddingValues(0.dp) // Loại bỏ padding nội dung để text không bị cắt
+                ) {
+                    Text(
+                        text = "GO!",
+                        fontSize = 16.sp,
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.align(Alignment.CenterVertically) // Căn giữa text theo chiều dọc
+                    )
+                }
             }
         }
     }

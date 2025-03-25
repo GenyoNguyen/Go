@@ -150,6 +150,7 @@ fun HomeScreen(navController: NavController, userName: String) {
                     riderName=riderName,
                     riderId=riderId,
                     coinsEarned=coinsEarned,
+                    addGoButton="no"
                 )
             }
         }
@@ -270,8 +271,10 @@ fun RideItem(
     riderName:String="",
     riderId:String="",
     coinsEarned:String="",
+    addGoButton:String=""
 ) {
-    var path:String=if (route!="offer_details") "$route/$userName/$rideNo/$estimatedDeparture/$fromLocation/$toLocation/$riderName/$riderId/$userFullName/$userID/$coinsEarned"
+    var path:String=if (route=="ride_details") "$route/$userName/$rideNo/$estimatedDeparture/$fromLocation/$toLocation/$riderName/$riderId/$userFullName/$userID/$coinsEarned/$addGoButton"
+    else if (route=="ride_details_history") "$route/$userName/$rideNo/$estimatedDeparture/$fromLocation/$toLocation/$riderName/$riderId/$userFullName/$userID/$coinsEarned"
     else "$route/$userName/$rideNo/$estimatedDeparture/$fromLocation/$toLocation/$riderName/$riderId/$coinsEarned"
 
     Column(
