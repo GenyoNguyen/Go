@@ -23,6 +23,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import com.example.projectse104.*
 
 @Composable
 fun VerifyEmailScreen(navController: NavController) {
@@ -35,35 +36,7 @@ fun VerifyEmailScreen(navController: NavController) {
             .background(Color.White),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Row containing the back arrow and title "Verify your email"
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 5.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Start
-        ) {
-            IconButton(onClick = { navController.popBackStack() }) {
-                Icon(
-                    imageVector = Icons.Filled.ArrowBack,
-                    contentDescription = "Back",
-                    tint = Color.Black
-                )
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            Text(
-                text = "Verify your email",
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .wrapContentWidth(Alignment.CenterHorizontally)
-                    .offset(x = -15.dp)
-            )
-        }
-
+        BackArrowWithText(navController,"Verify your email")
         Spacer(modifier = Modifier.height(24.dp))
 
         Text(
@@ -111,23 +84,8 @@ fun VerifyEmailScreen(navController: NavController) {
         }
 
         Spacer(modifier = Modifier.height(24.dp))
-
-        // VERIFY Button
-        Button(
-            onClick = { navController.navigate(Screen.NewPassword.route) },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp)
-                .padding(horizontal = 24.dp),
-            shape = RoundedCornerShape(25.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8FC79A))
-        ) {
-            Text(
-                text = "VERIFY",
-                fontSize = 16.sp,
-                color = Color.White,
-                fontWeight = FontWeight.Bold
-            )
+        Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp)){
+            BigButton(navController,"VERIFY",{navController.navigate("new_password")})
         }
 
 

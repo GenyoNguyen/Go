@@ -22,10 +22,10 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import com.example.projectse104.R
-import com.example.projectse104.ui.screens.home.BottomNavigationBar
+import com.example.projectse104.*
 
 @Composable
-fun RideCircleScreen(navController: NavController, userName: String) {
+fun RideCircleScreen(navController: NavController, userId: String) {
     var ridesTaken:String="27"
     var ridesGiven:String="36"
     var trustScore:String="209"
@@ -152,14 +152,14 @@ fun RideCircleScreen(navController: NavController, userName: String) {
                 else -> 0 // Nếu không phải Int hoặc String, trả về 0
             }
             var accompanyName:String=rider[1].toString()
-            favouriteRider(navController,userName,accompanyName,avatarResId)
+            favouriteRider(navController,userId,accompanyName,avatarResId)
         }
         Spacer(modifier = Modifier.weight(1f)) // Ensuring the content is aligned above the navbar
-        BottomNavigationBar(navController, userName, 4)
+        BottomNavigationBar(navController, userId, 4)
     }
 }
 @Composable
-fun favouriteRider(navController: NavController,userName:String,riderName:String,avatarID:Int) {
+fun favouriteRider(navController: NavController,userId:String,riderName:String,avatarID:Int) {
     Column(modifier = Modifier.fillMaxWidth()) {
         Row(
             modifier = Modifier
@@ -184,7 +184,7 @@ fun favouriteRider(navController: NavController,userName:String,riderName:String
             Icon(
                 painter = painterResource(id = R.drawable.chat_nav_icon), // Icon for navigation
                 contentDescription = "Arrow Icon",
-                modifier = Modifier.size(20.dp).clickable { navController.navigate("chat_details/$userName/$riderName/yes") },
+                modifier = Modifier.size(20.dp).clickable { navController.navigate("chat_details/$userId/$riderName/yes") },
             )
         }
         Spacer(modifier=Modifier.height(5.dp))

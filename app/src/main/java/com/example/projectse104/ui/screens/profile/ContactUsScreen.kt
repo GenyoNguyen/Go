@@ -21,10 +21,10 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.projectse104.R
 import com.example.projectse104.ui.navigation.Screen
-import com.example.projectse104.ui.screens.home.BottomNavigationBar
+import com.example.projectse104.*
 
 @Composable
-fun ContactUsScreen(navController: NavController, userName: String) {
+fun ContactUsScreen(navController: NavController, userId: String) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -61,7 +61,7 @@ fun ContactUsScreen(navController: NavController, userName: String) {
             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
         ) {
             Button(
-                onClick = {navController.navigate("help_support/$userName")},
+                onClick = {navController.navigate("help_support/$userId")},
                 modifier = Modifier
                     .width(180.dp)
                     .height(30.dp),
@@ -113,7 +113,7 @@ fun ContactUsScreen(navController: NavController, userName: String) {
         Dev(R.drawable.huy,"Nguyễn Phong Huy","23520637@gm.uit.edu.vn")
 
         Spacer(modifier = Modifier.weight(1f)) // Ensuring the content is aligned above the navbar
-        BottomNavigationBar(navController, userName, 4)
+        BottomNavigationBar(navController, userId, 4)
     }
 }
 @Composable

@@ -23,9 +23,10 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.projectse104.R
 import com.example.projectse104.ui.navigation.Screen
+import com.example.projectse104.*
 
 @Composable
-fun AddNewOfferScreen3(navController: NavController, userName: String) {
+fun AddNewOfferScreen3(navController: NavController, userId: String) {
     var departureTime by remember { mutableStateOf("") } // Trạng thái nhập thời gian
 
     Column(
@@ -34,31 +35,7 @@ fun AddNewOfferScreen3(navController: NavController, userName: String) {
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 5.dp), // Thêm padding để căn chỉnh
-            verticalAlignment = Alignment.CenterVertically, // Căn giữa theo chiều dọc
-            horizontalArrangement = Arrangement.Start // Căn trái để mũi tên ở góc trái
-        ) {
-            // Mũi tên quay lại
-            IconButton(onClick = { navController.navigate("add_new_offer2/$userName") }) {
-                Icon(
-                    imageVector = Icons.Filled.ArrowBack,
-                    contentDescription = "Back",
-                    tint = Color.Black
-                )
-            }
-            Text(
-                text = "Add new ofer", // Sử dụng tham số rideNo
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier
-                    .fillMaxWidth() // Căn giữa theo chiều ngang
-                    .wrapContentWidth(Alignment.CenterHorizontally)
-                    .offset(x = -15.dp) // Căn giữa hoàn toàn
-            )
-        }
+        BackArrowWithText(navController,"Add new offer")
 
         Spacer(modifier = Modifier.height(100.dp))
 
@@ -82,24 +59,6 @@ fun AddNewOfferScreen3(navController: NavController, userName: String) {
         Spacer(modifier = Modifier.height(16.dp))
         InputhBar()
         Spacer(modifier = Modifier.height(32.dp))
-
-        // Nút NEXT
-        Button(
-            onClick = {
-                navController.navigate("add_new_offer4/$userName")
-            },
-            modifier = Modifier
-                .fillMaxWidth(0.8f)
-                .height(50.dp),
-            shape = RoundedCornerShape(25.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8FC79A))
-        ) {
-            Text(
-                text = "NEXT",
-                fontSize = 16.sp,
-                color = Color.White,
-                fontWeight = FontWeight.Bold
-            )
-        }
+        BigButton(navController,"NEXT",{navController.navigate("add_new_offer4/$userId")})
     }
 }

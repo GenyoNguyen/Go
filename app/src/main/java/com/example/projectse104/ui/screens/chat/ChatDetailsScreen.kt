@@ -26,11 +26,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import com.example.projectse104.*
 
 @Composable
 fun ChatDetailsScreen(
     navController: NavController,
-    userName:String,
+    userId:String,
     friendName: String,
     isActive:String
 ) {
@@ -46,48 +47,10 @@ fun ChatDetailsScreen(
             .padding(16.dp)
     ) {
         // Header with user's name and status
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Start
-        ) {
-
-            // Back Button (Icon)
-            IconButton(onClick = { navController.popBackStack() }) {
-                Icon(
-                    imageVector = Icons.Filled.ArrowBack,
-                    contentDescription = "Back",
-                    tint = Color.Black
-                )
-            }
-            Spacer(modifier = Modifier.width(8.dp))
-
-            // Avatar
-            Image(
-                painter = painterResource(id = R.drawable.avatar), // Replace with actual avatar image resource
-                contentDescription = "User Avatar",
-                modifier = Modifier
-                    .size(50.dp)
-                    .clip(CircleShape)
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-
-            // User's name and active status
-            Column {
-                Text(
-                    text = friendName,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold
-                )
-                if(isActive=="yes") {
-                    Text(
-                        text = "Active now",
-                        fontSize = 12.sp,
-                        color = Color.Gray
-                    )
-                }
-            }
-        }
+        ChatHeader(navController,
+            name=friendName,
+            avatarID = R.drawable.avatar_1,
+            isActive="yes")
 
         Spacer(modifier = Modifier.height(20.dp))
 
@@ -108,118 +71,4 @@ fun ChatDetailsScreen(
         // Message Input Box
         ChatInputField()
     }
-}
-@Composable
-fun ChatInputField() {
-    var message by remember { mutableStateOf("") }  // Lưu tin nhắn
-
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        TextField(
-            value = message,  // Gán giá trị tin nhắn vào TextField
-            onValueChange = { newMessage -> message = newMessage }, // Cập nhật tin nhắn khi thay đổi
-            textStyle = TextStyle(fontSize = 16.sp, color = Color.Black),
-            keyboardOptions = KeyboardOptions.Default.copy(
-                keyboardType = KeyboardType.Text,  // Đảm bảo bàn phím là kiểu văn bản
-                imeAction = ImeAction.Send  // Cấu hình hành động bàn phím (nhấn "Enter")
-            ),
-            keyboardActions = KeyboardActions(
-                onSend = {
-                    sendMessage(message)  // Gửi tin nhắn
-                    message = ""  // Reset sau khi gửi
-                }
-            ),
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp)
-                .clip(RoundedCornerShape(25.dp))
-                .background(Color(0xFFEFF8F2)),
-            singleLine = true,
-            placeholder = { Text(text = "Type a message", fontSize = 16.sp) },
-        )
-
-        Spacer(modifier = Modifier.width(8.dp))
-
-        IconButton(
-            onClick = {
-                sendMessage(message)  // Gửi tin nhắn khi nhấn vào nút gửi
-                message = ""  // Reset sau khi gửi
-            }
-        ) {
-            Icon(
-                imageVector = Icons.Filled.Send,
-                contentDescription = "Send",
-                tint = Color.Blue
-            )
-        }
-    }
-}
-
-fun sendMessage(message: String) {
-    // Lưu hoặc xử lý tin nhắn
-    println("Sent message: $message")  // In ra tin nhắn đã gửi
-}
-
-@Composable
-fun MessageItem(message: String, time: String, type:String) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = if (type=="receive") Arrangement.Start else Arrangement.End,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        if (type=="receive") {
-            // If the message is from the other person, show avatar
-            Image(
-                painter = painterResource(id = R.drawable.avatar), // Replace with the actual avatar resource
-                contentDescription = "Profile",
-                modifier = Modifier
-                    .size(30.dp)
-                    .clip(CircleShape)
-            )
-            Spacer(modifier = Modifier.width(10.dp))
-        }
-
-        Column(
-            horizontalAlignment = Alignment.Start
-        ) {
-            Box(
-                modifier = Modifier
-                    .padding(8.dp)
-                    .background(
-                        if (type == "receive") Color(0xFFDCE8F8) else Color(0xFFDCF8EA),
-                        RoundedCornerShape(16.dp)
-                    )
-            ) {
-                Text(
-                    text = message,
-                    fontSize = 16.sp,
-                    color = Color.Black,
-                    modifier = Modifier.padding(12.dp)
-                )
-            }
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = time,
-                fontSize = 12.sp,
-                color = Color.Gray
-            )
-        }
-
-        if (type=="send") {
-            // If the message is from the user, show user's avatar
-            Spacer(modifier = Modifier.width(10.dp))
-            Image(
-                painter = painterResource(id = R.drawable.avatar), // Replace with user's avatar resource
-                contentDescription = "Profile",
-                modifier = Modifier
-                    .size(30.dp)
-                    .clip(CircleShape)
-            )
-        }
-    }
-    Spacer(modifier=Modifier.height(10.dp))
 }

@@ -24,11 +24,11 @@ import com.example.projectse104.ui.navigation.Screen
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
-import com.example.projectse104.ui.screens.home.BottomNavigationBar
+import com.example.projectse104.*
 @Composable
 fun RideDetailsRatingScreen(
     navController: NavController,
-    userName: String,
+    userId: String,
     rideNo: String,
     riderName: String,
     riderUserId: String,
@@ -53,7 +53,7 @@ fun RideDetailsRatingScreen(
             horizontalArrangement = Arrangement.Start
         ) {
             // Mũi tên quay lại
-            IconButton(onClick = { navController.navigate("history/$userName") }) {
+            IconButton(onClick = { navController.navigate("history/$userId") }) {
                 Icon(
                     imageVector = Icons.Filled.ArrowBack,
                     contentDescription = "Back",
@@ -73,69 +73,19 @@ fun RideDetailsRatingScreen(
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // Header with tabs (Overview, Rating)
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Button(
-                onClick = {navController.popBackStack()},
-                modifier = Modifier
-                    .width(180.dp)
-                    .height(30.dp),
-                shape = RoundedCornerShape(25.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFDCF8EA)),
-                contentPadding = PaddingValues(0.dp)
-            ) {
-                Text(
-                    text = "Overview",
-                    fontSize = 16.sp,
-                    color = Color.White,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.align(Alignment.CenterVertically)
-                )
-            }
-
-            Button(
-                onClick = {},
-                modifier = Modifier
-                    .width(180.dp)
-                    .height(30.dp),
-                shape = RoundedCornerShape(25.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8FC79A)),
-                contentPadding = PaddingValues(0.dp)
-            ) {
-                Text(
-                    text = "Rating",
-                    fontSize = 16.sp,
-                    color = Color.White,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.align(Alignment.CenterVertically)
-                )
-            }
-        }
+        OverviewRating(navController,
+            state="rating",
+            userId,
+            rideNo,
+            riderName,
+            riderUserId,
+            fromLocation,
+            toLocation)
 
         Spacer(modifier = Modifier.height(20.dp))
 
         // Rating and feedback section
-        Box(
-            modifier = Modifier.fillMaxWidth(),
-            contentAlignment = Alignment.Center // Căn giữa Row trong Box
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(0.8f), // Điều chỉnh độ rộng của Row (80% của chiều rộng màn hình)
-                horizontalArrangement = Arrangement.SpaceBetween // Sử dụng SpaceBetween trong Row
-            ) {
-                // Display the 5 stars based on the rating value
-                repeat(rating) {
-                    Image(
-                        painter = painterResource(id = R.drawable.star_icon), // Replace with the actual star image resource
-                        contentDescription = "Star",
-                        modifier = Modifier.size(40.dp)
-                    )
-                }
-            }
-        }
+        ratingStars(rating)
 
 
         Spacer(modifier = Modifier.height(20.dp))
@@ -212,7 +162,7 @@ fun RideDetailsRatingScreen(
                     fontSize = 16.sp,
                     modifier = Modifier
                         .clickable {
-                            navController.navigate("chat_details/$userName/$riderName/yes")
+                            navController.navigate("chat_details/$userId/$riderName/yes")
                         }
                 )
             }

@@ -27,6 +27,7 @@ import com.example.projectse104.R
 import com.example.projectse104.ui.navigation.Screen
 import android.app.TimePickerDialog
 import android.content.Context
+import androidx.compose.animation.core.animateValueAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -36,8 +37,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import java.util.*
+import com.example.projectse104.*
+
 @Composable
-fun AddNewOfferScreen1(navController: NavController, userName: String) {
+fun AddNewOfferScreen1(navController: NavController, userId: String) {
     var departureTime by remember { mutableStateOf("") } // Trạng thái nhập thời gian
 
     Column(
@@ -46,31 +49,7 @@ fun AddNewOfferScreen1(navController: NavController, userName: String) {
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 5.dp), // Thêm padding để căn chỉnh
-            verticalAlignment = Alignment.CenterVertically, // Căn giữa theo chiều dọc
-            horizontalArrangement = Arrangement.Start // Căn trái để mũi tên ở góc trái
-        ) {
-            // Mũi tên quay lại
-            IconButton(onClick = { navController.navigate("offer_a_ride/$userName") }) {
-                Icon(
-                    imageVector = Icons.Filled.ArrowBack,
-                    contentDescription = "Back",
-                    tint = Color.Black
-                )
-            }
-            Text(
-                text = "Add new ofer", // Sử dụng tham số rideNo
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier
-                    .fillMaxWidth() // Căn giữa theo chiều ngang
-                    .wrapContentWidth(Alignment.CenterHorizontally)
-                    .offset(x = -15.dp) // Căn giữa hoàn toàn
-            )
-        }
+        BackArrowWithText(navController,"Add new offer")
 
         Spacer(modifier = Modifier.height(100.dp))
 
@@ -94,85 +73,8 @@ fun AddNewOfferScreen1(navController: NavController, userName: String) {
         Spacer(modifier = Modifier.height(16.dp))
         TimePickerField()
         Spacer(modifier = Modifier.height(32.dp))
-
-        // Nút NEXT
-        Button(
-            onClick = {
-                navController.navigate("add_new_offer2/$userName")
-            },
-            modifier = Modifier
-                .fillMaxWidth(0.8f)
-                .height(50.dp),
-            shape = RoundedCornerShape(25.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8FC79A))
-        ) {
-            Text(
-                text = "NEXT",
-                fontSize = 16.sp,
-                color = Color.White,
-                fontWeight = FontWeight.Bold
-            )
+        Column(Modifier.fillMaxWidth(0.8f)) {
+            BigButton(navController, "NEXT", {navController.navigate("add_new_offer2/$userId")})
         }
     }
-}
-@Composable
-fun InputhBar() {
-    var searchText by remember { mutableStateOf(TextFieldValue("")) } // Quản lý trạng thái nhập văn bản
-
-    TextField(
-        value = searchText,
-        onValueChange = { searchText = it },
-        modifier = Modifier
-            .fillMaxWidth(0.8f)
-            .padding(horizontal = 16.dp)
-            .height(50.dp) // Tăng nhẹ chiều cao để có thêm không gian hiển thị
-            .clip(RoundedCornerShape(25.dp))
-            .background(Color(0xFFEFF8F2)),
-        textStyle = TextStyle(
-            fontSize = 16.sp,
-            lineHeight = 20.sp // Đảm bảo dòng chữ không bị cắt
-        ),
-        colors = TextFieldDefaults.colors(
-            focusedContainerColor = Color(0xFFEFF8F2),
-            unfocusedContainerColor = Color(0xFFEFF8F2),
-            disabledContainerColor = Color(0xFFEFF8F2),
-            focusedIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent
-        ),
-        singleLine = true
-    )
-}
-@Composable
-fun TimePickerField() {
-    val context = LocalContext.current
-    var timeText by remember { mutableStateOf("Select Time") }
-
-    Box(
-        modifier = Modifier
-            .fillMaxWidth(0.8f)
-            .height(50.dp)
-            .clip(RoundedCornerShape(25.dp))
-            .background(Color(0xFFEFF8F2))
-            .clickable { showTimePicker(context) { selectedTime -> timeText = selectedTime } },
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = timeText,
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Medium,
-            color = if (timeText == "Select Time") Color.Gray else Color.Black
-        )
-    }
-}
-
-// Hàm hiển thị `TimePickerDialog`
-fun showTimePicker(context: Context, onTimeSelected: (String) -> Unit) {
-    val calendar = Calendar.getInstance()
-    val hour = calendar.get(Calendar.HOUR_OF_DAY)
-    val minute = calendar.get(Calendar.MINUTE)
-
-    TimePickerDialog(context, { _, selectedHour, selectedMinute ->
-        val formattedTime = String.format("%02d:%02d", selectedHour, selectedMinute)
-        onTimeSelected(formattedTime)
-    }, hour, minute, true).show()
 }

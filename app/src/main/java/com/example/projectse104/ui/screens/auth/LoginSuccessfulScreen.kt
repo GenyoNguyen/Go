@@ -19,17 +19,20 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.projectse104.R
 import com.example.projectse104.ui.navigation.Screen
+import com.example.projectse104.*
+
 
 @Composable
 fun LoginSuccessfulScreen(navController: NavController) {
     val userName:String="Phúc"
+    val userId:String="1111"
     // Automatically navigate to HomeScreen after 2 seconds
     LaunchedEffect(true) {
         // Delay for 2 seconds
         kotlinx.coroutines.delay(1000)
         // Navigate to HomeScreen after delay
         navController.navigate(
-            "home/$userName"
+            "home/$userId"
         )
     }
 

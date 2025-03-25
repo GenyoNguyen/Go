@@ -29,10 +29,10 @@ import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import com.example.projectse104.R
 import com.example.projectse104.ui.navigation.Screen
-import com.example.projectse104.ui.screens.home.BottomNavigationBar
+import com.example.projectse104.*
 
 @Composable
-fun PromotionRewardsScreen(navController: NavController, userName: String) {
+fun PromotionRewardsScreen(navController: NavController, userId: String) {
     var keCoins:String="2909"
     var avatarID:Int=R.drawable.avatar_1
     Column(
@@ -149,7 +149,7 @@ fun PromotionRewardsScreen(navController: NavController, userName: String) {
             Spacer(modifier = Modifier.height(50.dp))
         }
         Spacer(modifier = Modifier.weight(1f)) // Ensuring the content is aligned above the navbar
-        BottomNavigationBar(navController, userName, 4)
+        BottomNavigationBar(navController, userId, 4)
 
     }
 }

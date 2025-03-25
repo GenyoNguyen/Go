@@ -20,11 +20,12 @@ import com.example.projectse104.R
 import com.example.projectse104.ui.navigation.Screen
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
+import com.example.projectse104.*
 
 @Composable
 fun RideDetailsScreen(
     navController: NavController,
-    userName:String,
+    userId:String,
     rideNo: String,
     estimatedDeparture: String,
     fromLocation: String,
@@ -41,31 +42,8 @@ fun RideDetailsScreen(
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 5.dp), // Thêm padding để căn chỉnh
-            verticalAlignment = Alignment.CenterVertically, // Căn giữa theo chiều dọc
-            horizontalArrangement = Arrangement.Start // Căn trái để mũi tên ở góc trái
-        ) {
-            // Mũi tên quay lại
-            IconButton(onClick = { navController.popBackStack() }) {
-                Icon(
-                    imageVector = Icons.Filled.ArrowBack,
-                    contentDescription = "Back",
-                    tint = Color.Black
-                )
-            }
-            Text(
-                text = "Details of Ride No. $rideNo", // Sử dụng tham số rideNo
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier
-                    .fillMaxWidth() // Căn giữa theo chiều ngang
-                    .wrapContentWidth(Alignment.CenterHorizontally)
-                    .offset(x = -15.dp) // Căn giữa hoàn toàn
-            )
-        }
+        BackArrowWithText(navController,"Details of Ride No. $rideNo")
+
 
         Spacer(modifier = Modifier.height(24.dp))
 
@@ -161,7 +139,7 @@ fun RideDetailsScreen(
             Spacer(modifier = Modifier.height(16.dp))
             if(addGoButton=="yes") {
                 Button(
-                    onClick = { navController.navigate("confirm_ride/$riderName/$rideNo/$userName") },
+                    onClick = { navController.navigate("confirm_ride/$riderName/$rideNo/$userId") },
                     modifier = Modifier
                         .width(100.dp)
                         .height(30.dp)

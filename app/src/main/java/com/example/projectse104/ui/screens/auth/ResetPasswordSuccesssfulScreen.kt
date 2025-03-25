@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.projectse104.R
 import com.example.projectse104.ui.navigation.Screen
+import com.example.projectse104.*
 
 @Composable
 fun ResetPasswordSuccessfulScreen(navController: NavController) {
@@ -46,21 +47,6 @@ fun ResetPasswordSuccessfulScreen(navController: NavController) {
         )
 
         Spacer(modifier = Modifier.height(24.dp))
-
-        Button(
-            onClick = { navController.navigate(Screen.SignIn.route) },  // Navigate back to Login screen
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp),
-            shape = RoundedCornerShape(25.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8FC79A))
-        ) {
-            Text(
-                text = "DONE",
-                fontSize = 16.sp,
-                color = Color.White,
-                fontWeight = FontWeight.Bold
-            )
-        }
+        BigButton(navController,"DONE",{navController.navigate("sign_in")})
     }
 }

@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.projectse104.R
 import com.example.projectse104.ui.navigation.Screen
+import com.example.projectse104.*
 
 @Composable
 fun ConfirmRequestScreen(
@@ -36,31 +37,8 @@ fun ConfirmRequestScreen(
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 5.dp), // Thêm padding để căn chỉnh
-            verticalAlignment = Alignment.CenterVertically, // Căn giữa theo chiều dọc
-            horizontalArrangement = Arrangement.Start // Căn trái để mũi tên ở góc trái
-        ) {
-            // Mũi tên quay lại
-            IconButton(onClick = { navController.popBackStack() }) {
-                Icon(
-                    imageVector = Icons.Filled.ArrowBack,
-                    contentDescription = "Back",
-                    tint = Color.Black
-                )
-            }
-            Text(
-                text = "Details of Ride No. $rideID", // Sử dụng tham số rideNo
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier
-                    .fillMaxWidth() // Căn giữa theo chiều ngang
-                    .wrapContentWidth(Alignment.CenterHorizontally)
-                    .offset(x = -15.dp) // Căn giữa hoàn toàn
-            )
-        }
+        BackArrowWithText(navController,"Details of Ride No. $rideID")
+
         Spacer(modifier = Modifier.height(100.dp))
 
         // Image for the tick icon in the center
@@ -96,47 +74,8 @@ fun ConfirmRequestScreen(
         Spacer(modifier = Modifier.height(24.dp))
 
         // Buttons (NO and YES)
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 30.dp)
-        ) {
-            Button(
-                onClick = {navController.navigate("offer_a_ride/$riderName")
-                }, // Điều hướng về màn hình FindARide
-                modifier = Modifier
-                    .width(150.dp)
-                    .height(40.dp),
-                shape = RoundedCornerShape(25.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
-                contentPadding = PaddingValues(0.dp)
-            ) {
-                Text(
-                    text = "NO",
-                    fontSize = 16.sp,
-                    color = Color.White,
-                    fontWeight = FontWeight.Bold
-                )
-            }
-
-            Spacer(modifier = Modifier.width(16.dp))
-
-            Button(
-                onClick = {navController.navigate("booking_successful/$riderName")
-                }, // Điều hướng tới màn hình BookingSuccessful
-                modifier = Modifier
-                    .width(150.dp)
-                    .height(40.dp),
-                shape = RoundedCornerShape(25.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8FC79A)),
-                contentPadding = PaddingValues(0.dp)
-            ) {
-                Text(
-                    text = "YES!",
-                    fontSize = 16.sp,
-                    color = Color.White,
-                    fontWeight = FontWeight.Bold
-                )
-            }
-        }
+        YesNoButtons(navController,
+            yesOnClick = {navController.navigate("booking_successful/$riderName")},
+            noOnClick = {navController.navigate("offer_a_ride/$riderName")})
     }
 }
