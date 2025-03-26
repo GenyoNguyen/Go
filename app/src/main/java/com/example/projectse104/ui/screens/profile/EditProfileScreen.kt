@@ -80,7 +80,7 @@ fun EditProfileScreen(navController: NavController, userId: String) {
         }
         Spacer(modifier = Modifier.height(40.dp))
         CustomTextFieldWithLabel("NAME",input_name,{input_name=it},userFullName)
-        CustomTextFieldWithLabel("EMAIL",input_email,{input_phoneNumber=it},userGmail)
+        CustomTextFieldWithLabel("EMAIL",input_email,{input_email=it},userGmail)
         CustomTextFieldWithLabel("PHONE NUMBER",input_phoneNumber,{input_phoneNumber=it},phoneNumber)
         CustomTextFieldWithLabel("LOCATION",input_location,{input_location=it},location)
         Button(
