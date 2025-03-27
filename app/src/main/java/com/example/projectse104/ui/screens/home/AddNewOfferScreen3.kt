@@ -27,7 +27,7 @@ import com.example.projectse104.*
 
 @Composable
 fun AddNewOfferScreen3(navController: NavController, userId: String) {
-    var departureTime by remember { mutableStateOf("") } // Trạng thái nhập thời gian
+    var toLocation by remember { mutableStateOf("") } // Trạng thái nhập thời gian
 
     Column(
         modifier = Modifier
@@ -39,26 +39,13 @@ fun AddNewOfferScreen3(navController: NavController, userId: String) {
 
         Spacer(modifier = Modifier.height(100.dp))
 
-        // Icon đồng hồ
-        Image(
-            painter = painterResource(id = R.drawable.destination_icon), // Ảnh đồng hồ
-            contentDescription = "Clock Icon",
-            modifier = Modifier.size(200.dp)
-        )
-
-        Spacer(modifier = Modifier.height(40.dp))
-
-        // Câu hỏi
-        Text(
-            text = "Where is the destination",
-            fontSize = 22.sp,
-            fontWeight = FontWeight.Medium,
-            color = Color.Black
-        )
+        AddNewOfferContent(R.drawable.destination_icon,"Where is the destination")
 
         Spacer(modifier = Modifier.height(16.dp))
-        InputhBar()
+        InputhBar(toLocation,{toLocation=it})
         Spacer(modifier = Modifier.height(32.dp))
-        BigButton(navController,"NEXT",{navController.navigate("add_new_offer4/$userId")})
+        Column(Modifier.fillMaxWidth(0.8f)) {
+            BigButton(navController, "NEXT", { navController.navigate("add_new_offer4/$userId") })
+        }
     }
 }

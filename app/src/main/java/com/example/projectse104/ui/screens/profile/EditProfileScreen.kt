@@ -17,6 +17,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -52,23 +53,7 @@ fun EditProfileScreen(navController: NavController, userId: String) {
             verticalAlignment = Alignment.CenterVertically, // Căn giữa theo chiều dọc
             horizontalArrangement = Arrangement.Start // Căn trái để mũi tên ở góc trái
         ) {
-            // Mũi tên quay lại
-            IconButton(onClick = { navController.popBackStack() }) {
-                Icon(
-                    imageVector = Icons.Filled.ArrowBack,
-                    contentDescription = "Back",
-                    tint = Color.Black
-                )
-            }
-            Text(
-                text = "Edit Profile", // Sử dụng tham số rideNo
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier
-                    .fillMaxWidth() // Căn giữa theo chiều ngang
-                    .wrapContentWidth(Alignment.CenterHorizontally)
-                    .offset(x = -15.dp) // Căn giữa hoàn toàn
-            )
+            BackArrowWithText(navController,"Edit Profile")
         }
         Spacer(modifier = Modifier.height(20.dp))
         Row(modifier=Modifier.fillMaxWidth(),Arrangement.Center) {
@@ -79,81 +64,17 @@ fun EditProfileScreen(navController: NavController, userId: String) {
             )
         }
         Spacer(modifier = Modifier.height(40.dp))
-        CustomTextFieldWithLabel("NAME",input_name,{input_name=it},userFullName)
-        CustomTextFieldWithLabel("EMAIL",input_email,{input_email=it},userGmail)
-        CustomTextFieldWithLabel("PHONE NUMBER",input_phoneNumber,{input_phoneNumber=it},phoneNumber)
-        CustomTextFieldWithLabel("LOCATION",input_location,{input_location=it},location)
-        Button(
-            onClick = { },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp)
-                .padding(horizontal = 16.dp)
-            ,
-            shape = RoundedCornerShape(25.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8FC79A))
-        ) {
-            Text(
+        ProfileCustomTextFieldWithLabel("NAME",input_name,{input_name=it},userFullName)
+        ProfileCustomTextFieldWithLabel("EMAIL",input_email,{input_email=it},userGmail)
+        ProfileCustomTextFieldWithLabel("PHONE NUMBER",input_phoneNumber,{input_phoneNumber=it},phoneNumber)
+        ProfileCustomTextFieldWithLabel("LOCATION",input_location,{input_location=it},location)
+        Row(modifier = Modifier.padding(horizontal=16.dp)) {
+            BigButton(navController = navController,
                 text = "SAVE CHANGES",
-                fontSize = 16.sp,
-                color = Color.White,
-                fontWeight = FontWeight.Bold
-            )
+                onClick = {})
         }
         Spacer(modifier = Modifier.weight(1f)) // Ensuring the content is aligned above the navbar
         BottomNavigationBar(navController, userId, 4)
 
     }
-}
-@Composable
-fun CustomTextFieldWithLabel(
-    label: String,
-    value: String,
-    onValueChange: (String) -> Unit,
-    remain_value: String = "" // Add default value parameter
-) {
-    val focusedColor = Color(0xFF8FC79A)
-
-    Box(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
-        Text(
-            text = label,
-            fontSize = 12.sp,
-            color = if (value.isNotEmpty()) focusedColor else Color.Gray,
-            modifier = Modifier
-                .padding(start = 16.dp)
-                .offset(y = -7.dp)
-                .zIndex(1f)
-        )
-
-        OutlinedTextField(
-            value = if (value.isEmpty()) remain_value else value, // Use remain_value if value is empty
-            onValueChange = onValueChange,
-            singleLine = true,
-            textStyle = LocalTextStyle.current.copy(color = Color.Black),
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(24.dp),
-            colors = TextFieldDefaults.colors(
-                focusedIndicatorColor = focusedColor,
-                unfocusedIndicatorColor = Color.Gray,
-                cursorColor = focusedColor,
-                focusedContainerColor = Color.White,
-                unfocusedContainerColor = Color.White
-            )
-        )
-
-        val coverWidth = when (label.length) {
-            in 1..5 -> 55.dp
-            in 6..8 -> 75.dp
-            else -> 110.dp
-        }
-
-        Box(
-            modifier = Modifier
-                .width(coverWidth)
-                .height(6.dp)
-                .background(Color.White)
-                .offset(x = 20.dp, y = 7.dp)
-        )
-    }
-    Spacer(modifier = Modifier.height(40.dp))
 }

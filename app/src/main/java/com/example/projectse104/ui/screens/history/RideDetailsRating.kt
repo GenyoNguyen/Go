@@ -30,20 +30,20 @@ fun RideDetailsRatingScreen(
     navController: NavController,
     userId: String,
     rideNo: String,
-    riderName: String,
-    riderUserId: String,
-    fromLocation:String,
-    toLocation:String
 ) {
+    var riderName: String="Nguyễn Hữu Dũng"
+    var riderUserId: String="10000512"
+    var riderAvatarId:Int=R.drawable.avatar_1
     var rating: Int = 5
     var trustScore: Int = 36
     var keCoins: Int = 103
     var content:String="The ride from Dĩ An to District 1 was very smooth. The driver, Nguyễn Hữu Dũng, was friendly, professional, and drove safely. Although the journey was quite long, he maintained a steady speed, making the ride comfortable and pleasant."
-
+    //Id hội thoại tương ứng với chuyến đi
+    var conversationId:String="0001"
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(14.dp)
+            .padding(16.dp)
     ) {
         Row(
             modifier = Modifier
@@ -76,11 +76,7 @@ fun RideDetailsRatingScreen(
         OverviewRating(navController,
             state="rating",
             userId,
-            rideNo,
-            riderName,
-            riderUserId,
-            fromLocation,
-            toLocation)
+            rideNo,)
 
         Spacer(modifier = Modifier.height(20.dp))
 
@@ -95,51 +91,13 @@ fun RideDetailsRatingScreen(
             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Row(modifier = Modifier.offset(x = 53.dp)) {
-                Image(
-                    painter = painterResource(id = R.drawable.avatar), // Rider's avatar image
-                    contentDescription = "Rider Avatar",
-                    modifier = Modifier
-                        .size(125.dp)
-                        .clip(CircleShape)
-                )
-                Column() {
-                    Text(
-                        text = "+$trustScore trust scores",
-                        fontSize = 14.sp,
-                        color = Color(0xFF35B82A),
-                        modifier = Modifier.offset(x = -10.dp)
-                    )
-                    Text(
-                        text = "+$keCoins Ké coins",
-                        fontSize = 14.sp,
-                        color = Color(0xFF35B82A)
-                    )
-                }
-            }
-            Spacer(modifier = Modifier.height(30.dp))
+            RatingContent(riderAvatarId,
+                trustScore,
+                keCoins,
+                riderName,
+                riderUserId,
+                content)
 
-            Column {
-                Text(
-                    text = buildAnnotatedString {
-                        append("Rider: ")
-                        pushStyle(SpanStyle(fontWeight = FontWeight.Bold)) // Áp dụng đậm cho riderName
-                        append(riderName) // In đậm tên của người lái
-                        pop() // Kết thúc phần in đậm
-                        append(" - UserID: ")
-                        pushStyle(SpanStyle(fontWeight = FontWeight.Bold)) // Áp dụng đậm cho riderUserId
-                        append(riderUserId) // In đậm ID người lái
-                        pop() // Kết thúc phần in đậm
-                    },
-                    fontSize = 16.sp
-                )
-                Spacer(modifier = Modifier.height(10.dp))
-
-                Text(
-                    text = content,
-                    fontSize = 16.sp
-                )
-            }
 
             Spacer(modifier = Modifier.height(10.dp))
 
@@ -162,7 +120,7 @@ fun RideDetailsRatingScreen(
                     fontSize = 16.sp,
                     modifier = Modifier
                         .clickable {
-                            navController.navigate("chat_details/$userId/$riderName/yes")
+                            navController.navigate("chat_details/$userId/$conversationId")
                         }
                 )
             }

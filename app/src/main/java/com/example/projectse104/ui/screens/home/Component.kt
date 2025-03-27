@@ -270,12 +270,10 @@ fun PassengerItem(
     }
 }
 @Composable
-fun InputhBar() {
-    var searchText by remember { mutableStateOf(TextFieldValue("")) } // Quản lý trạng thái nhập văn bản
-
+fun InputhBar(value:String,onValueChange:(String)->Unit) {
     TextField(
-        value = searchText,
-        onValueChange = { searchText = it },
+        value = value,
+        onValueChange = onValueChange,
         modifier = Modifier
             .fillMaxWidth(0.8f)
             .padding(horizontal = 16.dp)
@@ -297,9 +295,11 @@ fun InputhBar() {
     )
 }
 @Composable
-fun TimePickerField() {
+fun TimePickerField(
+    timeText: String,
+    onValueChange: (String) -> Unit
+) {
     val context = LocalContext.current
-    var timeText by remember { mutableStateOf("Select Time") }
 
     Box(
         modifier = Modifier
@@ -307,7 +307,7 @@ fun TimePickerField() {
             .height(50.dp)
             .clip(RoundedCornerShape(25.dp))
             .background(Color(0xFFEFF8F2))
-            .clickable { showTimePicker(context) { selectedTime -> timeText = selectedTime } },
+            .clickable { showTimePicker(context) { selectedTime -> onValueChange(selectedTime) } },
         contentAlignment = Alignment.Center
     ) {
         Text(
@@ -329,4 +329,144 @@ fun showTimePicker(context: Context, onTimeSelected: (String) -> Unit) {
         val formattedTime = String.format("%02d:%02d", selectedHour, selectedMinute)
         onTimeSelected(formattedTime)
     }, hour, minute, true).show()
+}
+
+@Composable
+fun OfferDetails(estimatedDeparture: String,
+                 fromLocation: String,
+                 toLocation: String,
+                 riderName:String,
+                 riderUserId:String,
+                 cost:String){
+    Column(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Text(
+            text = "$estimatedDeparture",
+            fontSize = 16.sp,
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
+            text = "Route: From $fromLocation to $toLocation",
+            fontSize = 15.sp
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = "Rider: ",
+                fontSize = 15.sp
+            )
+            Text(
+                text = "$riderName",
+                fontSize = 15.sp,
+                fontWeight = FontWeight.Bold
+            )
+            Text(
+                text = "- (UserID: $riderUserId)",
+                fontSize = 15.sp
+            )
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        Row {
+            Text(
+                text = "Status: ",
+                fontSize = 15.sp
+            )
+            Text(
+                text = "Success",
+                fontSize = 15.sp,
+                color = Color.Green
+            )
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = "Passenger Information: ???",
+            fontSize = 15.sp
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+        Row {
+            Text(
+                text = "Cost: $cost ",
+                fontSize = 15.sp,
+            )
+            Text(
+                text = "Ké Coins",
+                fontSize = 15.sp,
+                color = Color.Yellow
+            )
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Potential Passengers Section
+        // Potential Passengers Section
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Potential Passengers",
+                fontSize = 23.sp,
+                fontWeight = FontWeight.Bold
+            )
+            Spacer(modifier = Modifier.width(8.dp)) // Khoảng cách giữa chữ và đường kẻ
+            Divider(
+                color = Color.Black,
+                thickness = 1.dp,
+                modifier = Modifier
+                    .weight(1f) // Chiếm toàn bộ không gian còn lại của Row để kéo dài đường kẻ
+            )
+        }
+    }
+}
+@Composable
+fun AddNewOffer(navController: NavController,userId: String){
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 24.dp)
+            .clickable {
+                navController.navigate("add_new_offer1/$userId") // Điều hướng đến màn hình tạo chuyến đi mới
+            },
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.add_offer_icon), // Ảnh dấu "+"
+            contentDescription = "Add Offer Icon",
+            modifier = Modifier.size(32.dp) // Kích thước icon
+        )
+
+        Spacer(modifier = Modifier.width(8.dp))
+
+        Text(
+            text = "Add new offer",
+            fontSize = 18.sp,
+            color = Color(0xFF8FC79A),
+            fontWeight = FontWeight.Medium
+        )
+    }
+}
+@Composable
+fun AddNewOfferContent(iconId:Int,text:String){
+    Image(
+        painter = painterResource(id = iconId), // Ảnh đồng hồ
+        contentDescription = "Clock Icon",
+        modifier = Modifier.size(200.dp)
+    )
+
+    Spacer(modifier = Modifier.height(40.dp))
+
+    // Câu hỏi
+    Text(
+        text = text,
+        fontSize = 22.sp,
+        fontWeight = FontWeight.Medium,
+        color = Color.Black
+    )
 }

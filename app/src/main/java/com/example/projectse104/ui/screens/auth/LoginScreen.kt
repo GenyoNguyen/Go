@@ -92,6 +92,7 @@ fun LoginScreen(navController: NavController) {
         }
 
         Spacer(modifier = Modifier.height(32.dp))
+
         SocialMedia()
 
         Spacer(modifier = Modifier.height(32.dp))

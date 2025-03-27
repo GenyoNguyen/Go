@@ -117,14 +117,6 @@ fun AppNavigation(navController: NavHostController) {
             arguments = listOf(
                 navArgument("userId") { type = NavType.StringType },
                 navArgument("rideNo") { type = NavType.StringType },
-                navArgument("estimatedDeparture") { type = NavType.StringType },
-                navArgument("fromLocation") { type = NavType.StringType },
-                navArgument("toLocation") { type = NavType.StringType },
-                navArgument("riderName") { type = NavType.StringType },
-                navArgument("riderUserId") { type = NavType.StringType },
-                navArgument("passengerName") { type = NavType.StringType },
-                navArgument("passengerUserId") { type = NavType.StringType },
-                navArgument("cost") { type = NavType.StringType } ,
                 navArgument("addGoButton") { type = NavType.StringType }
 
             )
@@ -132,14 +124,6 @@ fun AppNavigation(navController: NavHostController) {
             // Lấy các tham số từ backStackEntry
             val userId = backStackEntry.arguments?.getString("userId") ?: ""
             val rideNo = backStackEntry.arguments?.getString("rideNo") ?: ""
-            val estimatedDeparture = backStackEntry.arguments?.getString("estimatedDeparture") ?: ""
-            val fromLocation = backStackEntry.arguments?.getString("fromLocation") ?: ""
-            val toLocation = backStackEntry.arguments?.getString("toLocation") ?: ""
-            val riderName = backStackEntry.arguments?.getString("riderName") ?: ""
-            val riderUserId = backStackEntry.arguments?.getString("riderUserId") ?: ""
-            val passengerName = backStackEntry.arguments?.getString("passengerName") ?: ""
-            val passengerUserId = backStackEntry.arguments?.getString("passengerUserId") ?: ""
-            val cost = backStackEntry.arguments?.getString("cost") ?: ""
             val addGoButton = backStackEntry.arguments?.getString("addGoButton") ?: ""
 
             // Truyền tham số vào RideDetailsScreen
@@ -147,14 +131,6 @@ fun AppNavigation(navController: NavHostController) {
                 navController = navController,
                 userId=userId,
                 rideNo = rideNo,
-                estimatedDeparture = estimatedDeparture,
-                fromLocation = fromLocation,
-                toLocation = toLocation,
-                riderName = riderName,
-                riderUserId = riderUserId,
-                passengerName = passengerName,
-                passengerUserId = passengerUserId,
-                cost = cost,
                 addGoButton=addGoButton
             )
         }
@@ -163,41 +139,17 @@ fun AppNavigation(navController: NavHostController) {
             arguments = listOf(
                 navArgument("userId") { type = NavType.StringType },
                 navArgument("rideNo") { type = NavType.StringType },
-                navArgument("estimatedDeparture") { type = NavType.StringType },
-                navArgument("fromLocation") { type = NavType.StringType },
-                navArgument("toLocation") { type = NavType.StringType },
-                navArgument("riderName") { type = NavType.StringType },
-                navArgument("riderUserId") { type = NavType.StringType },
-                navArgument("passengerName") { type = NavType.StringType },
-                navArgument("passengerUserId") { type = NavType.StringType },
-                navArgument("cost") { type = NavType.StringType }
             )
         ) { backStackEntry ->
             // Lấy các tham số từ backStackEntry
             val userId = backStackEntry.arguments?.getString("userId") ?: ""
             val rideNo = backStackEntry.arguments?.getString("rideNo") ?: ""
-            val estimatedDeparture = backStackEntry.arguments?.getString("estimatedDeparture") ?: ""
-            val fromLocation = backStackEntry.arguments?.getString("fromLocation") ?: ""
-            val toLocation = backStackEntry.arguments?.getString("toLocation") ?: ""
-            val riderName = backStackEntry.arguments?.getString("riderName") ?: ""
-            val riderUserId = backStackEntry.arguments?.getString("riderUserId") ?: ""
-            val passengerName = backStackEntry.arguments?.getString("passengerName") ?: ""
-            val passengerUserId = backStackEntry.arguments?.getString("passengerUserId") ?: ""
-            val cost = backStackEntry.arguments?.getString("cost") ?: ""
 
             // Truyền tham số vào RideDetailsScreen
             RideDetailsHistoryScreen(
                 navController = navController,
                 userId=userId,
                 rideNo = rideNo,
-                estimatedDeparture = estimatedDeparture,
-                fromLocation = fromLocation,
-                toLocation = toLocation,
-                riderName = riderName,
-                riderUserId = riderUserId,
-                passengerName = passengerName,
-                passengerUserId = passengerUserId,
-                cost = cost
             )
         }
         composable(
@@ -244,35 +196,17 @@ fun AppNavigation(navController: NavHostController) {
             arguments = listOf(
                 navArgument("userId") { type = NavType.StringType },
                 navArgument("rideNo") { type = NavType.StringType },
-                navArgument("estimatedDeparture") { type = NavType.StringType },
-                navArgument("fromLocation") { type = NavType.StringType },
-                navArgument("toLocation") { type = NavType.StringType },
-                navArgument("riderName") { type = NavType.StringType },
-                navArgument("riderUserId") { type = NavType.StringType },
-                navArgument("cost") { type = NavType.StringType }
             )
         ) { backStackEntry ->
             // Lấy các tham số từ backStackEntry
             val userId = backStackEntry.arguments?.getString("userId") ?: ""
             val rideNo = backStackEntry.arguments?.getString("rideNo") ?: ""
-            val estimatedDeparture = backStackEntry.arguments?.getString("estimatedDeparture") ?: ""
-            val fromLocation = backStackEntry.arguments?.getString("fromLocation") ?: ""
-            val toLocation = backStackEntry.arguments?.getString("toLocation") ?: ""
-            val riderName = backStackEntry.arguments?.getString("riderName") ?: ""
-            val riderUserId = backStackEntry.arguments?.getString("riderUserId") ?: ""
-            val cost = backStackEntry.arguments?.getString("cost") ?: ""
 
             // Truyền tham số vào RideDetailsScreen
             OfferDetailsScreen(
                 navController = navController,
                 userId=userId,
                 rideNo = rideNo,
-                estimatedDeparture = estimatedDeparture,
-                fromLocation = fromLocation,
-                toLocation = toLocation,
-                riderName = riderName,
-                riderUserId = riderUserId,
-                cost = cost
             )
         }
         composable(
@@ -336,32 +270,22 @@ fun AppNavigation(navController: NavHostController) {
             Screen.ChatDetails.route,
             arguments = listOf(
                 navArgument("userId") { type = NavType.StringType },
-                navArgument("friendName") { type = NavType.StringType },
-                navArgument("isActive") { type = NavType.StringType })
+                navArgument("conversationId") { type = NavType.StringType },)
         ) { backStackEntry ->
             val userId = backStackEntry.arguments?.getString("userId") ?: ""
-            val friendName = backStackEntry.arguments?.getString("friendName") ?: ""
-            val isActive = backStackEntry.arguments?.getString("isActive") ?: ""
-            ChatDetailsScreen(navController, userId,friendName,isActive)
+            val conversationId = backStackEntry.arguments?.getString("conversationId") ?: ""
+            ChatDetailsScreen(navController, userId,conversationId)
         }
         composable(
             Screen.RideDetailsRating.route,
             arguments = listOf(
                 navArgument("userId") { type = NavType.StringType },
-                navArgument("rideNo") { type = NavType.StringType },
-                navArgument("riderName") { type = NavType.StringType },
-                navArgument("riderUserId") { type = NavType.StringType },
-                navArgument("fromLocation") { type = NavType.StringType },
-                navArgument("toLocation") { type = NavType.StringType },)
+                navArgument("rideNo") { type = NavType.StringType },)
         ) { backStackEntry ->
             val userId = backStackEntry.arguments?.getString("userId") ?: ""
             val rideNo = backStackEntry.arguments?.getString("rideNo") ?: ""
-            val riderName = backStackEntry.arguments?.getString("riderName") ?: ""
-            val riderUserId = backStackEntry.arguments?.getString("riderUserId") ?: ""
-            val fromLocation = backStackEntry.arguments?.getString("fromLocation") ?: ""
-            val toLocation = backStackEntry.arguments?.getString("toLocation") ?: ""
 
-            RideDetailsRatingScreen(navController, userId,rideNo,riderName,riderUserId,fromLocation,toLocation)
+            RideDetailsRatingScreen(navController, userId,rideNo)
         }
         composable(
             Screen.ProfileView.route,

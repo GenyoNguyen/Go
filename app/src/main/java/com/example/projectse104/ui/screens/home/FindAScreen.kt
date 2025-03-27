@@ -27,16 +27,14 @@ import com.example.projectse104.*
 @Composable
 fun FindARideScreen(navController: NavController, userId: String) {
     var userName="Phúc"
-    var userFullName="Nguyễn Xuân Phúc"
-    var userID="100000299"
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
     ) {
         var rides:List<List<Any>> = listOf(
-            listOf("0054752", "29 Nov, 1:20 pm", "Dĩ An", "Quận 1",R.drawable.avatar_1,"Nguyễn Hữu Dũng","10000512","113"),
-            listOf("0054753","30 Nov, 2:00 pm", "HCM", "Quận 5",R.drawable.avatar_2,"Độ PC","10000666","36")
+            listOf("0054752", "29 Nov, 1:20 pm", "Dĩ An", "Quận 1",R.drawable.avatar_1),
+            listOf("0054753","30 Nov, 2:00 pm", "HCM", "Quận 5",R.drawable.avatar_2)
         )
         HomeHeader(userName)
 
@@ -70,9 +68,6 @@ fun FindARideScreen(navController: NavController, userId: String) {
                         ?: 0  // Nếu giá trị là String, cố gắng chuyển đổi, nếu không trả về 0
                     else -> 0 // Nếu không phải Int hoặc String, trả về 0
                 }
-                var riderName: String = ride[5].toString()
-                var riderId: String = ride[6].toString()
-                var coinsEarned: String = ride[7].toString()
                 RideItem(
                     navController,
                     rideNo,
@@ -82,11 +77,6 @@ fun FindARideScreen(navController: NavController, userId: String) {
                     avatarResId,
                     "ride_details",
                     userId,
-                    userFullName,
-                    userID,
-                    riderName,
-                    riderId,
-                    coinsEarned,
                     "yes"
                 )
             }

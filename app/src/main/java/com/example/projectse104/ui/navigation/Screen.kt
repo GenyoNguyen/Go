@@ -21,17 +21,17 @@ sealed class Screen(val route: String) {
     object ConfirmRide : Screen("confirm_ride/{riderName}/{rideID}/{userId}") // Thêm tham số userId và rideID
     object BookingSuccessful : Screen("booking_successful/{userId}") // ✅ Thêm màn hình RideDetails
     object OfferARide : Screen("offer_a_ride/{userId}") // ✅ Thêm màn hình RideDetails
-    object OfferDetails : Screen("offer_details/{userId}/{rideNo}/{estimatedDeparture}/{fromLocation}/{toLocation}/{riderName}/{riderUserId}/{cost}") // ✅ Thêm màn hình RideDetails
+    object OfferDetails : Screen("offer_details/{userId}/{rideNo}") // ✅ Thêm màn hình RideDetails
     object ConfirmRequest : Screen("confirm_request/{passengerName}/{rideID}/{riderName}") // ✅ Thêm màn hình RideDetails
-    object RideDetails : Screen("ride_details/{userId}/{rideNo}/{estimatedDeparture}/{fromLocation}/{toLocation}/{riderName}/{riderUserId}/{passengerName}/{passengerUserId}/{cost}/{addGoButton}")
+    object RideDetails : Screen("ride_details/{userId}/{rideNo}/{addGoButton}")
     object AddNewOffer1 : Screen("add_new_offer1/{userId}")
     object AddNewOffer2 : Screen("add_new_offer2/{userId}")
     object AddNewOffer3 : Screen("add_new_offer3/{userId}")
     object AddNewOffer4 : Screen("add_new_offer4/{userId}")
     object AddNewOfferSuccessfully: Screen("add_new_offer_successfully/{userId}")
-    object ChatDetails: Screen("chat_details/{userId}/{friendName}/{isActive}")
-    object RideDetailsHistory : Screen("ride_details_history/{userId}/{rideNo}/{estimatedDeparture}/{fromLocation}/{toLocation}/{riderName}/{riderUserId}/{passengerName}/{passengerUserId}/{cost}")
-    object RideDetailsRating : Screen("ride_details_rating/{userId}/{rideNo}/{riderName}/{riderUserId}/{fromLocation}/{toLocation}")
+    object ChatDetails: Screen("chat_details/{userId}/{conversationId}")
+    object RideDetailsHistory : Screen("ride_details_history/{userId}/{rideNo}")
+    object RideDetailsRating : Screen("ride_details_rating/{userId}/{rideNo}")
     object ProfileView : Screen("profile_view/{userId}")
     object EditProfile : Screen("edit_profile/{userId}")
     object RideCircle: Screen("ride_circle/{userId}")

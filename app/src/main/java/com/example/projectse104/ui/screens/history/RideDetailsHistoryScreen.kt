@@ -26,15 +26,16 @@ fun RideDetailsHistoryScreen(
     navController: NavController,
     userId:String,
     rideNo: String,
-    estimatedDeparture: String,
-    fromLocation: String,
-    toLocation: String,
-    riderName: String,
-    riderUserId: String,
-    passengerName: String,
-    passengerUserId: String,
-    cost: String
 ) {
+    var mapImageId:Int=R.drawable.map_image
+    var estimatedDeparture: String="29 Nov, 1:20 pm"
+    var fromLocation: String="Dĩ An"
+    var toLocation: String="Quận 1"
+    var riderName: String="Nguyễn Hữu Dũng"
+    var riderUserId: String="10000512"
+    var passengerName: String="Nguyễn Xuân Phúc"
+    var passengerUserId: String=userId
+    var cost: String="113"
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -49,16 +50,12 @@ fun RideDetailsHistoryScreen(
         OverviewRating(navController,
             state="overview",
             userId,
-            rideNo,
-            riderName,
-            riderUserId,
-            fromLocation,
-            toLocation)
+            rideNo,)
         Spacer(modifier = Modifier.height(24.dp))
 
         // Map image (Use the uploaded map image here)
         Image(
-            painter = painterResource(id = R.drawable.map_image), // Thay thế bằng hình ảnh bản đồ thực tế
+            painter = painterResource(id = mapImageId), // Thay thế bằng hình ảnh bản đồ thực tế
             contentDescription = "Map Image",
             modifier = Modifier.fillMaxWidth(), // Ảnh sẽ chiếm toàn bộ chiều rộng của container
             contentScale = ContentScale.Crop // Cắt bớt ảnh nếu cần thiết
