@@ -33,31 +33,9 @@ fun SavedLocationScreen(navController: NavController, userId: String) {
             .fillMaxSize()
             .background(Color.White)
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 5.dp), // Thêm padding để căn chỉnh
-            verticalAlignment = Alignment.CenterVertically, // Căn giữa theo chiều dọc
-            horizontalArrangement = Arrangement.Start // Căn trái để mũi tên ở góc trái
-        ) {
-            // Mũi tên quay lại
-            IconButton(onClick = { navController.popBackStack() }) {
-                Icon(
-                    imageVector = Icons.Filled.ArrowBack,
-                    contentDescription = "Back",
-                    tint = Color.Black
-                )
-            }
-            Text(
-                text = "Saved location", // Sử dụng tham số rideNo
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier
-                    .fillMaxWidth() // Căn giữa theo chiều ngang
-                    .wrapContentWidth(Alignment.CenterHorizontally)
-                    .offset(x = -15.dp) // Căn giữa hoàn toàn
-            )
-        }
+
+        BackArrowWithText(navController,"Saved location")
+
         Spacer(modifier=Modifier.height(20.dp))
         Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
             for (savedLocation in savedLocatons) {
@@ -73,59 +51,14 @@ fun SavedLocationScreen(navController: NavController, userId: String) {
             }
         }
         Spacer(modifier=Modifier.height(50.dp))
-        Button(
-            onClick = { },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp)
-                .padding(horizontal = 16.dp)
-            ,
-            shape = RoundedCornerShape(25.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8FC79A))
-        ) {
-            Text(
+
+        Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+            BigButton(navController = navController,
                 text = "ADD NEW ADDRESS",
-                fontSize = 16.sp,
-                color = Color.White,
-                fontWeight = FontWeight.Bold
-            )
+                onClick = {})
         }
+
         Spacer(modifier = Modifier.weight(1f)) // Ensuring the content is aligned above the navbar
         BottomNavigationBar(navController, userId, 4)
-    }
-}
-@Composable
-fun SavedLocation(iconID:Int, name: String,details:String) {
-    Column(modifier = Modifier.fillMaxWidth()) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 12.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                painter = painterResource(id = iconID), // Icon for navigation
-                contentDescription = "Arrow Icon",
-                modifier = Modifier.size(30.dp),
-                tint=Color.Gray
-            )
-            Spacer(modifier=Modifier.width((20.dp)))
-            Column {
-                Text(
-                    text = name,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Medium,
-                )
-                Spacer(modifier = Modifier.height(10.dp))
-                Text(
-                    text = details,
-                    fontSize = 15.sp,
-                    fontWeight = FontWeight.Medium,
-                    color=Color.Gray
-                )
-            }
-        }
-        Spacer(modifier=Modifier.height(5.dp))
-        Divider(color = Color.LightGray, thickness = 1.dp)
     }
 }

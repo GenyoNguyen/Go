@@ -35,37 +35,18 @@ import com.example.projectse104.*
 fun PromotionRewardsScreen(navController: NavController, userId: String) {
     var keCoins:String="2909"
     var avatarID:Int=R.drawable.avatar_1
+    var redeemCode by remember { mutableStateOf("") } // Quản lý trạng thái nhập văn bản
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 5.dp), // Thêm padding để căn chỉnh
-            verticalAlignment = Alignment.CenterVertically, // Căn giữa theo chiều dọc
-            horizontalArrangement = Arrangement.Start // Căn trái để mũi tên ở góc trái
-        ) {
-            // Mũi tên quay lại
-            IconButton(onClick = { navController.popBackStack() }) {
-                Icon(
-                    imageVector = Icons.Filled.ArrowBack,
-                    contentDescription = "Back",
-                    tint = Color.Black
-                )
-            }
-            Text(
-                text = "Promotion & Rewards", // Sử dụng tham số rideNo
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier
-                    .fillMaxWidth() // Căn giữa theo chiều ngang
-                    .wrapContentWidth(Alignment.CenterHorizontally)
-                    .offset(x = -15.dp) // Căn giữa hoàn toàn
-            )
-        }
+
+        BackArrowWithText(navController,"Promotion & Rewards")
+
         Spacer(modifier = Modifier.height(20.dp))
+
         Row(modifier=Modifier.fillMaxWidth(),Arrangement.Center) {
             Image(
                 painter = painterResource(id = avatarID), // Ensure this is a valid drawable resource
@@ -73,38 +54,11 @@ fun PromotionRewardsScreen(navController: NavController, userId: String) {
                 modifier = Modifier.size(100.dp)
             )
         }
+
         Spacer(modifier = Modifier.height(30.dp))
-        Column(modifier = Modifier
-            .padding(16.dp)
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(8.dp))
-            .background(Color(0xFFFFC800))
-        ){
-            Row(modifier = Modifier.fillMaxWidth().padding(16.dp),
-                horizontalArrangement = Arrangement.Start){
-                Text(
-                    text="Ké coins",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 30.sp
-                )
-            }
-            Row(modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically){
-                Text(
-                    text=keCoins,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 30.sp
-                )
-                Spacer(modifier = Modifier.width(5.dp))
-                Image(
-                    painter = painterResource(id = R.drawable.coins_icon), // Ensure this is a valid drawable resource
-                    contentDescription = "Profile Avatar",
-                    modifier = Modifier.size(50.dp)
-                )
-            }
-            Spacer(modifier = Modifier.height(50.dp))
-        }
+
+        KeCoinsDisplay(keCoins)
+
         Column(modifier = Modifier
             .padding(16.dp)
             .fillMaxWidth()
@@ -129,10 +83,14 @@ fun PromotionRewardsScreen(navController: NavController, userId: String) {
             Row(modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically){
-                InputhBar()
+                //Vùng nhập redeem code
+                RedeemCodeInputhBar(redeemCode,{redeemCode=it})
+
                 Spacer(modifier = Modifier.width(5.dp))
                 Button(
-                    onClick = {},
+                    onClick = {
+                        //Hành động khi nhấn redeem
+                    },
                     modifier = Modifier
                         .height(50.dp), // Add padding on the right side
                     shape = RoundedCornerShape(25.dp),
@@ -150,33 +108,5 @@ fun PromotionRewardsScreen(navController: NavController, userId: String) {
         }
         Spacer(modifier = Modifier.weight(1f)) // Ensuring the content is aligned above the navbar
         BottomNavigationBar(navController, userId, 4)
-
     }
-}
-@Composable
-fun InputhBar() {
-    var searchText by remember { mutableStateOf(TextFieldValue("")) } // Quản lý trạng thái nhập văn bản
-
-    TextField(
-        value = searchText,
-        onValueChange = { searchText = it },
-        modifier = Modifier
-            .fillMaxWidth(0.7f)
-            .padding(horizontal = 16.dp)
-            .height(50.dp) // Tăng nhẹ chiều cao để có thêm không gian hiển thị
-            .clip(RoundedCornerShape(25.dp))
-            .background(Color(0xFFEFF8F2)),
-        textStyle = TextStyle(
-            fontSize = 16.sp,
-            lineHeight = 20.sp // Đảm bảo dòng chữ không bị cắt
-        ),
-        colors = TextFieldDefaults.colors(
-            focusedContainerColor = Color(0xFFEFF8F2),
-            unfocusedContainerColor = Color(0xFFEFF8F2),
-            disabledContainerColor = Color(0xFFEFF8F2),
-            focusedIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent
-        ),
-        singleLine = true
-    )
 }

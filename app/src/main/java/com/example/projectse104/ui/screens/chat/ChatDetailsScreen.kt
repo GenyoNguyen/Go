@@ -32,9 +32,9 @@ import com.example.projectse104.*
 fun ChatDetailsScreen(
     navController: NavController,
     userId:String,
-    friendName: String,
-    isActive:String
+    conversationId:String,
 ) {
+    var friendName="Nguyễn Hữu Dũng"
     var messages:List<List<String>> =listOf(
         listOf("Bạn đi đến Quận 1 phải không?","7:52","receive"),
         listOf("Đúng vậy, tớ ở KTX khu B ấy, tòa B4?","7:53","send"),

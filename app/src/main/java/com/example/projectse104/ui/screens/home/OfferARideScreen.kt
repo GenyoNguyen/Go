@@ -26,11 +26,9 @@ import com.example.projectse104.*
 @Composable
 fun OfferARideScreen(navController: NavController, userId: String) {
     var userName="Phúc"
-    var userFullName="Nguyễn Xuân Phúc"
-    var userID="100000299"
     var rides:List<List<Any>> = listOf(
-        listOf("0054752", "29 Nov, 1:20 pm", "Dĩ An", "Quận 1",R.drawable.avatar_1,"113"),
-        listOf("0054753","30 Nov, 2:00 pm", "HCM", "Quận 5",R.drawable.avatar_1,"36")
+        listOf("0054752", "29 Nov, 1:20 pm", "Dĩ An", "Quận 1",R.drawable.avatar_1),
+        listOf("0054753","30 Nov, 2:00 pm", "HCM", "Quận 5",R.drawable.avatar_1)
     )
     Column(
         modifier = Modifier
@@ -66,7 +64,6 @@ fun OfferARideScreen(navController: NavController, userId: String) {
                     is String -> value.toIntOrNull() ?: 0  // Nếu giá trị là String, cố gắng chuyển đổi, nếu không trả về 0
                     else -> 0 // Nếu không phải Int hoặc String, trả về 0
                 }
-                var coinsEarned:String=ride[5].toString()
                 RideItem(
                     navController=navController,
                     rideNo=rideNo,
@@ -76,40 +73,13 @@ fun OfferARideScreen(navController: NavController, userId: String) {
                     avatarResId=avatarResId,
                     route="offer_details",
                     userId=userId,
-                    passengerFullName ="",
-                    passengerID = "",
-                    riderName = userFullName,
-                    riderId = userID,
-                    coinsEarned=coinsEarned,
                 )
             }
         }
         Spacer(modifier = Modifier.height(16.dp))
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 24.dp)
-                .clickable {
-                    navController.navigate("add_new_offer1/$userId") // Điều hướng đến màn hình tạo chuyến đi mới
-                },
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.add_offer_icon), // Ảnh dấu "+"
-                contentDescription = "Add Offer Icon",
-                modifier = Modifier.size(32.dp) // Kích thước icon
-            )
 
-            Spacer(modifier = Modifier.width(8.dp))
+        AddNewOffer(navController,userId)
 
-            Text(
-                text = "Add new offer",
-                fontSize = 18.sp,
-                color = Color(0xFF8FC79A),
-                fontWeight = FontWeight.Medium
-            )
-        }
 
         // Bottom navigation bar (Updated to NavigationBar for Material3)
         Spacer(modifier = Modifier.weight(1f)) // Ensuring the content is aligned above the navbar

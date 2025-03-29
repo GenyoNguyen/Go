@@ -25,7 +25,7 @@ import com.example.projectse104.*
 fun ProfileScreen(navController: NavController, userId: String) {
     var userFullName: String = "Nguyễn Xuân Phúc"
     var userGmail: String = "nguyenxuanphuc010205@gmail.com"
-    var userID: String = "10000299"
+    var userAvatarId:Int=R.drawable.avatar
 
     Column(
         modifier = Modifier
@@ -33,58 +33,15 @@ fun ProfileScreen(navController: NavController, userId: String) {
             .background(Color.White)
     ) {
         // Header section with profile name and icon
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 16.dp)
-                .clip(RoundedCornerShape(8.dp)) // Bo tròn 4 góc của header
-                .background(Color(0xFF8FC79A)), // Thêm background sau khi clip
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Spacer(modifier = Modifier.height(45.dp))                // Row cho Home và Hi, {userName}
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.Start, // Tạo khoảng cách giữa "Home" và "Hi, {userName}"
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                // Thêm icon ngôi nhà cạnh chữ Home
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "My Profile",
-                        fontSize = 30.sp,
-                        color = Color.White,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Spacer(modifier = Modifier.width(8.dp)) // Khoảng cách giữa icon và chữ "Home"
-                    Image(
-                        painter = painterResource(id = R.drawable.user_icon), // Đổi lại với icon của bạn
-                        contentDescription = "Home Icon",
-                        modifier = Modifier.size(30.dp)
-                    )
-                }
-            }
-            Spacer(modifier = Modifier.height(45.dp))                // Row cho Home và Hi, {userName}
-
-        }
+        ProfileHeader()
         Column(modifier = Modifier.offset(y = -70.dp)) {
-            Column(
-                modifier = Modifier
+            Column(modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp)
                     .clip(RoundedCornerShape(8.dp)) // Bo tròn 4 góc của header
                     .background(Color.White)
-                    .border(
-                        1.dp,
-                        Color.LightGray,
-                        RoundedCornerShape(8.dp)
-
-                    )
-                    .clickable {navController.navigate("profile_view/$userID")} // Navigate to page1 when the column is clicked
+                    .border(1.dp, Color.LightGray,RoundedCornerShape(8.dp))
+                    .clickable {navController.navigate("profile_view/$userId")} // Navigate to page1 when the column is clicked
             ) {
                 Spacer(modifier = Modifier.height(10.dp))
 
@@ -94,39 +51,11 @@ fun ProfileScreen(navController: NavController, userId: String) {
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceAround // Thêm background sau khi clip
                 ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.avatar), // Đổi lại với icon của bạn
-                        contentDescription = "Home Icon",
-                        modifier = Modifier.size(70.dp)
-                    )
-                    Column() {
-                        Text(
-                            text = userFullName,
-                            fontSize = 22.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.Black
-                        )
-                        Spacer(modifier = Modifier.height(10.dp))
-                        Text(
-                            text = userGmail,
-                            fontSize = 14.sp,
-                            color = Color.Gray
-                        )
-                        Spacer(modifier = Modifier.height(5.dp))
-
-                        Text(
-                            text = "UserID: $userID",
-                            fontSize = 14.sp,
-                            color = Color.Gray
-                        )
-                    }
-                    Image(
-                        painter = painterResource(id = R.drawable.change_icon), // Đổi lại với icon của bạn
-                        contentDescription = "Home Icon",
-                        modifier = Modifier.size(30.dp)
-                            .clickable {navController.navigate("edit_profile/$userId")} // Navigate to page2 when change icon is clicked
-
-                    )
+                    HeaderChangeSection(navController,
+                        userAvatarId,
+                        userFullName,
+                        userGmail,
+                        userId)
                 }
                 Spacer(modifier = Modifier.height(10.dp))
             }
@@ -153,37 +82,5 @@ fun ProfileScreen(navController: NavController, userId: String) {
     }
 }
 
-@Composable
-fun ProfileOption(navController: NavController,title: String,avatarID:Int,route:String="") {
-    Column(modifier = Modifier.fillMaxWidth().clickable{navController.navigate(route)}) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 12.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                painter = painterResource(id = avatarID), // Icon for navigation
-                contentDescription = "Arrow Icon",
-                modifier = Modifier.size(20.dp),
-                tint=Color.Gray
-            )
-            Spacer(modifier=Modifier.width((10.dp)))
-            Text(
-                text = title,
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Medium,
-                modifier = Modifier.weight(1f)
-            )
-            Icon(
-                painter = painterResource(id = R.drawable.ic_arrow_right), // Icon for navigation
-                contentDescription = "Arrow Icon",
-                modifier = Modifier.size(20.dp),
-                tint=Color.Gray
-            )
-        }
-        Spacer(modifier=Modifier.height(5.dp))
-        Divider(color = Color.LightGray, thickness = 1.dp)
-    }
-}
+
 

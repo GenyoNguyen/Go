@@ -41,8 +41,7 @@ import com.example.projectse104.*
 
 @Composable
 fun AddNewOfferScreen1(navController: NavController, userId: String) {
-    var departureTime by remember { mutableStateOf("") } // Trạng thái nhập thời gian
-
+    var timeText by remember { mutableStateOf("Select Time") }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -52,26 +51,18 @@ fun AddNewOfferScreen1(navController: NavController, userId: String) {
         BackArrowWithText(navController,"Add new offer")
 
         Spacer(modifier = Modifier.height(100.dp))
-
         // Icon đồng hồ
-        Image(
-            painter = painterResource(id = R.drawable.clock_icon), // Ảnh đồng hồ
-            contentDescription = "Clock Icon",
-            modifier = Modifier.size(200.dp)
-        )
 
-        Spacer(modifier = Modifier.height(40.dp))
+        AddNewOfferContent(R.drawable.clock_icon,"What time do you depart?")
 
-        // Câu hỏi
-        Text(
-            text = "What time do you depart?",
-            fontSize = 22.sp,
-            fontWeight = FontWeight.Medium,
-            color = Color.Black
-        )
 
         Spacer(modifier = Modifier.height(16.dp))
-        TimePickerField()
+        TimePickerField(
+            timeText = timeText,
+            onValueChange = { selectedTime ->
+                timeText = selectedTime
+            }
+        )
         Spacer(modifier = Modifier.height(32.dp))
         Column(Modifier.fillMaxWidth(0.8f)) {
             BigButton(navController, "NEXT", {navController.navigate("add_new_offer2/$userId")})

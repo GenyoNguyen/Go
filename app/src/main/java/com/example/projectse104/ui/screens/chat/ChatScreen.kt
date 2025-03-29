@@ -22,10 +22,10 @@ import com.example.projectse104.*
 @Composable
 fun ChatScreen(navController: NavController,userId:String) {
     var conversations:List<List<Any>> = listOf(
-        listOf("Nguyễn Hữu Dũng","You: Cảm ơn bạn nhiều !","4 mins",R.drawable.avatar_1,"yes","yes"),
-        listOf("Nguyễn Minh Triết","Thanks","43 mins",R.drawable.avatar_2,"yes","no"),
-        listOf("Nguyễn Phong Huy", "Lần sau đi nữa nhé!", "4 hours", R.drawable.avatar_1,"no","yes"),
-        listOf("Xuân Phúc","You: Oke bro","4 days",R.drawable.avatar_2,"yes","no"),
+        listOf("0001","Nguyễn Hữu Dũng","You: Cảm ơn bạn nhiều !","4 mins",R.drawable.avatar_1,"yes","yes"),
+        listOf("0002","Nguyễn Minh Triết","Thanks","43 mins",R.drawable.avatar_2,"yes","no"),
+        listOf("0003","Nguyễn Phong Huy", "Lần sau đi nữa nhé!", "4 hours", R.drawable.avatar_1,"no","yes"),
+        listOf("0004","Xuân Phúc","You: Oke bro","4 days",R.drawable.avatar_2,"yes","no"),
 
         )
     Column(
@@ -42,25 +42,27 @@ fun ChatScreen(navController: NavController,userId:String) {
                 .padding(horizontal = 16.dp)
         ) {
             for (conversation in conversations) {
-                var name:String=conversation[0].toString()
-                var message:String=conversation[1].toString()
-                var time:String=conversation[2].toString()
-                var imageRes: Int = when (val value = conversation[3]) {
+                var conversationId:String=conversation[0].toString()
+                var name:String=conversation[1].toString()
+                var message:String=conversation[2].toString()
+                var time:String=conversation[3].toString()
+                var imageRes: Int = when (val value = conversation[4]) {
                     is Int -> value
                     is String -> value.toIntOrNull() ?: 0  // Nếu giá trị là String, cố gắng chuyển đổi, nếu không trả về 0
                     else -> 0 // Nếu không phải Int hoặc String, trả về 0
                 }
-                val haveSeen: String = conversation[4].toString()
-                val isOnline: String = conversation[5].toString()
+                val haveSeen: String = conversation[5].toString()
+                val isOnline: String = conversation[6].toString()
                 ChatItem(
-                    navController,
-                    userId,
-                    name,
-                    message,
-                    time,
-                    imageRes,
-                    haveSeen,
-                    isOnline
+                    navController = navController,
+                    userId = userId,
+                    conversationId = conversationId,
+                    friendName = name,
+                    message=message,
+                    time = time,
+                    imageRes=imageRes,
+                    haveSeen=haveSeen,
+                    isOnline=isOnline
                 )
             }
         }

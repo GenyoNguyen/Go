@@ -34,6 +34,7 @@ import com.example.projectse104.*
 fun ChatItem(
     navController: NavController, // Thêm navController vào để điều hướng
     userId:String,
+    conversationId:String,
     friendName: String,
     message: String,
     time: String,
@@ -46,7 +47,7 @@ fun ChatItem(
             .fillMaxWidth()
             .clickable {
                 // Navigate to the chat details screen and pass data
-                navController.navigate("chat_details/$userId/$friendName/$isOnline")
+                navController.navigate("chat_details/$userId/$conversationId")
             }
     ) {
         Row(
