@@ -10,15 +10,15 @@ import com.example.projectse104.domain.model.Message
 import com.example.projectse104.domain.repository.MessageListResponse
 import com.example.projectse104.domain.repository.MessageRepository
 import com.example.projectse104.domain.repository.SendMessageResponse
-import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.Query.Direction
+import io.github.jan.supabase.postgrest.query.PostgrestQueryBuilder
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 
 class MessageRepositoryImpl(
-    private val messagesRef: CollectionReference
+    private val messagesRef: PostgrestQueryBuilder
 ) : MessageRepository {
 
     override fun getMessageList(conversationId: String): Flow<MessageListResponse> = callbackFlow {

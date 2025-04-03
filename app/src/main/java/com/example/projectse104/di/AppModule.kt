@@ -10,58 +10,66 @@ import com.example.projectse104.domain.repository.MessageRepository
 import com.example.projectse104.domain.repository.RideOfferRepository
 import com.example.projectse104.domain.repository.RideRepository
 import com.example.projectse104.domain.repository.UserRepository
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import io.github.jan.supabase.SupabaseClient
+import io.github.jan.supabase.createSupabaseClient
+import io.github.jan.supabase.postgrest.Postgrest
+import io.github.jan.supabase.postgrest.from
+import io.github.jan.supabase.realtime.Realtime
 
-const val USERS = "users"
-const val RIDES = "rides"
-const val RIDE_OFFERS = "ride_offers"
-const val CONVERSATIONS = "conversations"
-const val MESSAGES = "messages"
+const val USER = "User"
+const val RIDE = "Ride"
+const val RIDE_OFFER = "RideOffer"
+const val CONVERSATION = "Conversation"
+const val MESSAGE = "Message"
 
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
     @Provides
-    fun provideFirebaseFirestore() = Firebase.firestore
+    fun provideSupabaseClient() = createSupabaseClient(
+        supabaseUrl = "https://ouanezsrnbseuupwngww.supabase.co",
+        supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im91YW5lenNybmJzZXV1cHduZ3d3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDM0MzIwMTcsImV4cCI6MjA1OTAwODAxN30.ovsvvFYTUUM2f6HkrjKC2qhHS2IRUeH6TUiGTfsOEAg"
+    ) {
+        install(Postgrest)
+        install(Realtime)
+    }
 
     @Provides
     fun provideUserRepository(
-        db: FirebaseFirestore
+        db: SupabaseClient
     ): UserRepository = UserRepositoryImpl(
-        usersRef = db.collection(USERS)
+        usersRef = db.from(USER)
     )
 
     @Provides
     fun provideRideRepository(
-        db: FirebaseFirestore
+        db: SupabaseClient
     ): RideRepository = RideRepositoryImpl(
-        ridesRef = db.collection(RIDES)
+        ridesRef = db.from(RIDE)
     )
 
     @Provides
     fun provideRideOfferRepository(
-        db: FirebaseFirestore
+        db: SupabaseClient
     ): RideOfferRepository = RideOfferRepositoryImpl(
-        rideOffersRef = db.collection(RIDE_OFFERS)
+        rideOffersRef = db.from(RIDE_OFFER)
     )
 
     @Provides
     fun provideConversationRepository(
-        db: FirebaseFirestore
+        db: SupabaseClient
     ): ConversationRepository = ConversationRepositoryImpl(
-        conversationsRef = db.collection(CONVERSATIONS)
+        conversationsRef = db.from(CONVERSATION)
     )
 
     @Provides
     fun provideMessageRepository(
-        db: FirebaseFirestore
+        db: SupabaseClient
     ): MessageRepository = MessageRepositoryImpl(
-        messagesRef = db.collection(MESSAGES)
+        messagesRef = db.from(MESSAGE)
     )
 }

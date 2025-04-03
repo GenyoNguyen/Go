@@ -11,7 +11,7 @@ import com.example.projectse104.domain.repository.AddRideOfferResponse
 import com.example.projectse104.domain.repository.RideOfferListResponse
 import com.example.projectse104.domain.repository.RideOfferRepository
 import com.example.projectse104.domain.repository.RideOfferResponse
-import com.google.firebase.firestore.CollectionReference
+import io.github.jan.supabase.postgrest.query.PostgrestQueryBuilder
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -21,7 +21,7 @@ import java.util.Date
 import java.util.Locale
 
 class RideOfferRepositoryImpl(
-    private val rideOffersRef: CollectionReference
+    private val rideOffersRef: PostgrestQueryBuilder
 ) : RideOfferRepository {
     override fun getRideOfferList(): Flow<RideOfferListResponse> = callbackFlow {
         val listener = rideOffersRef.orderBy(ESTIMATED_DEPART_TIME_FIELD)

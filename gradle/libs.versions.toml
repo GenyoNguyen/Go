@@ -1,5 +1,6 @@
 [versions]
 agp = "8.9.0"
+bom = "3.1.4"
 core = "1.6.1"
 firebaseBom = "33.10.0"
 hiltAndroid = "2.51.1"
@@ -23,12 +24,14 @@ mockitoKotlin = "4.0.0"
 robolectric = "4.9"
 startupRuntime = "1.2.0"
 navigationCompose = "2.8.9"
+kotlinStdlib = "2.0.20"
 
 [libraries]
 androidx-core = { module = "androidx.test:core", version.ref = "core" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose" }
 androidx-startup-runtime = { module = "androidx.startup:startup-runtime", version.ref = "startupRuntime" }
+bom = { module = "io.github.jan-tennert.supabase:bom", version.ref = "bom" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
 firebase-firestore = { module = "com.google.firebase:firebase-firestore" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroid" }
@@ -53,8 +56,10 @@ googleid = { group = "com.google.android.libraries.identity.googleid", name = "g
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutinesTest" }
 mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockitoCore" }
 mockito-kotlin = { module = "org.mockito.kotlin:mockito-kotlin", version.ref = "mockitoKotlin" }
+postgrest-kt = { module = "io.github.jan-tennert.supabase:postgrest-kt" }
 robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
+kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlinStdlib" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -7,6 +7,8 @@ plugins {
     // Apply the Hilt plugin
     id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
+
+    kotlin("plugin.serialization") version "2.0.0"
 }
 
 android {
@@ -59,6 +61,7 @@ dependencies {
     implementation(libs.androidx.credentials.play.services.auth)
     implementation(libs.googleid)
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.kotlin.stdlib)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -102,6 +105,14 @@ dependencies {
     testImplementation(libs.robolectric) // Optional, for Android-specific tests
     testImplementation(libs.androidx.core)
     testImplementation(libs.kotlinx.coroutines.test)
+
+    //Supabase
+    implementation(platform("io.github.jan-tennert.supabase:bom:3.1.4"))
+    implementation("io.github.jan-tennert.supabase:postgrest-kt")
+    implementation("io.github.jan-tennert.supabase:realtime-kt")
+
+    //Ktor
+    implementation("io.ktor:ktor-client-cio:3.1.2")
 }
 
 // Allow references to generated code
