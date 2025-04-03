@@ -11,6 +11,9 @@ import kotlinx.coroutines.flow.Flow
 class ConversationRepositoryImpl(
     private val conversationsRef: PostgrestQueryBuilder
 ) : ConversationRepository {
+    //    override fun getConversationsWithLastMessage(userId: String): Flow<ConversaationsWithLastMessageResponse> {
+//        TODO("Not yet implemented")
+//    }
     override fun getConversationsWithLastMessage(userId: String): Flow<ConversaationsWithLastMessageResponse> {
         TODO("Not yet implemented")
     }

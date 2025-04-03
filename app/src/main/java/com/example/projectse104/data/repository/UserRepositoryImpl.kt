@@ -15,7 +15,7 @@ class UserRepositoryImpl(
 
     override suspend fun getUser(userId: String): UserResponse = try {
         val userResponse =
-            usersRef.select() {
+            usersRef.select {
                 filter {
                     User::id eq userId
                 }

@@ -33,7 +33,7 @@ fun ProfileScreen(navController: NavController, viewModel: ProfileViewModel = hi
     var userFullName = null.toString()
     var userGmail = null.toString()
     var userId = null.toString()
-    var userAvatarId: Int = R.drawable.avatar
+    val userAvatarId: Int = R.drawable.avatar
 
     when (state) {
         is Response.Success<User> -> {
@@ -52,7 +52,7 @@ fun ProfileScreen(navController: NavController, viewModel: ProfileViewModel = hi
     ) {
         // Header section with profile name and icon
         ProfileHeader()
-        Column(modifier = Modifier.offset(y = -70.dp)) {
+        Column(modifier = Modifier.offset(y = (-70).dp)) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()

@@ -8,7 +8,7 @@ typealias RideListResponse = Response<List<Ride>>
 typealias RideResponse = Response<Ride>
 
 interface RideRepository {
-    fun getPendingRideList(passengerId: String): Flow<List<Ride>>
+    fun getPendingRideList(passengerId: String): Flow<RideListResponse>
 
     suspend fun getRideHistoryList(passengerId: String): Flow<List<Ride>>
 

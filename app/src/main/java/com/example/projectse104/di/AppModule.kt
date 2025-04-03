@@ -19,6 +19,8 @@ import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.postgrest.from
 import io.github.jan.supabase.realtime.Realtime
+import io.github.jan.supabase.realtime.channel
+import io.github.jan.supabase.realtime.realtime
 
 const val USER = "User"
 const val RIDE = "Ride"
@@ -49,7 +51,8 @@ object AppModule {
     fun provideRideRepository(
         db: SupabaseClient
     ): RideRepository = RideRepositoryImpl(
-        ridesRef = db.from(RIDE)
+        ridesRef = db.from(RIDE),
+        rideChannel = db.realtime.channel("ride")
     )
 
     @Provides
