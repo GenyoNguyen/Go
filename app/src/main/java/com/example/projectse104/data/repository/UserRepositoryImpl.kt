@@ -20,8 +20,12 @@ class UserRepositoryImpl(
                     User::id eq userId
                 }
             }.decodeSingle<User>()
+        println("UserId: $userId")
+        println(userResponse)
         Response.Success(userResponse)
     } catch (e: Exception) {
+        println("UserId: $userId")
+        println(e.message)
         Response.Failure(e)
     }
 

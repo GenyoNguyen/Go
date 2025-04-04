@@ -1,10 +1,6 @@
 package com.example.projectse104.data.repository
 
-import com.example.projectse104.core.ACCEPTED_TIME_FIELD
-import com.example.projectse104.core.ESTIMATED_DEPART_TIME_FIELD
-import com.example.projectse104.core.Response
 import com.example.projectse104.domain.model.RideOffer
-import com.example.projectse104.domain.model.toRideOffer
 import com.example.projectse104.domain.repository.AcceptRideOfferResponse
 import com.example.projectse104.domain.repository.AcceptedRideOfferListResponse
 import com.example.projectse104.domain.repository.AddRideOfferResponse
@@ -12,13 +8,7 @@ import com.example.projectse104.domain.repository.RideOfferListResponse
 import com.example.projectse104.domain.repository.RideOfferRepository
 import com.example.projectse104.domain.repository.RideOfferResponse
 import io.github.jan.supabase.postgrest.query.PostgrestQueryBuilder
-import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.tasks.await
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 class RideOfferRepositoryImpl(
     private val rideOffersRef: PostgrestQueryBuilder

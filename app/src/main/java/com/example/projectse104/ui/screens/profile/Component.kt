@@ -6,9 +6,28 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Divider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -24,9 +43,9 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import com.example.projectse104.R
-import com.example.projectse104.*
+
 @Composable
-fun ProfileHeader(){
+fun ProfileHeader() {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -66,9 +85,12 @@ fun ProfileHeader(){
 
     }
 }
+
 @Composable
-fun ProfileOption(navController: NavController,title: String,avatarID:Int,route:String="") {
-    Column(modifier = Modifier.fillMaxWidth().clickable{navController.navigate(route)}) {
+fun ProfileOption(navController: NavController, title: String, avatarID: Int, route: String = "") {
+    Column(modifier = Modifier
+        .fillMaxWidth()
+        .clickable { navController.navigate(route) }) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -79,9 +101,9 @@ fun ProfileOption(navController: NavController,title: String,avatarID:Int,route:
                 painter = painterResource(id = avatarID), // Icon for navigation
                 contentDescription = "Arrow Icon",
                 modifier = Modifier.size(20.dp),
-                tint=Color.Gray
+                tint = Color.Gray
             )
-            Spacer(modifier=Modifier.width((10.dp)))
+            Spacer(modifier = Modifier.width((10.dp)))
             Text(
                 text = title,
                 fontSize = 20.sp,
@@ -92,19 +114,23 @@ fun ProfileOption(navController: NavController,title: String,avatarID:Int,route:
                 painter = painterResource(id = R.drawable.ic_arrow_right), // Icon for navigation
                 contentDescription = "Arrow Icon",
                 modifier = Modifier.size(20.dp),
-                tint=Color.Gray
+                tint = Color.Gray
             )
         }
-        Spacer(modifier=Modifier.height(5.dp))
+        Spacer(modifier = Modifier.height(5.dp))
         Divider(color = Color.LightGray, thickness = 1.dp)
     }
 }
+
 @Composable
-fun HeaderChangeSection(navController: NavController,
-                        userAvatarId:Int,
-                        userFullName:String,
-                        userGmail:String,
-                        userId:String){
+fun HeaderChangeSection(
+    navController: NavController,
+    userAvatarId: Int,
+    userFullName: String,
+    userGmail: String,
+    userCode: String,
+    userId: String
+) {
     Image(
         painter = painterResource(id = userAvatarId), // Đổi lại với icon của bạn
         contentDescription = "Home Icon",
@@ -126,7 +152,7 @@ fun HeaderChangeSection(navController: NavController,
         Spacer(modifier = Modifier.height(5.dp))
 
         Text(
-            text = "UserID: $userId",
+            text = "UserID: $userCode",
             fontSize = 14.sp,
             color = Color.Gray
         )
@@ -134,11 +160,13 @@ fun HeaderChangeSection(navController: NavController,
     Image(
         painter = painterResource(id = R.drawable.change_icon), // Đổi lại với icon của bạn
         contentDescription = "Home Icon",
-        modifier = Modifier.size(30.dp)
-            .clickable {navController.navigate("edit_profile/$userId")} // Navigate to page2 when change icon is clicked
+        modifier = Modifier
+            .size(30.dp)
+            .clickable { navController.navigate("edit_profile/$userId") } // Navigate to page2 when change icon is clicked
 
     )
 }
+
 @Composable
 fun ProfileCustomTextFieldWithLabel(
     label: String,
@@ -148,7 +176,9 @@ fun ProfileCustomTextFieldWithLabel(
 ) {
     val focusedColor = Color(0xFF8FC79A)
 
-    Box(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
+    Box(modifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp)) {
         Text(
             text = label,
             fontSize = 12.sp,
@@ -191,11 +221,14 @@ fun ProfileCustomTextFieldWithLabel(
     }
     Spacer(modifier = Modifier.height(40.dp))
 }
+
 @Composable
-fun ViewUserDetails(avatarID:Int,
-                    userFullName:String,
-                    rating:String,
-                    position:String){
+fun ViewUserDetails(
+    avatarID: Int,
+    userFullName: String,
+    rating: String,
+    position: String
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -233,12 +266,12 @@ fun ViewUserDetails(avatarID:Int,
             )
             Spacer(modifier = Modifier.height(10.dp))
 
-            Row(){
+            Row() {
                 Icon(
                     painter = painterResource(id = R.drawable.profile_view_location), // Icon for navigation
                     contentDescription = "Arrow Icon",
                     modifier = Modifier.size(20.dp),
-                    tint=Color(0xFF544C44)
+                    tint = Color(0xFF544C44)
                 )
                 Spacer(modifier = Modifier.width(5.dp))
 
@@ -251,10 +284,13 @@ fun ViewUserDetails(avatarID:Int,
         }
     }
 }
+
 @Composable
-fun ViewRideDetails(ridesTaken:String,
-                    ridesGiven:String,
-                    trustScore:String){
+fun ViewRideDetails(
+    ridesTaken: String,
+    ridesGiven: String,
+    trustScore: String
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -313,13 +349,16 @@ fun ViewRideDetails(ridesTaken:String,
 
     }
 }
+
 @Composable
 fun RecentAccompany(
     avatarResId: Int,
     passengerName: String,
 ) {
     Column(
-        modifier = Modifier.fillMaxWidth().padding(horizontal=16.dp) // Đảm bảo column chiếm hết chiều rộng
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp) // Đảm bảo column chiếm hết chiều rộng
     ) {
         Row(
             modifier = Modifier
@@ -362,8 +401,9 @@ fun RecentAccompany(
         )
     }
 }
+
 @Composable
-fun SavedLocation(iconID:Int, name: String,details:String) {
+fun SavedLocation(iconID: Int, name: String, details: String) {
     Column(modifier = Modifier.fillMaxWidth()) {
         Row(
             modifier = Modifier
@@ -375,9 +415,9 @@ fun SavedLocation(iconID:Int, name: String,details:String) {
                 painter = painterResource(id = iconID), // Icon for navigation
                 contentDescription = "Arrow Icon",
                 modifier = Modifier.size(30.dp),
-                tint=Color.Gray
+                tint = Color.Gray
             )
-            Spacer(modifier=Modifier.width((20.dp)))
+            Spacer(modifier = Modifier.width((20.dp)))
             Column {
                 Text(
                     text = name,
@@ -389,35 +429,43 @@ fun SavedLocation(iconID:Int, name: String,details:String) {
                     text = details,
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Medium,
-                    color=Color.Gray
+                    color = Color.Gray
                 )
             }
         }
-        Spacer(modifier=Modifier.height(5.dp))
+        Spacer(modifier = Modifier.height(5.dp))
         Divider(color = Color.LightGray, thickness = 1.dp)
     }
 }
+
 @Composable
-fun KeCoinsDisplay(keCoins:String){
-    Column(modifier = Modifier
-        .padding(16.dp)
-        .fillMaxWidth()
-        .clip(RoundedCornerShape(8.dp))
-        .background(Color(0xFFFFC800))
-    ){
-        Row(modifier = Modifier.fillMaxWidth().padding(16.dp),
-            horizontalArrangement = Arrangement.Start){
+fun KeCoinsDisplay(keCoins: String) {
+    Column(
+        modifier = Modifier
+            .padding(16.dp)
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(8.dp))
+            .background(Color(0xFFFFC800))
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.Start
+        ) {
             Text(
-                text="Ké coins",
+                text = "Ké coins",
                 fontWeight = FontWeight.Bold,
                 fontSize = 30.sp
             )
         }
-        Row(modifier = Modifier.fillMaxWidth(),
+        Row(
+            modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically){
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             Text(
-                text=keCoins,
+                text = keCoins,
                 fontWeight = FontWeight.Bold,
                 fontSize = 30.sp
             )
@@ -431,8 +479,9 @@ fun KeCoinsDisplay(keCoins:String){
         Spacer(modifier = Modifier.height(50.dp))
     }
 }
+
 @Composable
-fun RedeemCodeInputhBar(value:String,onValueChange:(String)->Unit) {
+fun RedeemCodeInputhBar(value: String, onValueChange: (String) -> Unit) {
 
     TextField(
         value = value,
@@ -457,14 +506,19 @@ fun RedeemCodeInputhBar(value:String,onValueChange:(String)->Unit) {
         singleLine = true
     )
 }
+
 @Composable
-fun RideCircleDetails(avatarID: Int,
-                      trustScore: String,
-                      ridesTaken: String,
-                      ridesGiven: String){
-    Row(modifier=Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 10.dp)){
+fun RideCircleDetails(
+    avatarID: Int,
+    trustScore: String,
+    ridesTaken: String,
+    ridesGiven: String
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 10.dp)
+    ) {
         Text(
             text = "Your trust score",
             fontSize = 22.sp,
@@ -486,18 +540,19 @@ fun RideCircleDetails(avatarID: Int,
             modifier = Modifier
                 .size(100.dp)
         )
-        Spacer(modifier=Modifier.width(20.dp))
-        Column(modifier = Modifier
-            .clip(RoundedCornerShape(8.dp))
-            .background(Color(0xFFDCF8EA))
-            .border(
-                1.dp,
-                Color(0XFF7CCFA7),
-                RoundedCornerShape(8.dp)
+        Spacer(modifier = Modifier.width(20.dp))
+        Column(
+            modifier = Modifier
+                .clip(RoundedCornerShape(8.dp))
+                .background(Color(0xFFDCF8EA))
+                .border(
+                    1.dp,
+                    Color(0XFF7CCFA7),
+                    RoundedCornerShape(8.dp)
 
-            )
-            .padding(16.dp)
-        ){
+                )
+                .padding(16.dp)
+        ) {
             Text(
                 text = "Trust score: $trustScore",
                 fontSize = 22.sp,
@@ -524,8 +579,15 @@ fun RideCircleDetails(avatarID: Int,
         }
     }
 }
+
 @Composable
-fun favouriteRider(navController: NavController,userId:String,riderName:String,avatarID:Int,conversationId:String) {
+fun favouriteRider(
+    navController: NavController,
+    userId: String,
+    riderName: String,
+    avatarID: Int,
+    conversationId: String
+) {
     Column(modifier = Modifier.fillMaxWidth()) {
         Row(
             modifier = Modifier
@@ -550,16 +612,21 @@ fun favouriteRider(navController: NavController,userId:String,riderName:String,a
             Icon(
                 painter = painterResource(id = R.drawable.chat_nav_icon), // Icon for navigation
                 contentDescription = "Arrow Icon",
-                modifier = Modifier.size(20.dp).clickable { navController.navigate("chat_details/$userId/$conversationId") },
+                modifier = Modifier
+                    .size(20.dp)
+                    .clickable { navController.navigate("chat_details/$userId/$conversationId") },
             )
         }
-        Spacer(modifier=Modifier.height(5.dp))
+        Spacer(modifier = Modifier.height(5.dp))
         Divider(color = Color(0XFF35B82A), thickness = 1.dp)
     }
 }
+
 @Composable
-fun FAQSection(index:String, name: String) {
-    Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
+fun FAQSection(index: String, name: String) {
+    Column(modifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp)) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -578,22 +645,24 @@ fun FAQSection(index:String, name: String) {
                 fontWeight = FontWeight.Bold,
             )
         }
-        Spacer(modifier=Modifier.height(5.dp))
+        Spacer(modifier = Modifier.height(5.dp))
         Divider(color = Color(0xFF7CCFA7), thickness = 1.dp)
     }
 }
+
 @Composable
 fun Media(iconID: Int, name: String, url: String) {
     val context = LocalContext.current
 
-    Column(modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 30.dp)
-        .clickable {
-            // Open the URL when the composable is clicked
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-            context.startActivity(intent)
-        }
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 30.dp)
+            .clickable {
+                // Open the URL when the composable is clicked
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                context.startActivity(intent)
+            }
     ) {
         Row(
             modifier = Modifier
@@ -618,9 +687,11 @@ fun Media(iconID: Int, name: String, url: String) {
 }
 
 @Composable
-fun Dev(avatarResId: Int, devName: String,devGmail:String) {
+fun Dev(avatarResId: Int, devName: String, devGmail: String) {
     Column(
-        modifier = Modifier.fillMaxWidth().padding(horizontal=16.dp) // Đảm bảo column chiếm hết chiều rộng
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp) // Đảm bảo column chiếm hết chiều rộng
     ) {
         Row(
             modifier = Modifier
@@ -644,7 +715,7 @@ fun Dev(avatarResId: Int, devName: String,devGmail:String) {
                     fontSize = 20.sp,
                     fontWeight = FontWeight.SemiBold,
                     textAlign = TextAlign.Center,
-                    color=Color(0xFF7CCFA7)
+                    color = Color(0xFF7CCFA7)
                 )
                 Spacer(modifier = Modifier.height(5.dp))
                 Text(
@@ -664,19 +735,25 @@ fun Dev(avatarResId: Int, devName: String,devGmail:String) {
         )
     }
 }
+
 @Composable
-fun FAQContacUS(navController: NavController,userId: String,state:String){
+fun FAQContacUS(navController: NavController, userId: String, state: String) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
     ) {
         Button(
-            onClick = {if(state=="contact") navController.popBackStack() else {} },
+            onClick = {
+                if (state == "contact") navController.popBackStack() else {
+                }
+            },
             modifier = Modifier
                 .width(180.dp)
                 .height(30.dp),
             shape = RoundedCornerShape(25.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(if(state=="faq")0xFF8FC79A else 0xFFDCF8EA)),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(if (state == "faq") 0xFF8FC79A else 0xFFDCF8EA)),
             contentPadding = PaddingValues(0.dp) // Loại bỏ padding nội dung để text không bị cắt
         ) {
             Text(
@@ -689,12 +766,15 @@ fun FAQContacUS(navController: NavController,userId: String,state:String){
         }
 
         Button(
-            onClick = {if(state=="faq") navController.navigate("contact_us/$userId") else {} },
+            onClick = {
+                if (state == "faq") navController.navigate("contact_us/$userId") else {
+                }
+            },
             modifier = Modifier
                 .width(180.dp)
                 .height(30.dp),
             shape = RoundedCornerShape(25.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(if(state=="contact")0xFF8FC79A else 0xFFDCF8EA)),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(if (state == "contact") 0xFF8FC79A else 0xFFDCF8EA)),
             contentPadding = PaddingValues(0.dp) // Loại bỏ padding nội dung để text không bị cắt
         ) {
             Text(

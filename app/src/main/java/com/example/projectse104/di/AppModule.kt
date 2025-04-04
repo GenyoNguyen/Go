@@ -32,12 +32,14 @@ const val MESSAGE = "Message"
 @InstallIn(SingletonComponent::class)
 object AppModule {
     @Provides
-    fun provideSupabaseClient() = createSupabaseClient(
-        supabaseUrl = "https://ouanezsrnbseuupwngww.supabase.co",
-        supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im91YW5lenNybmJzZXV1cHduZ3d3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDM0MzIwMTcsImV4cCI6MjA1OTAwODAxN30.ovsvvFYTUUM2f6HkrjKC2qhHS2IRUeH6TUiGTfsOEAg"
-    ) {
-        install(Postgrest)
-        install(Realtime)
+    fun provideSupabaseClient(): SupabaseClient {
+        return createSupabaseClient(
+            supabaseUrl = "https://ouanezsrnbseuupwngww.supabase.co",
+            supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im91YW5lenNybmJzZXV1cHduZ3d3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDM0MzIwMTcsImV4cCI6MjA1OTAwODAxN30.ovsvvFYTUUM2f6HkrjKC2qhHS2IRUeH6TUiGTfsOEAg"
+        ) {
+            install(Postgrest)
+            install(Realtime)
+        }
     }
 
     @Provides

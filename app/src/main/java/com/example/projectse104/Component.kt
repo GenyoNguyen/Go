@@ -2,15 +2,41 @@ package com.example.projectse104
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -19,15 +45,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
-import com.example.projectse104.R
-import com.example.projectse104.ui.navigation.Screen
 
 @Composable
 fun CustomTextFieldWithLabel(
@@ -79,6 +102,7 @@ fun CustomTextFieldWithLabel(
         )
     }
 }
+
 @Composable
 fun CustomPasswordTextField(
     label: String,
@@ -125,12 +149,12 @@ fun CustomPasswordTextField(
             )
         )
         val coverWidth = when (label) {
-            "EMAIL"->100.dp
-            "Password"->80.dp
+            "EMAIL" -> 100.dp
+            "Password" -> 80.dp
             "New password" -> 100.dp
-            "Confirm password"->120.dp
-            "Confirm new password"->140.dp
-            else ->10.dp
+            "Confirm password" -> 120.dp
+            "Confirm new password" -> 140.dp
+            else -> 10.dp
         }
         Box(
             modifier = Modifier
@@ -141,13 +165,16 @@ fun CustomPasswordTextField(
         )
     }
 }
+
 @Composable
-fun BigButton(navController: NavController,
-              text:String,
-              onClick: () -> Unit = {}){
-    Box(modifier=Modifier.fillMaxWidth()){
+fun BigButton(
+    navController: NavController,
+    text: String,
+    onClick: () -> Unit = {}
+) {
+    Box(modifier = Modifier.fillMaxWidth()) {
         Button(
-            onClick = { onClick()},
+            onClick = { onClick() },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp),
@@ -163,38 +190,40 @@ fun BigButton(navController: NavController,
         }
     }
 }
+
 @Composable
-fun BackArrowWithText(navController: NavController,text:String) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 5.dp), // Thêm padding để căn chỉnh
-            verticalAlignment = Alignment.CenterVertically, // Căn giữa theo chiều dọc
-            horizontalArrangement = Arrangement.Start // Căn trái để mũi tên ở góc trái
-        ) {
-            // Mũi tên quay lại
-            IconButton(onClick = { navController.popBackStack() }) {
-                Icon(
-                    imageVector = Icons.Filled.ArrowBack,
-                    contentDescription = "Back",
-                    tint = Color.Black
-                )
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // Tiêu đề "Forgot password"
-            Text(
-                text = text,
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier
-                    .fillMaxWidth() // Căn giữa theo chiều ngang
-                    .wrapContentWidth(Alignment.CenterHorizontally)
-                    .offset(x = -15.dp) // Căn giữa hoàn toàn
+fun BackArrowWithText(navController: NavController, text: String) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 5.dp), // Thêm padding để căn chỉnh
+        verticalAlignment = Alignment.CenterVertically, // Căn giữa theo chiều dọc
+        horizontalArrangement = Arrangement.Start // Căn trái để mũi tên ở góc trái
+    ) {
+        // Mũi tên quay lại
+        IconButton(onClick = { navController.popBackStack() }) {
+            Icon(
+                imageVector = Icons.Filled.ArrowBack,
+                contentDescription = "Back",
+                tint = Color.Black
             )
         }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // Tiêu đề "Forgot password"
+        Text(
+            text = text,
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier
+                .fillMaxWidth() // Căn giữa theo chiều ngang
+                .wrapContentWidth(Alignment.CenterHorizontally)
+                .offset(x = -15.dp) // Căn giữa hoàn toàn
+        )
     }
+}
+
 @Composable
 fun BottomNavigationBar(navController: NavController, userId: String, activate: Int) {
     NavigationBar(
@@ -286,20 +315,21 @@ fun BottomNavigationBar(navController: NavController, userId: String, activate: 
         )
     }
 }
+
 @Composable
 fun RideItem(
     navController: NavController,
-    rideNo: String="",
-    estimatedDeparture: String="",
-    fromLocation: String="",
-    toLocation: String="",
+    rideNo: String = "",
+    estimatedDeparture: String = "",
+    fromLocation: String = "",
+    toLocation: String = "",
     avatarResId: Int, // Thêm tham số avatarResId để truyền ảnh
-    route: String="", // Thêm tham số route
-    userId:String="",
-    addGoButton:String=""
+    route: String = "", // Thêm tham số route
+    userId: String = "",
+    addGoButton: String = ""
 ) {
-    var path:String=if (route=="ride_details") "$route/$userId/$rideNo/$addGoButton"
-    else if (route=="ride_details_history") "$route/$userId/$rideNo"
+    var path: String = if (route == "ride_details") "$route/$userId/$rideNo/$addGoButton"
+    else if (route == "ride_details_history") "$route/$userId/$rideNo"
     else "$route/$userId/$rideNo"
 
     Column(
@@ -389,8 +419,9 @@ fun RideItem(
         Spacer(modifier = Modifier.height(10.dp))
     }
 }
+
 @Composable
-fun Header(text:String,iconID:Int){
+fun Header(text: String, iconID: Int) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -432,15 +463,18 @@ fun Header(text:String,iconID:Int){
         Spacer(modifier = Modifier.height(30.dp))
     }
 }
+
 @Composable
-fun rideDetails(estimatedDeparture: String,
-                fromLocation: String,
-                toLocation: String,
-                riderName:String,
-                riderUserId:String,
-                passengerName:String,
-                passengerUserId:String,
-                cost:String){
+fun rideDetails(
+    estimatedDeparture: String,
+    fromLocation: String,
+    toLocation: String,
+    riderName: String,
+    riderUserId: String,
+    passengerName: String,
+    passengerUserId: String,
+    cost: String
+) {
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {

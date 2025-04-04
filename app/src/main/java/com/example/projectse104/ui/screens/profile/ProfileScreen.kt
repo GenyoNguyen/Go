@@ -24,6 +24,7 @@ import androidx.navigation.NavController
 import com.example.projectse104.BottomNavigationBar
 import com.example.projectse104.R
 import com.example.projectse104.core.Response
+import com.example.projectse104.core.logErrorMessage
 import com.example.projectse104.domain.model.User
 
 @Composable
@@ -33,16 +34,21 @@ fun ProfileScreen(navController: NavController, viewModel: ProfileViewModel = hi
     var userFullName = null.toString()
     var userGmail = null.toString()
     var userId = null.toString()
+    var userCode = null.toString()
     val userAvatarId: Int = R.drawable.avatar
 
     when (state) {
         is Response.Success<User> -> {
+            println(state.data)
             userId = state.data?.id.toString()
+            userCode = state.data?.userCode.toString()
             userFullName = state.data?.fullName.toString()
             userGmail = state.data?.email.toString()
         }
 
-        else -> {}
+        else -> {
+            logErrorMessage("Error loading user data")
+        }
     }
 
     Column(
@@ -75,6 +81,7 @@ fun ProfileScreen(navController: NavController, viewModel: ProfileViewModel = hi
                         userAvatarId,
                         userFullName,
                         userGmail,
+                        userCode,
                         userId
                     )
                 }

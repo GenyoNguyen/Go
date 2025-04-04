@@ -29,7 +29,7 @@ class ProfileViewModel @Inject constructor(
     }
 
     private fun getUser(userId: String) {
-        println("Loading...")
+        println("Loading view model...")
         getUserUseCase(userId)
             .onEach { result -> _userState.value = result }
             .launchIn(viewModelScope)

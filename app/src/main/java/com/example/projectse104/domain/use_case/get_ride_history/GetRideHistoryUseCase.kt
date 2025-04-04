@@ -12,6 +12,6 @@ class GetRideHistoryUseCase @Inject constructor(
 ) {
     operator fun invoke(passengerId: String): Flow<RideListResponse> = flow {
         emit(Response.Loading)
-        emit(repository.getRideHistoryList(passengerId))
+//        emit(repository.getRideHistoryList(passengerId))
     }
 }
