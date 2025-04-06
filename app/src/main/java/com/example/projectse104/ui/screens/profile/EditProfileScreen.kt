@@ -29,6 +29,8 @@ import androidx.navigation.NavController
 import com.example.projectse104.R
 import com.example.projectse104.ui.navigation.Screen
 import com.example.projectse104.*
+import com.example.projectse104.core.Response
+import com.example.projectse104.domain.model.User
 
 @Composable
 fun EditProfileScreen(navController: NavController, userId: String) {
@@ -41,40 +43,79 @@ fun EditProfileScreen(navController: NavController, userId: String) {
     var input_name by remember { mutableStateOf("") }
     var input_phoneNumber by remember { mutableStateOf("") }
     var input_location by remember { mutableStateOf("") }
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White)
-    ) {
-        Row(
+    var isLoading:Boolean=true
+    var loadingFailed:Boolean=false
+    val state: Response<User> = Response.Loading
+    when(state){
+        is Response.Success<User> -> {
+            userFullName=state.data?.fullName.toString()
+            avatarID = state.data?.profilePic?.toIntOrNull() ?: R.drawable.avatar_1
+            location=state.data?.location.toString()
+            userGmail=state.data?.email.toString()
+            phoneNumber=state.data?.phoneNumber.toString()
+            isLoading=false
+            loadingFailed=false
+        }
+        is Response.Loading -> {
+            isLoading=true
+        }
+        else -> {
+            loadingFailed=true
+        }
+    }
+    ToastMessage(
+        message = "Không thể tải dữ liệu. Vui lòng thử lại!",
+        show = loadingFailed
+    )
+    if(isLoading) {
+        ShimmerEditProfileScreen(navController)
+    }
+    else {
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 5.dp), // Thêm padding để căn chỉnh
-            verticalAlignment = Alignment.CenterVertically, // Căn giữa theo chiều dọc
-            horizontalArrangement = Arrangement.Start // Căn trái để mũi tên ở góc trái
+                .fillMaxSize()
+                .background(Color.White)
         ) {
-            BackArrowWithText(navController,"Edit Profile")
-        }
-        Spacer(modifier = Modifier.height(20.dp))
-        Row(modifier=Modifier.fillMaxWidth(),Arrangement.Center) {
-            Image(
-                painter = painterResource(id = avatarID), // Ensure this is a valid drawable resource
-                contentDescription = "Profile Avatar",
-                modifier = Modifier.size(150.dp)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 5.dp), // Thêm padding để căn chỉnh
+                verticalAlignment = Alignment.CenterVertically, // Căn giữa theo chiều dọc
+                horizontalArrangement = Arrangement.Start // Căn trái để mũi tên ở góc trái
+            ) {
+                BackArrowWithText(navController, "Edit Profile")
+            }
+            Spacer(modifier = Modifier.height(20.dp))
+            Row(modifier = Modifier.fillMaxWidth(), Arrangement.Center) {
+                Image(
+                    painter = painterResource(id = avatarID), // Ensure this is a valid drawable resource
+                    contentDescription = "Profile Avatar",
+                    modifier = Modifier.size(150.dp)
+                )
+            }
+            Spacer(modifier = Modifier.height(40.dp))
+            ProfileCustomTextFieldWithLabel("NAME", input_name, { input_name = it }, userFullName)
+            ProfileCustomTextFieldWithLabel("EMAIL", input_email, { input_email = it }, userGmail)
+            ProfileCustomTextFieldWithLabel(
+                "PHONE NUMBER",
+                input_phoneNumber,
+                { input_phoneNumber = it },
+                phoneNumber
             )
-        }
-        Spacer(modifier = Modifier.height(40.dp))
-        ProfileCustomTextFieldWithLabel("NAME",input_name,{input_name=it},userFullName)
-        ProfileCustomTextFieldWithLabel("EMAIL",input_email,{input_email=it},userGmail)
-        ProfileCustomTextFieldWithLabel("PHONE NUMBER",input_phoneNumber,{input_phoneNumber=it},phoneNumber)
-        ProfileCustomTextFieldWithLabel("LOCATION",input_location,{input_location=it},location)
-        Row(modifier = Modifier.padding(horizontal=16.dp)) {
-            BigButton(navController = navController,
-                text = "SAVE CHANGES",
-                onClick = {})
-        }
-        Spacer(modifier = Modifier.weight(1f)) // Ensuring the content is aligned above the navbar
-        BottomNavigationBar(navController, userId, 4)
+            ProfileCustomTextFieldWithLabel(
+                "LOCATION",
+                input_location,
+                { input_location = it },
+                location
+            )
+            Row(modifier = Modifier.padding(horizontal = 16.dp)) {
+                BigButton(navController = navController,
+                    text = "SAVE CHANGES",
+                    onClick = {})
+            }
+            Spacer(modifier = Modifier.weight(1f)) // Ensuring the content is aligned above the navbar
+            BottomNavigationBar(navController, userId, 4)
 
+        }
     }
 }

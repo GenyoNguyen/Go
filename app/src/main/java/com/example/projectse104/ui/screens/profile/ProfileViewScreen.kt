@@ -23,6 +23,8 @@ import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import com.example.projectse104.R
 import com.example.projectse104.*
+import com.example.projectse104.core.Response
+import com.example.projectse104.domain.model.User
 
 @Composable
 fun ProfileViewScreen(navController: NavController, userId: String) {
@@ -37,55 +39,92 @@ fun ProfileViewScreen(navController: NavController, userId: String) {
         listOf(R.drawable.avatar_1,"Nguyễn Hữu Dũng"),
         listOf(R.drawable.avatar_2,"Nguyễn Phong Huy"),
         )
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White)
-    ) {
-
-        BackArrowWithText(navController,"Profile")
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        ViewUserDetails(avatarID,
-                        userFullName,
-                        rating,
-                        position)
-        Spacer(modifier = Modifier.height(20.dp))
-
-        ViewRideDetails(ridesTaken,
-                        ridesGiven,
-                        trustScore)
-
-        Spacer(modifier = Modifier.height(20.dp))
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-            verticalAlignment = Alignment.CenterVertically
+    var isLoading:Boolean=true
+    var loadingFailed:Boolean=false
+    val state: Response<User> = Response.Success(
+        User(id=userId, fullName = "Nguyễn Xuân Phúc",
+        email="nguyenxuanphuc010205@gmail.com", profilePic = R.drawable.avatar.toString(), overallRating = 4.5f,
+            location = position)
+    )
+    when(state){
+        is Response.Success<User> -> {
+            userFullName=state.data?.fullName.toString()
+            avatarID = state.data?.profilePic?.toIntOrNull() ?: R.drawable.avatar_1
+            rating=state.data?.overallRating.toString()
+            position=state.data?.location.toString()
+            isLoading=false
+            loadingFailed=false
+        }
+        is Response.Loading -> {
+            isLoading=true
+        }
+        else -> {
+            loadingFailed=true
+        }
+    }
+    ToastMessage(
+        message = "Không thể tải dữ liệu. Vui lòng thử lại!",
+        show = loadingFailed
+    )
+    if(isLoading) {
+        ShimmerProfileViewScreen(navController)
+    }
+    else {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.White)
         ) {
-            Text(
-                text = "Recent activity",
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold
+
+            BackArrowWithText(navController, "Profile")
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            ViewUserDetails(
+                avatarID,
+                userFullName,
+                rating,
+                position
             )
-            Spacer(modifier = Modifier.width(8.dp)) // Khoảng cách giữa chữ và đường kẻ
-            Divider(
-                color = Color.Black,
-                thickness = 1.dp,
-                modifier = Modifier
-                    .weight(1f) // Chiếm toàn bộ không gian còn lại của Row để kéo dài đường kẻ
+            Spacer(modifier = Modifier.height(20.dp))
+
+            ViewRideDetails(
+                ridesTaken,
+                ridesGiven,
+                trustScore
             )
-        }
-        Spacer(modifier = Modifier.height(20.dp))
-        for (accompany in accompanies){
-            var avatarResId: Int = when (val value = accompany[0]) {
-                is Int -> value
-                is String -> value.toIntOrNull() ?: 0  // Nếu giá trị là String, cố gắng chuyển đổi, nếu không trả về 0
-                else -> 0 // Nếu không phải Int hoặc String, trả về 0
+
+            Spacer(modifier = Modifier.height(20.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Recent activity",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.width(8.dp)) // Khoảng cách giữa chữ và đường kẻ
+                Divider(
+                    color = Color.Black,
+                    thickness = 1.dp,
+                    modifier = Modifier
+                        .weight(1f) // Chiếm toàn bộ không gian còn lại của Row để kéo dài đường kẻ
+                )
             }
-            var accompanyName:String=accompany[1].toString()
-            RecentAccompany(avatarResId,accompanyName)
+            Spacer(modifier = Modifier.height(20.dp))
+            for (accompany in accompanies) {
+                var avatarResId: Int = when (val value = accompany[0]) {
+                    is Int -> value
+                    is String -> value.toIntOrNull()
+                        ?: 0  // Nếu giá trị là String, cố gắng chuyển đổi, nếu không trả về 0
+                    else -> 0 // Nếu không phải Int hoặc String, trả về 0
+                }
+                var accompanyName: String = accompany[1].toString()
+                RecentAccompany(avatarResId, accompanyName)
+            }
+            Spacer(modifier = Modifier.weight(1f)) // Ensuring the content is aligned above the navbar
+            BottomNavigationBar(navController, userId, 4)
         }
-        Spacer(modifier = Modifier.weight(1f)) // Ensuring the content is aligned above the navbar
-        BottomNavigationBar(navController, userId, 4)
     }
 }

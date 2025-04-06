@@ -19,6 +19,8 @@ import androidx.navigation.NavController
 import com.example.projectse104.R
 import com.example.projectse104.ui.navigation.Screen
 import com.example.projectse104.*
+import com.example.projectse104.core.Response
+import com.example.projectse104.domain.model.User
 
 @Composable
 fun SavedLocationScreen(navController: NavController, userId: String) {
@@ -26,39 +28,65 @@ fun SavedLocationScreen(navController: NavController, userId: String) {
         listOf(R.drawable.saved_location_home,"Home","KTX khu B, phường Linh Trung, thành phố Thủ Đức "),
         listOf(R.drawable.saved_location_work,"Work","Đại học Công nghệ Thông tin ĐHQG TP Hồ Chí Minh"),
         listOf(R.drawable.saved_location_other,"Other","Tòa BA4, KTX khu B"),
-
         )
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White)
-    ) {
+    var isLoading:Boolean=true
+    var loadingFailed:Boolean=false
+    val state: Response<User> = Response.Success(
+        User(id=userId, fullName = "Nguyễn Xuân Phúc",
+        email="nguyenxuanphuc010205@gmail.com", profilePic = R.drawable.avatar.toString())
+    )
+    when(state){
+        is Response.Success<User> -> {
+            isLoading=false
+            loadingFailed=false
+        }
+        is Response.Loading -> {
+            isLoading=true
+        }
+        else -> {
+            loadingFailed=true
+        }
+    }
+    ToastMessage(
+        message = "Không thể tải dữ liệu. Vui lòng thử lại!",
+        show = loadingFailed
+    )
+    if(isLoading) {
+        ShimmerSavedLocationScreen(navController)
+    }
+    else {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.White)
+        ) {
 
-        BackArrowWithText(navController,"Saved location")
+            BackArrowWithText(navController, "Saved location")
 
-        Spacer(modifier=Modifier.height(20.dp))
-        Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
-            for (savedLocation in savedLocatons) {
-                var iconID: Int = when (val value = savedLocation[0]) {
-                    is Int -> value
-                    is String -> value.toIntOrNull()
-                        ?: 0  // Nếu giá trị là String, cố gắng chuyển đổi, nếu không trả về 0
-                    else -> 0 // Nếu không phải Int hoặc String, trả về 0
+            Spacer(modifier = Modifier.height(20.dp))
+            Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
+                for (savedLocation in savedLocatons) {
+                    var iconID: Int = when (val value = savedLocation[0]) {
+                        is Int -> value
+                        is String -> value.toIntOrNull()
+                            ?: 0  // Nếu giá trị là String, cố gắng chuyển đổi, nếu không trả về 0
+                        else -> 0 // Nếu không phải Int hoặc String, trả về 0
+                    }
+                    var name = savedLocation[1].toString()
+                    var details = savedLocation[2].toString()
+                    SavedLocation(iconID, name, details)
                 }
-                var name = savedLocation[1].toString()
-                var details = savedLocation[2].toString()
-                SavedLocation(iconID, name, details)
             }
-        }
-        Spacer(modifier=Modifier.height(50.dp))
+            Spacer(modifier = Modifier.height(50.dp))
 
-        Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-            BigButton(navController = navController,
-                text = "ADD NEW ADDRESS",
-                onClick = {})
-        }
+            Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+                BigButton(navController = navController,
+                    text = "ADD NEW ADDRESS",
+                    onClick = {})
+            }
 
-        Spacer(modifier = Modifier.weight(1f)) // Ensuring the content is aligned above the navbar
-        BottomNavigationBar(navController, userId, 4)
+            Spacer(modifier = Modifier.weight(1f)) // Ensuring the content is aligned above the navbar
+            BottomNavigationBar(navController, userId, 4)
+        }
     }
 }
