@@ -105,16 +105,16 @@ fun RideContent(estimatedDeparture:String,
 
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
-                text = "Rider: ",
-                fontSize = 15.sp
-            )
-            Text(
-                text = riderName, // Sử dụng tham số riderName
-                fontSize = 15.sp,
-                fontWeight = FontWeight.Bold
-            )
-            Text(
-                text = "- (UserID: $riderUserId)", // Sử dụng tham số riderUserId
+                text = buildAnnotatedString {
+                    append("Rider: ")
+                    pushStyle(SpanStyle(fontWeight = FontWeight.Bold)) // Áp dụng đậm cho riderName
+                    append(riderName) // In đậm tên của người lái
+                    pop() // Kết thúc phần in đậm
+                    append(" - UserID: ")
+                    pushStyle(SpanStyle(fontWeight = FontWeight.Bold)) // Áp dụng đậm cho riderUserId
+                    append(riderUserId) // In đậm ID người lái
+                    pop() // Kết thúc phần in đậm
+                },
                 fontSize = 15.sp
             )
         }
@@ -136,17 +136,17 @@ fun RideContent(estimatedDeparture:String,
 
         Row(horizontalArrangement = Arrangement.Start) {
             Text(
-                text = "Passenger Information: ",
+                text = buildAnnotatedString {
+                    append("Passenger Information: ")
+                    pushStyle(SpanStyle(fontWeight = FontWeight.Bold)) // Áp dụng đậm cho riderName
+                    append(passengerName) // In đậm tên của người lái
+                    pop() // Kết thúc phần in đậm
+                    append(" - UserID: ")
+                    pushStyle(SpanStyle(fontWeight = FontWeight.Bold)) // Áp dụng đậm cho riderUserId
+                    append(passengerUserId) // In đậm ID người lái
+                    pop() // Kết thúc phần in đậm
+                },
                 fontSize = 15.sp
-            )
-            Text(
-                text = passengerName, // Sử dụng tham số passengerName
-                fontSize = 15.sp,
-                fontWeight = FontWeight.Bold
-            )
-            Text(
-                text = "- (UserID: $passengerUserId)", // Sử dụng tham số passengerUserId
-                fontSize = 15.sp,
             )
         }
 

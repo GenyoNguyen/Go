@@ -6,7 +6,9 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -30,6 +32,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.TextFieldValue
 import com.example.projectse104.*
+import com.valentinilk.shimmer.shimmer
 import java.util.Calendar
 
 @Composable
@@ -469,4 +472,99 @@ fun AddNewOfferContent(iconId:Int,text:String){
         fontWeight = FontWeight.Medium,
         color = Color.Black
     )
+}
+@Composable
+fun ShimmerHomeScreen(navController: NavController, userId: String, index:Int,active:Int) {
+
+    Scaffold(
+        bottomBar = {
+            BottomNavigationBar(navController, userId, active)
+        }
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.White)
+                .padding(innerPadding)
+        ) {
+            ShimmerHomeHeader()
+
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                TopNavBar(navController, userId, index)
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 16.dp)
+                    .shimmer(), // 💫 shimmer ở đây
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                repeat(6) { // giả lập 6 dòng shimmer
+                    ShimmerRideItem()
+                }
+            }
+        }
+    }
+}
+@Composable
+fun ShimmerHomeHeader() {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 16.dp)
+            .clip(RoundedCornerShape(8.dp))
+            .background(Color(0xFF8FC79A)) // cùng màu với HomeHeader gốc
+            .shimmer(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Spacer(modifier = Modifier.height(60.dp))
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Box(
+                    modifier = Modifier
+                        .height(30.dp)
+                        .width(100.dp)
+                        .clip(RoundedCornerShape(6.dp))
+                        .background(Color.LightGray)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Box(
+                    modifier = Modifier
+                        .size(30.dp)
+                        .clip(RoundedCornerShape(6.dp))
+                        .background(Color.LightGray)
+                )
+            }
+
+            Box(
+                modifier = Modifier
+                    .height(24.dp)
+                    .width(120.dp)
+                    .clip(RoundedCornerShape(6.dp))
+                    .background(Color.LightGray)
+            )
+        }
+
+        Spacer(modifier = Modifier.height(30.dp))
+    }
 }

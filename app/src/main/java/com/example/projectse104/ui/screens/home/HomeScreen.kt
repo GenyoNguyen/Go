@@ -3,7 +3,9 @@ package com.example.projectse104.ui.screens.home
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -19,7 +21,12 @@ import com.example.projectse104.ui.navigation.Screen
 import androidx.compose.material3.Card
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.lifecycle.ViewModel
 import com.example.projectse104.*
+import com.example.projectse104.core.Response
+import com.example.projectse104.domain.model.User
+import com.valentinilk.shimmer.shimmer
+import com.valentinilk.shimmer.rememberShimmer
 
 
 @Composable
@@ -27,52 +34,94 @@ fun HomeScreen(navController: NavController, userId: String) {
     var userName="Phúc"
     var rides:List<List<Any>> = listOf(
         listOf("0054752", "29 Nov, 1:20 pm", "Dĩ An", "Quận 1",R.drawable.avatar_1,),
-        listOf("0054753","30 Nov, 2:00 pm", "HCM", "Quận 5",R.drawable.avatar_2,)
-        )
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White)
-    ) {
-        HomeHeader(userName)
-
-        // Main content (rides and offers)
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            TopNavBar(navController,userId,1)
-
-            Spacer(modifier = Modifier.height(16.dp))
-            //Liệt kê các chuyến đi từ rides
-            for (ride in rides) {
-                var rideNo:String=ride[0].toString()
-                var estimatedDeparture:String=ride[1].toString()
-                var fromLocation:String=ride[2].toString()
-                var toLocation:String=ride[3].toString()
-                var avatarResId: Int = when (val value = ride[4]) {
-                    is Int -> value
-                    is String -> value.toIntOrNull() ?: 0  // Nếu giá trị là String, cố gắng chuyển đổi, nếu không trả về 0
-                    else -> 0 // Nếu không phải Int hoặc String, trả về 0
+        listOf("0054753","30 Nov, 2:00 pm", "HCM", "Quận 5",R.drawable.avatar_2,),
+        listOf("0054752", "29 Nov, 1:20 pm", "Dĩ An", "Quận 1",R.drawable.avatar_1,),
+        listOf("0054752", "29 Nov, 1:20 pm", "Dĩ An", "Quận 1",R.drawable.avatar_1,),
+        listOf("0054752", "29 Nov, 1:20 pm", "Dĩ An", "Quận 1",R.drawable.avatar_1,),
+        listOf("0054752", "29 Nov, 1:20 pm", "Dĩ An", "Quận 1",R.drawable.avatar_1,),
+       )
+    var isLoading:Boolean=true
+    var loadingFailed:Boolean=false
+    val state:Response<User> = Response.Success(User(id="1111", fullName = "Nguyễn Xuân Phúc"))
+    when(state){
+        is Response.Success<User> -> {
+            val fullName = state.data?.fullName?.trim()
+            userName = fullName
+                ?.split("\\s+".toRegex())
+                ?.lastOrNull()
+                ?: "Người dùng"
+            isLoading=false
+            loadingFailed=false
+        }
+        is Response.Loading -> {
+            isLoading=true
+        }
+        else -> {
+            loadingFailed=true
+        }
+    }
+    ToastMessage(
+        message = "Không thể tải dữ liệu. Vui lòng thử lại!",
+        show = loadingFailed
+    )
+    if(isLoading){
+        ShimmerHomeScreen(navController,userId,1,1)
+    }
+    else {
+        Scaffold(
+            bottomBar = {
+                BottomNavigationBar(navController, userId, 1)
+            }
+        ) { innerPadding ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.White)
+                    .padding(innerPadding)
+            ) {
+                HomeHeader(userName)
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    TopNavBar(navController, userId, 1)
                 }
-                RideItem(
-                    navController=navController,
-                    rideNo=rideNo,
-                    estimatedDeparture=estimatedDeparture,
-                    fromLocation=fromLocation,
-                    toLocation=toLocation,
-                    avatarResId=avatarResId,
-                    route="ride_details",
-                    userId=userId,
-                    addGoButton="no"
-                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f) // Đây là phần quan trọng: giúp nội dung scroll được nhưng không che bottom bar
+                        .verticalScroll(rememberScrollState())
+                        .padding(horizontal = 16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    for (ride in rides) {
+                        val rideNo = ride[0].toString()
+                        val estimatedDeparture = ride[1].toString()
+                        val fromLocation = ride[2].toString()
+                        val toLocation = ride[3].toString()
+                        val avatarResId = when (val value = ride[4]) {
+                            is Int -> value
+                            is String -> value.toIntOrNull() ?: 0
+                            else -> 0
+                        }
+
+                        RideItem(
+                            navController = navController,
+                            rideNo = rideNo,
+                            estimatedDeparture = estimatedDeparture,
+                            fromLocation = fromLocation,
+                            toLocation = toLocation,
+                            avatarResId = avatarResId,
+                            route = "ride_details",
+                            userId = userId,
+                            addGoButton = "no"
+                        )
+                    }
+                }
             }
         }
-
-        // Bottom navigation bar (Updated to NavigationBar for Material3)
-        Spacer(modifier = Modifier.weight(1f)) // Ensuring the content is aligned above the navbar
-        BottomNavigationBar(navController,userId,1)
     }
 }
