@@ -82,6 +82,8 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview:1.0.5")
     implementation("androidx.activity:activity-compose:1.3.1")
     implementation("androidx.navigation:navigation-compose:2.4.0")
+    implementation("com.valentinilk.shimmer:compose-shimmer:1.3.2")
+
 
     // Import the BoM for the Firebase platform
     implementation(platform(libs.firebase.bom))

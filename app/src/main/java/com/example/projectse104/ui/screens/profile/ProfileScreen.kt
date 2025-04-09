@@ -14,22 +14,25 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.projectse104.BottomNavigationBar
 import com.example.projectse104.R
+import com.example.projectse104.ToastMessage
 import com.example.projectse104.core.Response
-import com.example.projectse104.core.logErrorMessage
 import com.example.projectse104.domain.model.User
 
 @Composable
 fun ProfileScreen(navController: NavController, viewModel: ProfileViewModel = hiltViewModel()) {
-    val state = viewModel.userState.value
+    val userState by viewModel.userState.collectAsStateWithLifecycle()
+    val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
 
     var userFullName = null.toString()
     var userGmail = null.toString()
@@ -37,20 +40,31 @@ fun ProfileScreen(navController: NavController, viewModel: ProfileViewModel = hi
     var userCode = null.toString()
     val userAvatarId: Int = R.drawable.avatar
 
-    when (state) {
+    when (val state = userState) {
         is Response.Success<User> -> {
             println(state.data)
             userId = state.data?.id.toString()
             userCode = state.data?.userCode.toString()
             userFullName = state.data?.fullName.toString()
             userGmail = state.data?.email.toString()
+            viewModel.disableLoading()
         }
 
-        else -> {
-            logErrorMessage("Error loading user data")
+        is Response.Failure -> {
+            ToastMessage(
+                message = "Không thể tải dữ liệu. Vui lòng thử lại!",
+                show = true
+            )
         }
+
+        else -> {}
     }
 
+
+    if(isLoading) {
+        ShimmerProfileScreen(navController, userId)
+    }
+    else {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -67,70 +81,70 @@ fun ProfileScreen(navController: NavController, viewModel: ProfileViewModel = hi
                     .background(Color.White)
                     .border(1.dp, Color.LightGray, RoundedCornerShape(8.dp))
                     .clickable { navController.navigate("profile_view/$userId") } // Navigate to page1 when the column is clicked
-            ) {
-                Spacer(modifier = Modifier.height(10.dp))
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceAround // Thêm background sau khi clip
                 ) {
-                    HeaderChangeSection(
-                        navController,
-                        userAvatarId,
-                        userFullName,
-                        userGmail,
-                        userCode,
-                        userId
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceAround // Thêm background sau khi clip
+                    ) {
+                        HeaderChangeSection(
+                            navController,
+                            userAvatarId,
+                            userFullName,
+                            userGmail,
+                            userId
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(10.dp))
+                }
+
+                // Spacer between header and options
+                // List of options
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                ) {
+                    ProfileOption(
+                        navController = navController,
+                        title = "Saved Locations",
+                        avatarID = R.drawable.profile_icon_1,
+                        "saved_locations/$userId"
+                    )
+                    ProfileOption(
+                        navController = navController,
+                        title = "Promotions & Rewards",
+                        avatarID = R.drawable.profile_icon_2,
+                        "promotion_rewards/$userId"
+                    )
+                    ProfileOption(
+                        navController = navController,
+                        title = "My Ride Circle",
+                        avatarID = R.drawable.profile_icon_3,
+                        "ride_circle/$userId"
+                    )
+                    ProfileOption(
+                        navController = navController,
+                        title = "Help & Support",
+                        avatarID = R.drawable.profile_icon_4,
+                        "help_support/$userId"
+                    )
+                    ProfileOption(
+                        navController = navController,
+                        title = "Sign out",
+                        avatarID = R.drawable.profile_icon_5
                     )
                 }
-                Spacer(modifier = Modifier.height(10.dp))
-            }
 
-            // Spacer between header and options
-            // List of options
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-            ) {
-                ProfileOption(
-                    navController = navController,
-                    title = "Saved Locations",
-                    avatarID = R.drawable.profile_icon_1,
-                    "saved_locations/$userId"
-                )
-                ProfileOption(
-                    navController = navController,
-                    title = "Promotions & Rewards",
-                    avatarID = R.drawable.profile_icon_2,
-                    "promotion_rewards/$userId"
-                )
-                ProfileOption(
-                    navController = navController,
-                    title = "My Ride Circle",
-                    avatarID = R.drawable.profile_icon_3,
-                    "ride_circle/$userId"
-                )
-                ProfileOption(
-                    navController = navController,
-                    title = "Help & Support",
-                    avatarID = R.drawable.profile_icon_4,
-                    "help_support/$userId"
-                )
-                ProfileOption(
-                    navController = navController,
-                    title = "Sign out",
-                    avatarID = R.drawable.profile_icon_5
-                )
+                // Bottom navigation bar
             }
+            Spacer(modifier = Modifier.weight(1f)) // Ensuring the content is aligned above the navbar
+            BottomNavigationBar(navController, userId, 4)
 
-            // Bottom navigation bar
         }
-        Spacer(modifier = Modifier.weight(1f)) // Ensuring the content is aligned above the navbar
-        BottomNavigationBar(navController, userId, 4)
-
     }
 }
 

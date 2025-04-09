@@ -30,6 +30,8 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import com.example.projectse104.*
+import com.valentinilk.shimmer.shimmer
+import com.valentinilk.shimmer.rememberShimmer
 @Composable
 fun ChatItem(
     navController: NavController, // Thêm navController vào để điều hướng
@@ -177,16 +179,16 @@ fun sendMessage(message: String) {
 }
 
 @Composable
-fun MessageItem(message: String, time: String, type:String) {
+fun MessageItem(message: String, time: String, type: String) {
     Row(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = if (type=="receive") Arrangement.Start else Arrangement.End,
+        horizontalArrangement = if (type == "receive") Arrangement.Start else Arrangement.End,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        if (type=="receive") {
-            // If the message is from the other person, show avatar
+        if (type == "receive") {
+            // Avatar của người gửi
             Image(
-                painter = painterResource(id = R.drawable.avatar), // Replace with the actual avatar resource
+                painter = painterResource(id = R.drawable.avatar),
                 contentDescription = "Profile",
                 modifier = Modifier
                     .size(30.dp)
@@ -213,19 +215,22 @@ fun MessageItem(message: String, time: String, type:String) {
                     modifier = Modifier.padding(12.dp)
                 )
             }
-            Spacer(modifier = Modifier.height(4.dp))
+
+            // 👇 Canh chỉnh thời gian theo type
             Text(
                 text = time,
                 fontSize = 12.sp,
-                color = Color.Gray
+                color = Color.Gray,
+                modifier = Modifier
+                    .padding(horizontal = 8.dp)
+                    .align(if (type == "send") Alignment.Start else Alignment.End)
             )
         }
 
-        if (type=="send") {
-            // If the message is from the user, show user's avatar
+        if (type == "send") {
             Spacer(modifier = Modifier.width(10.dp))
             Image(
-                painter = painterResource(id = R.drawable.avatar), // Replace with user's avatar resource
+                painter = painterResource(id = R.drawable.avatar),
                 contentDescription = "Profile",
                 modifier = Modifier
                     .size(30.dp)
@@ -233,8 +238,9 @@ fun MessageItem(message: String, time: String, type:String) {
             )
         }
     }
-    Spacer(modifier=Modifier.height(10.dp))
+    Spacer(modifier = Modifier.height(10.dp))
 }
+
 @Composable
 fun ChatHeader(navController: NavController,name:String,avatarID:Int,isActive:String){
     Row(
@@ -277,6 +283,151 @@ fun ChatHeader(navController: NavController,name:String,avatarID:Int,isActive:St
                     color = Color.Gray
                 )
             }
+        }
+    }
+}
+
+@Composable
+fun ShimmerChatDetailsScreen(navController: NavController) {
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+        // 👉 Header giả lập
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .shimmer(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            IconButton(onClick = { navController.popBackStack() }) {
+                Icon(
+                    imageVector = Icons.Filled.ArrowBack,
+                    contentDescription = "Back",
+                    tint = Color.Black
+                )
+            }
+            Spacer(modifier = Modifier.width(8.dp))
+            Box(
+                modifier = Modifier
+                    .size(50.dp)
+                    .background(Color.LightGray, CircleShape)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Column {
+                Box(
+                    modifier = Modifier
+                        .width(120.dp)
+                        .height(18.dp)
+                        .background(Color.LightGray, RoundedCornerShape(4.dp))
+                )
+                Spacer(modifier = Modifier.height(6.dp))
+                Box(
+                    modifier = Modifier
+                        .width(80.dp)
+                        .height(12.dp)
+                        .background(Color.LightGray, RoundedCornerShape(4.dp))
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // 👉 Danh sách tin nhắn shimmer
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .shimmer(),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            repeat(8) { i ->
+                if (i % 2 == 0) {
+                    // 👉 Row cho i chẵn (tin nhắn nhận)
+                    Row(
+                        horizontalArrangement = Arrangement.Start,
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(30.dp)
+                                .background(Color.LightGray, CircleShape)
+                        )
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Column {
+                            Box(
+                                modifier = Modifier
+                                    .width(220.dp)
+                                    .height(20.dp)
+                                    .background(Color.LightGray, RoundedCornerShape(12.dp))
+                            )
+                            Spacer(modifier = Modifier.height(6.dp))
+                            Box(
+                                modifier = Modifier
+                                    .width(50.dp)
+                                    .height(12.dp)
+                                    .background(Color.LightGray, RoundedCornerShape(4.dp))
+                            )
+                        }
+                    }
+                } else {
+                    // 👉 Row cho i lẻ (tin nhắn gửi)
+                    Row(
+                        horizontalArrangement = Arrangement.End,
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Column {
+                            Box(
+                                modifier = Modifier
+                                    .width(220.dp)
+                                    .height(20.dp)
+                                    .background(Color.LightGray, RoundedCornerShape(12.dp))
+                            )
+                            Spacer(modifier = Modifier.height(6.dp))
+                            Box(
+                                modifier = Modifier
+                                    .width(50.dp)
+                                    .height(12.dp)
+                                    .background(Color.LightGray, RoundedCornerShape(4.dp))
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Box(
+                            modifier = Modifier
+                                .size(30.dp)
+                                .background(Color.LightGray, CircleShape)
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(20.dp))
+            }
+        }
+
+        // 👉 Input box shimmer
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp)
+                .shimmer(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Box(
+                modifier = Modifier
+                    .height(40.dp)
+                    .fillMaxWidth(0.85f)
+                    .background(Color.LightGray, RoundedCornerShape(20.dp))
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Box(
+                modifier = Modifier
+                    .size(40.dp)
+                    .background(Color.LightGray, CircleShape)
+            )
         }
     }
 }

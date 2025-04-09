@@ -2,7 +2,6 @@ package com.example.projectse104.ui.screens.profile
 
 import android.util.Log
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,6 +11,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -22,19 +24,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import com.example.projectse104.BackArrowWithText
-import com.example.projectse104.BigButton
-import com.example.projectse104.BottomNavigationBar
+import com.example.projectse104.*
 import com.example.projectse104.R
 import com.example.projectse104.core.Response
 import com.example.projectse104.domain.model.User
+import androidx.hilt.navigation.compose.hiltViewModel
+
 
 @Composable
 fun EditProfileScreen(navController: NavController, viewModel: ProfileViewModel = hiltViewModel()) {
 
-    val state = viewModel.userState.value
+    val userState by viewModel.userState.collectAsStateWithLifecycle()
+    val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
 
     var userId = ""
     var userFullName: String = "Lmao"
@@ -46,8 +49,9 @@ fun EditProfileScreen(navController: NavController, viewModel: ProfileViewModel 
     var input_name by remember { mutableStateOf("") }
     var input_phoneNumber by remember { mutableStateOf("") }
     var input_location by remember { mutableStateOf("") }
+    var loadingFailed:Boolean=false
 
-    when (state) {
+    when (val state = userState) {
         is Response.Success<User> -> {
             userId = state.data?.id.toString()
             userFullName = state.data?.fullName?.toString() ?: ""
@@ -55,11 +59,22 @@ fun EditProfileScreen(navController: NavController, viewModel: ProfileViewModel 
             location = state.data?.location?.toString() ?: ""
             phoneNumber = state.data?.phoneNumber?.toString() ?: ""
             Log.d("EditProfileScreen", "Received")
+            viewModel.disableLoading()
         }
-
-        else -> {}
+        is Response.Loading -> {
+        }
+        else -> {
+            loadingFailed=true
+        }
     }
-
+    ToastMessage(
+        message = "Không thể tải dữ liệu. Vui lòng thử lại!",
+        show = loadingFailed
+    )
+    if(isLoading) {
+        ShimmerEditProfileScreen(navController)
+    }
+    else {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -106,5 +121,6 @@ fun EditProfileScreen(navController: NavController, viewModel: ProfileViewModel 
         Spacer(modifier = Modifier.weight(1f)) // Ensuring the content is aligned above the navbar
         BottomNavigationBar(navController, userId, 4)
 
+        }
     }
 }

@@ -45,12 +45,26 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
+import com.example.projectse104.R
+import com.example.projectse104.ui.navigation.Screen
+import com.valentinilk.shimmer.shimmer
+import android.widget.Toast
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.platform.LocalContext
+import com.example.projectse104.core.Response
+import com.example.projectse104.ui.screens.home.ShimmerHomeHeader
+import com.example.projectse104.ui.screens.home.TopNavBar
+
 
 @Composable
 fun CustomTextFieldWithLabel(
@@ -550,6 +564,245 @@ fun rideDetails(
                 text = "Ké Coins",
                 fontSize = 15.sp,
                 color = Color.Yellow
+            )
+        }
+    }
+}
+@Composable
+fun ShimmeringPlaceholder() {
+    Row(
+        modifier = Modifier
+            .shimmer() // <- Affects all subsequent UI elements
+            .fillMaxWidth()
+            .padding(16.dp),
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+    ) {
+        Box(
+            modifier = Modifier
+                .size(80.dp, 80.dp)
+                .background(Color.LightGray),
+        )
+        Column(
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(24.dp)
+                    .background(Color.LightGray),
+            )
+            Box(
+                modifier = Modifier
+                    .size(120.dp, 20.dp)
+                    .background(Color.LightGray),
+            )
+        }
+    }
+}
+@Composable
+fun ShimmerRideItem() {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp)
+            .height(80.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .size(60.dp)
+                .clip(RoundedCornerShape(12.dp))
+                .background(Color.LightGray)
+        )
+        Spacer(modifier = Modifier.width(16.dp))
+        Column(
+            modifier = Modifier
+                .fillMaxHeight()
+                .weight(1f)
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth(0.6f)
+                    .height(18.dp)
+                    .clip(RoundedCornerShape(4.dp))
+                    .background(Color.LightGray)
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth(0.8f)
+                    .height(14.dp)
+                    .clip(RoundedCornerShape(4.dp))
+                    .background(Color.LightGray)
+            )
+            Spacer(modifier = Modifier.height(6.dp))
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth(0.4f)
+                    .height(14.dp)
+                    .clip(RoundedCornerShape(4.dp))
+                    .background(Color.LightGray)
+            )
+        }
+    }
+}
+@Composable
+fun ToastMessage(message: String, show: Boolean) {
+    val context = LocalContext.current
+    if (show) {
+        LaunchedEffect(message) {
+            Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+        }
+    }
+}
+@Composable
+fun ShimmerScreen(navController: NavController, userId: String, active:Int) {
+    Scaffold(
+        bottomBar = {
+            BottomNavigationBar(navController, userId, active)
+        }
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.White)
+                .padding(innerPadding)
+        ) {
+            ShimmerHeader()
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 16.dp)
+                    .shimmer(), // 💫 shimmer ở đây
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                repeat(6) { // giả lập 6 dòng shimmer
+                    ShimmerRideItem()
+                }
+            }
+        }
+    }
+}
+@Composable
+fun ShimmerHeader() {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 16.dp)
+            .clip(RoundedCornerShape(8.dp))
+            .background(Color(0xFF8FC79A)) // cùng màu với HomeHeader gốc
+            .shimmer(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Spacer(modifier = Modifier.height(60.dp))
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.Start,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Box(
+                    modifier = Modifier
+                        .height(30.dp)
+                        .width(100.dp)
+                        .clip(RoundedCornerShape(6.dp))
+                        .background(Color.LightGray)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Box(
+                    modifier = Modifier
+                        .size(30.dp)
+                        .clip(RoundedCornerShape(6.dp))
+                        .background(Color.LightGray)
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(30.dp))
+    }
+}
+@Composable
+fun ShimmerRideDetailsScreen(navController: NavController,addGoButton: Boolean = true) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+        // Back + title shimmer
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp)
+                ,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            IconButton(onClick = { navController.popBackStack() }) {
+                Icon(
+                    imageVector = Icons.Filled.ArrowBack,
+                    contentDescription = "Back",
+                    tint = Color.Black
+                )
+            }
+            Spacer(modifier = Modifier.width(8.dp))
+            Box(
+                modifier = Modifier
+                    .height(20.dp)
+                    .width(200.dp)
+                    .shimmer()
+                    .background(Color.LightGray, RoundedCornerShape(4.dp))
+            )
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // Map shimmer
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(180.dp)
+                .shimmer()
+                .background(Color.LightGray, RoundedCornerShape(8.dp))
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // Ride details placeholders
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .shimmer()
+        ) {
+            repeat(6) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth(0.9f)
+                        .height(16.dp)
+                        .background(Color.LightGray, RoundedCornerShape(4.dp))
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+            }
+        }
+
+        // GO button shimmer
+        if (addGoButton) {
+            Spacer(modifier = Modifier.height(24.dp))
+            Box(
+                modifier = Modifier
+                    .align(Alignment.End)
+                    .width(100.dp)
+                    .height(30.dp)
+                    .background(Color.LightGray, RoundedCornerShape(25.dp))
+                    .shimmer()
             )
         }
     }
