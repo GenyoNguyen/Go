@@ -1,75 +1,85 @@
 package com.example.projectse104.ui.screens.profile
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Divider
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
+import com.example.projectse104.BackArrowWithText
+import com.example.projectse104.BottomNavigationBar
 import com.example.projectse104.R
-import com.example.projectse104.*
+import com.example.projectse104.ToastMessage
 import com.example.projectse104.core.Response
 import com.example.projectse104.domain.model.User
 
 @Composable
 fun ProfileViewScreen(navController: NavController, userId: String) {
     var userFullName: String = "Nguyễn Xuân Phúc"
-    var rating:String="4.5"
-    var position:String="Dĩ An, Bình Dương"
-    var ridesTaken:String="27"
-    var ridesGiven:String="36"
-    var trustScore:String="209"
-    var avatarID:Int=R.drawable.avatar_1
-    var accompanies:List<List<Any>> = listOf(
-        listOf(R.drawable.avatar_1,"Nguyễn Hữu Dũng"),
-        listOf(R.drawable.avatar_2,"Nguyễn Phong Huy"),
-        )
-    var isLoading:Boolean=true
-    var loadingFailed:Boolean=false
-    val state: Response<User> = Response.Success(
-        User(id=userId, fullName = "Nguyễn Xuân Phúc",
-        email="nguyenxuanphuc010205@gmail.com", profilePic = R.drawable.avatar.toString(), overallRating = 4.5f,
-            location = position)
+    var rating: String = "4.5"
+    var position: String = "Dĩ An, Bình Dương"
+    var ridesTaken: String = "27"
+    var ridesGiven: String = "36"
+    var trustScore: String = "209"
+    var avatarID: Int = R.drawable.avatar_1
+    var accompanies: List<List<Any>> = listOf(
+        listOf(R.drawable.avatar_1, "Nguyễn Hữu Dũng"),
+        listOf(R.drawable.avatar_2, "Nguyễn Phong Huy"),
     )
-    when(state){
+    var isLoading: Boolean = true
+    var loadingFailed: Boolean = false
+    val state: Response<User> = Response.Success(
+        User(
+            id = userId,
+            fullName = "Nguyễn Xuân Phúc",
+            email = "nguyenxuanphuc010205@gmail.com",
+            profilePic = R.drawable.avatar.toString(),
+            overallRating = 4.5f,
+            location = position,
+            password = "",
+            phoneNumber = "TODO()",
+            coins = 0,
+            userCode = "TODO()"
+        )
+    )
+    when (state) {
         is Response.Success<User> -> {
-            userFullName=state.data?.fullName.toString()
+            userFullName = state.data?.fullName.toString()
             avatarID = state.data?.profilePic?.toIntOrNull() ?: R.drawable.avatar_1
-            rating=state.data?.overallRating.toString()
-            position=state.data?.location.toString()
-            isLoading=false
-            loadingFailed=false
+            rating = state.data?.overallRating.toString()
+            position = state.data?.location.toString()
+            isLoading = false
+            loadingFailed = false
         }
+
         is Response.Loading -> {
-            isLoading=true
+            isLoading = true
         }
+
         else -> {
-            loadingFailed=true
+            loadingFailed = true
         }
     }
     ToastMessage(
         message = "Không thể tải dữ liệu. Vui lòng thử lại!",
         show = loadingFailed
     )
-    if(isLoading) {
+    if (isLoading) {
         ShimmerProfileViewScreen(navController)
-    }
-    else {
+    } else {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -96,7 +106,9 @@ fun ProfileViewScreen(navController: NavController, userId: String) {
 
             Spacer(modifier = Modifier.height(20.dp))
             Row(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(

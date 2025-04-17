@@ -10,7 +10,6 @@ data class Ride(
     val id: String,
     val rideOfferId: String? = null,
     val passengerId: String? = null,
-    val driverId: String? = null,
     @Serializable(with = DateSerializer::class)
     val departTime: Date? = null,
     @Serializable(with = DateSerializer::class)

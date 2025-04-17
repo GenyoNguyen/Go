@@ -36,8 +36,8 @@ class UserRepositoryImpl(
         Response.Failure(e)
     }
 
-    override suspend fun updateUser(userUpdate: Map<String, Any>): UpdateUserResponse = try {
-        val userId = userUpdate.getValue(ID_FIELD) as String
+    override suspend fun updateUser(userUpdate: Map<String, String>): UpdateUserResponse = try {
+        val userId = userUpdate.getValue(ID_FIELD)
         usersRef.update({
             for ((key, value) in userUpdate) {
                 set(key, value)

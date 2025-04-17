@@ -103,7 +103,7 @@ fun AppNavigation(navController: NavHostController) {
             val userId = backStackEntry.arguments?.getString("userId") ?: ""
 
             // Truyền tham số vào ConfirmRideScreen
-            ProfileScreen(navController = navController)
+            ProfileScreen(navController = navController, userId = userId)
         }
         composable(
             Screen.FindARide.route,
@@ -310,7 +310,7 @@ fun AppNavigation(navController: NavHostController) {
             arguments = listOf(navArgument("userId") { type = NavType.StringType })
         ) { backStackEntry ->
             val userId = backStackEntry.arguments?.getString("userId") ?: ""
-            EditProfileScreen(navController)
+            EditProfileScreen(navController, userId)
         }
         composable(
             Screen.RideCircle.route,

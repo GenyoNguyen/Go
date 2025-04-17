@@ -62,13 +62,27 @@ dependencies {
     implementation(libs.googleid)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.kotlin.stdlib)
+
+    //Testing
+    // Unit Testing
     testImplementation(libs.junit)
+    testImplementation(libs.mockito.kotlin)
+    testImplementation(libs.robolectric) // Optional, for Android-specific tests
+    testImplementation(libs.androidx.core)
+    // Coroutines and Flow test
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.turbine)
+    // Android Testing
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
+
+    // Debugging
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    // Compose and Material3
     implementation("androidx.navigation:navigation-compose:2.7.4")
     implementation("androidx.compose.material3:material3:1.2.0")
     implementation("androidx.compose.material:material:1.5.0")    // Material 2 (nếu cần)
@@ -100,14 +114,6 @@ dependencies {
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
     kapt(libs.hilt.android.compiler)
 
-    // Testing
-    testImplementation(libs.junit)
-    testImplementation(libs.mockito.core)
-    testImplementation(libs.mockito.kotlin)
-    testImplementation(libs.robolectric) // Optional, for Android-specific tests
-    testImplementation(libs.androidx.core)
-    testImplementation(libs.kotlinx.coroutines.test)
-
     //Supabase
     implementation(platform("io.github.jan-tennert.supabase:bom:3.1.4"))
     implementation("io.github.jan-tennert.supabase:postgrest-kt")
@@ -115,6 +121,10 @@ dependencies {
 
     //Ktor
     implementation("io.ktor:ktor-client-cio:3.1.2")
+
+    //Scope
+    implementation(libs.androidx.lifecycle.runtime.compose)
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
 }
 
 // Allow references to generated code

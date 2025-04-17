@@ -30,20 +30,22 @@ import com.example.projectse104.core.Response
 import com.example.projectse104.domain.model.User
 
 @Composable
-fun ProfileScreen(navController: NavController, viewModel: ProfileViewModel = hiltViewModel()) {
+fun ProfileScreen(
+    navController: NavController,
+    userId: String,
+    viewModel: ProfileViewModel = hiltViewModel()
+) {
     val userState by viewModel.userState.collectAsStateWithLifecycle()
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
 
     var userFullName = null.toString()
     var userGmail = null.toString()
-    var userId = null.toString()
     var userCode = null.toString()
     val userAvatarId: Int = R.drawable.avatar
 
     when (val state = userState) {
         is Response.Success<User> -> {
             println(state.data)
-            userId = state.data?.id.toString()
             userCode = state.data?.userCode.toString()
             userFullName = state.data?.fullName.toString()
             userGmail = state.data?.email.toString()
@@ -61,26 +63,25 @@ fun ProfileScreen(navController: NavController, viewModel: ProfileViewModel = hi
     }
 
 
-    if(isLoading) {
+    if (isLoading) {
         ShimmerProfileScreen(navController, userId)
-    }
-    else {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White)
-    ) {
-        // Header section with profile name and icon
-        ProfileHeader()
-        Column(modifier = Modifier.offset(y = (-70).dp)) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-                    .clip(RoundedCornerShape(8.dp)) // Bo tròn 4 góc của header
-                    .background(Color.White)
-                    .border(1.dp, Color.LightGray, RoundedCornerShape(8.dp))
-                    .clickable { navController.navigate("profile_view/$userId") } // Navigate to page1 when the column is clicked
+    } else {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.White)
+        ) {
+            // Header section with profile name and icon
+            ProfileHeader()
+            Column(modifier = Modifier.offset(y = (-70).dp)) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                        .clip(RoundedCornerShape(8.dp)) // Bo tròn 4 góc của header
+                        .background(Color.White)
+                        .border(1.dp, Color.LightGray, RoundedCornerShape(8.dp))
+                        .clickable { navController.navigate("profile_view/$userId") } // Navigate to page1 when the column is clicked
                 ) {
                     Spacer(modifier = Modifier.height(10.dp))
 
@@ -95,6 +96,7 @@ fun ProfileScreen(navController: NavController, viewModel: ProfileViewModel = hi
                             userAvatarId,
                             userFullName,
                             userGmail,
+                            userCode,
                             userId
                         )
                     }

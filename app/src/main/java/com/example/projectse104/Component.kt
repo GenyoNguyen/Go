@@ -1,5 +1,6 @@
 package com.example.projectse104
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -9,6 +10,8 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
@@ -16,7 +19,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Visibility
@@ -30,9 +35,11 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,29 +48,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
-import com.example.projectse104.R
-import com.example.projectse104.ui.navigation.Screen
 import com.valentinilk.shimmer.shimmer
-import android.widget.Toast
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.platform.LocalContext
-import com.example.projectse104.core.Response
-import com.example.projectse104.ui.screens.home.ShimmerHomeHeader
-import com.example.projectse104.ui.screens.home.TopNavBar
 
 
 @Composable
@@ -568,6 +564,7 @@ fun rideDetails(
         }
     }
 }
+
 @Composable
 fun ShimmeringPlaceholder() {
     Row(
@@ -599,6 +596,7 @@ fun ShimmeringPlaceholder() {
         }
     }
 }
+
 @Composable
 fun ShimmerRideItem() {
     Row(
@@ -645,6 +643,7 @@ fun ShimmerRideItem() {
         }
     }
 }
+
 @Composable
 fun ToastMessage(message: String, show: Boolean) {
     val context = LocalContext.current
@@ -654,8 +653,9 @@ fun ToastMessage(message: String, show: Boolean) {
         }
     }
 }
+
 @Composable
-fun ShimmerScreen(navController: NavController, userId: String, active:Int) {
+fun ShimmerScreen(navController: NavController, userId: String, active: Int) {
     Scaffold(
         bottomBar = {
             BottomNavigationBar(navController, userId, active)
@@ -687,6 +687,7 @@ fun ShimmerScreen(navController: NavController, userId: String, active:Int) {
         }
     }
 }
+
 @Composable
 fun ShimmerHeader() {
     Column(
@@ -731,8 +732,9 @@ fun ShimmerHeader() {
         Spacer(modifier = Modifier.height(30.dp))
     }
 }
+
 @Composable
-fun ShimmerRideDetailsScreen(navController: NavController,addGoButton: Boolean = true) {
+fun ShimmerRideDetailsScreen(navController: NavController, addGoButton: Boolean = true) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -742,8 +744,7 @@ fun ShimmerRideDetailsScreen(navController: NavController,addGoButton: Boolean =
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 8.dp)
-                ,
+                .padding(vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(onClick = { navController.popBackStack() }) {

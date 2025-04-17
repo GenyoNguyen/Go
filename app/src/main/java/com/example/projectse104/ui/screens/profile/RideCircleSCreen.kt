@@ -1,74 +1,71 @@
 package com.example.projectse104.ui.screens.profile
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.*
+import androidx.compose.material3.Divider
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.zIndex
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.example.projectse104.BackArrowWithText
+import com.example.projectse104.BottomNavigationBar
 import com.example.projectse104.R
-import com.example.projectse104.*
+import com.example.projectse104.ToastMessage
 import com.example.projectse104.core.Response
 import com.example.projectse104.domain.model.User
 
 @Composable
-fun RideCircleScreen(navController: NavController, userId: String) {
-    val ridesTaken = "27"
-    val ridesGiven = "36"
-    val trustScore = "209"
-    val avatarID = R.drawable.avatar_1
-    val riders: List<List<Any>> = listOf(
-        listOf(R.drawable.avatar_1, "Nguyễn Hữu Dũng", "0001"),
-        listOf(R.drawable.avatar_2, "Nguyễn Phong Huy", "0002"),
-        listOf(R.drawable.avatar_1, "Trần Văn Bình", "0003"),
-        listOf(R.drawable.avatar_2, "Lê Minh Khoa", "0004"),
-        listOf(R.drawable.avatar_1, "Ngô Phúc Hậu", "0005"),
-        listOf(R.drawable.avatar_2, "Phạm Thảo", "0006"),
-        // Thêm vài dòng để kiểm thử scroll
-    )
-    var isLoading:Boolean=true
-    var loadingFailed:Boolean=false
-    val state: Response<User> = Response.Success(
-        User(id=userId, fullName = "Nguyễn Xuân Phúc",
-        email="nguyenxuanphuc010205@gmail.com", profilePic = R.drawable.avatar.toString())
-    )
-    when(state){
-        is Response.Success<User> -> {
-            isLoading=false
-            loadingFailed=false
+fun RideCircleScreen(
+    navController: NavController,
+    userId: String,
+    viewModel: RideCircleViewModel = hiltViewModel()
+) {
+    val favouriteRiderListState by viewModel.favouriteRiderListState.collectAsStateWithLifecycle()
+    val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
+
+    var ridesTaken: String = "27"
+    var ridesGiven: String = "36"
+    var trustScore: String = "209"
+    var avatarID: Int = R.drawable.avatar_1
+    var riders: List<User> = mutableListOf()
+    when (val state = favouriteRiderListState) {
+        is Response.Success<List<User>> -> {
+            riders = state.data ?: emptyList()
+            viewModel.disableLoading()
+            println("Recieved riders: $riders")
         }
-        is Response.Loading -> {
-            isLoading=true
+
+        is Response.Failure -> {
+            ToastMessage(
+                message = state.e?.message.toString(),
+                show = true
+            )
         }
-        else -> {
-            loadingFailed=true
-        }
+
+        else -> {}
     }
-    ToastMessage(
-        message = "Không thể tải dữ liệu. Vui lòng thử lại!",
-        show = loadingFailed
-    )
-    if(isLoading) {
+
+    if (isLoading) {
         ShimmerRideCircleScreen(navController)
-    }
-    else {
+    } else {
         Scaffold(
             bottomBar = {
                 BottomNavigationBar(navController, userId, 4)
@@ -122,19 +119,12 @@ fun RideCircleScreen(navController: NavController, userId: String) {
                         .padding(horizontal = 16.dp)
                 ) {
                     for (rider in riders) {
-                        val avatarResId = when (val value = rider[0]) {
-                            is Int -> value
-                            is String -> value.toIntOrNull() ?: 0
-                            else -> 0
-                        }
-                        val accompanyName = rider[1].toString()
-                        val conversationId = rider[2].toString()
                         favouriteRider(
                             navController,
                             userId,
-                            accompanyName,
-                            avatarResId,
-                            conversationId
+                            rider.fullName,
+                            R.drawable.avatar_2,
+                            "conversationId"
                         )
                     }
                 }

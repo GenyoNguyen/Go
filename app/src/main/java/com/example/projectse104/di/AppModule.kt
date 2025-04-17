@@ -4,12 +4,20 @@ import com.example.projectse104.data.repository.ConversationRepositoryImpl
 import com.example.projectse104.data.repository.MessageRepositoryImpl
 import com.example.projectse104.data.repository.RideOfferRepositoryImpl
 import com.example.projectse104.data.repository.RideRepositoryImpl
+import com.example.projectse104.data.repository.UserFavouriteRiderRepositoryImpl
+import com.example.projectse104.data.repository.UserLocationRepositoryImpl
 import com.example.projectse104.data.repository.UserRepositoryImpl
 import com.example.projectse104.domain.repository.ConversationRepository
 import com.example.projectse104.domain.repository.MessageRepository
 import com.example.projectse104.domain.repository.RideOfferRepository
 import com.example.projectse104.domain.repository.RideRepository
+import com.example.projectse104.domain.repository.UserFavouriteRiderRepository
+import com.example.projectse104.domain.repository.UserLocationRepository
 import com.example.projectse104.domain.repository.UserRepository
+import com.example.projectse104.domain.use_case.validation.ValidateEmail
+import com.example.projectse104.domain.use_case.validation.ValidateFullName
+import com.example.projectse104.domain.use_case.validation.ValidateLocation
+import com.example.projectse104.domain.use_case.validation.ValidatePhoneNumber
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -27,6 +35,8 @@ const val RIDE = "Ride"
 const val RIDE_OFFER = "RideOffer"
 const val CONVERSATION = "Conversation"
 const val MESSAGE = "Message"
+const val USER_FAVOURITE_RIDER = "UserFavouriteRider"
+const val USER_LOCATION = "UserLocation"
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -77,4 +87,38 @@ object AppModule {
     ): MessageRepository = MessageRepositoryImpl(
         messagesRef = db.from(MESSAGE)
     )
+
+    @Provides
+    fun provideUserFavouriteRiderRepository(
+        db: SupabaseClient
+    ): UserFavouriteRiderRepository = UserFavouriteRiderRepositoryImpl(
+        userFavouriteRiderRef = db.from(USER_FAVOURITE_RIDER)
+    )
+
+    @Provides
+    fun provideUserLocationRepository(
+        db: SupabaseClient
+    ): UserLocationRepository = UserLocationRepositoryImpl(
+        userLocationRef = db.from(USER_LOCATION)
+    )
+
+    @Provides
+    fun provideValidateEmail(): ValidateEmail {
+        return ValidateEmail()
+    }
+
+    @Provides
+    fun provideValidateFullName(): ValidateFullName {
+        return ValidateFullName()
+    }
+
+    @Provides
+    fun provideValidateLocation(): ValidateLocation {
+        return ValidateLocation()
+    }
+
+    @Provides
+    fun provideValidatePhoneNumber(): ValidatePhoneNumber {
+        return ValidatePhoneNumber()
+    }
 }

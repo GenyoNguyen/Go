@@ -9,32 +9,11 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Divider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.LocalTextStyle
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -49,10 +28,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
-import com.example.projectse104.R
 import com.example.projectse104.*
+import com.example.projectse104.R
 import com.valentinilk.shimmer.shimmer
-import com.valentinilk.shimmer.rememberShimmer
 
 
 @Composable
@@ -99,9 +77,10 @@ fun ProfileHeader() {
 
 @Composable
 fun ProfileOption(navController: NavController, title: String, avatarID: Int, route: String = "") {
-    Column(modifier = Modifier
-        .fillMaxWidth()
-        .clickable { navController.navigate(route) }) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { navController.navigate(route) }) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -182,14 +161,15 @@ fun HeaderChangeSection(
 fun ProfileCustomTextFieldWithLabel(
     label: String,
     value: String,
-    onValueChange: (String) -> Unit,
-    remain_value: String = "" // Add default value parameter
+    onValueChange: (String) -> Unit
 ) {
     val focusedColor = Color(0xFF8FC79A)
 
-    Box(modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 16.dp)) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+    ) {
         Text(
             text = label,
             fontSize = 12.sp,
@@ -201,7 +181,7 @@ fun ProfileCustomTextFieldWithLabel(
         )
 
         OutlinedTextField(
-            value = if (value.isEmpty()) remain_value else value, // Use remain_value if value is empty
+            value = value, // Use remain_value if value is empty
             onValueChange = onValueChange,
             singleLine = true,
             textStyle = LocalTextStyle.current.copy(color = Color.Black),
@@ -635,9 +615,11 @@ fun favouriteRider(
 
 @Composable
 fun FAQSection(index: String, name: String) {
-    Column(modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 16.dp)) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+    ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -798,6 +780,7 @@ fun FAQContacUS(navController: NavController, userId: String, state: String) {
         }
     }
 }
+
 @Composable
 fun ShimmerProfileScreen(navController: NavController, userId: String) {
     Column(

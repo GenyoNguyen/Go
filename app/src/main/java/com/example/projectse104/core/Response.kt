@@ -1,6 +1,8 @@
 package com.example.projectse104.core
 
 sealed class Response<out T> {
+    data object Idle : Response<Nothing>()
+
     data object Loading : Response<Nothing>()
 
     data class Success<out T>(

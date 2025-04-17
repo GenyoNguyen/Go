@@ -1,4 +1,4 @@
-package com.example.projectse104.domain.use_case.get_ride_offer
+package com.example.projectse104.domain.use_case.ride_offer
 
 import com.example.projectse104.core.Response
 import com.example.projectse104.domain.repository.RideOfferRepository
