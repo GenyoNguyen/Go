@@ -21,13 +21,15 @@ import com.example.projectse104.ui.navigation.Screen
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import com.example.projectse104.*
+import com.example.projectse104.Component.*
 import com.example.projectse104.core.Response
 import com.example.projectse104.domain.model.Ride
 import com.example.projectse104.domain.model.User
-import com.example.projectse104.ui.screens.profile.ShimmerProfileScreen
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import com.example.projectse104.ui.screens.home.Component.*
+
 @Composable
 fun RideDetailsScreen(
     navController: NavController,

@@ -23,11 +23,13 @@ import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import com.example.projectse104.R
 import com.example.projectse104.*
+import com.example.projectse104.Component.*
 import com.example.projectse104.core.Response
 import com.example.projectse104.domain.model.User
+import com.example.projectse104.ui.screens.profile.Component.*
 
 @Composable
-fun ProfileViewScreen(navController: NavController, userId: String) {
+fun ProfileViewScreen(navController: NavController, userId: String,hideNav:String="yes") {
     var userFullName: String = "Nguyễn Xuân Phúc"
     var rating:String="4.5"
     var position:String="Dĩ An, Bình Dương"
@@ -124,7 +126,9 @@ fun ProfileViewScreen(navController: NavController, userId: String) {
                 RecentAccompany(avatarResId, accompanyName)
             }
             Spacer(modifier = Modifier.weight(1f)) // Ensuring the content is aligned above the navbar
-            BottomNavigationBar(navController, userId, 4)
+            if (hideNav == "yes") {
+                BottomNavigationBar(navController, userId, 4)
+            }
         }
     }
 }

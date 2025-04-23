@@ -20,6 +20,9 @@ import androidx.navigation.NavController
 import com.example.projectse104.R
 import com.example.projectse104.ui.navigation.Screen
 import com.example.projectse104.*
+import com.example.projectse104.Component.*
+import com.example.projectse104.ui.screens.auth.Component.*
+
 
 
 @Composable
@@ -35,7 +38,7 @@ fun LoginSuccessfulScreen(navController: NavController) {
             "home/$userId"
         )
     }
-
+Row(modifier = Modifier.fillMaxSize().background(Color.White)) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -63,4 +66,5 @@ fun LoginSuccessfulScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.height(24.dp))
     }
+}
 }

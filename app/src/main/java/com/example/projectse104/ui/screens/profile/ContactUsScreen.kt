@@ -22,7 +22,8 @@ import androidx.navigation.NavController
 import com.example.projectse104.R
 import com.example.projectse104.ui.navigation.Screen
 import com.example.projectse104.*
-
+import com.example.projectse104.Component.*
+import com.example.projectse104.ui.screens.profile.Component.*
 @Composable
 fun ContactUsScreen(navController: NavController, userId: String) {
     Column(
@@ -73,7 +74,7 @@ fun ContactUsScreen(navController: NavController, userId: String) {
         Spacer(modifier=Modifier.height(50.dp))
         Text(
             text = "Contact with Developer of this app",
-            fontSize = 24.sp,
+            fontSize = 19.sp,
             fontWeight = FontWeight.Bold,
             modifier=Modifier.padding(horizontal = 16.dp)
         )

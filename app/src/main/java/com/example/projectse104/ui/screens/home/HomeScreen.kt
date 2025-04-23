@@ -23,11 +23,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.lifecycle.ViewModel
 import com.example.projectse104.*
+import com.example.projectse104.Component.*
 import com.example.projectse104.core.Response
 import com.example.projectse104.domain.model.User
 import com.valentinilk.shimmer.shimmer
 import com.valentinilk.shimmer.rememberShimmer
 
+import com.example.projectse104.ui.screens.home.Component.*
 
 @Composable
 fun HomeScreen(navController: NavController, userId: String) {

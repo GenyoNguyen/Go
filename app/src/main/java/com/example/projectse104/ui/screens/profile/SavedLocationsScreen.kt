@@ -19,8 +19,10 @@ import androidx.navigation.NavController
 import com.example.projectse104.R
 import com.example.projectse104.ui.navigation.Screen
 import com.example.projectse104.*
+import com.example.projectse104.Component.*
 import com.example.projectse104.core.Response
 import com.example.projectse104.domain.model.User
+import com.example.projectse104.ui.screens.profile.Component.*
 
 @Composable
 fun SavedLocationScreen(navController: NavController, userId: String) {
@@ -82,7 +84,7 @@ fun SavedLocationScreen(navController: NavController, userId: String) {
             Column(modifier = Modifier.padding(horizontal = 16.dp)) {
                 BigButton(navController = navController,
                     text = "ADD NEW ADDRESS",
-                    onClick = {})
+                    onClick = {navController.navigate("add_new_address/{userId}")})
             }
 
             Spacer(modifier = Modifier.weight(1f)) // Ensuring the content is aligned above the navbar

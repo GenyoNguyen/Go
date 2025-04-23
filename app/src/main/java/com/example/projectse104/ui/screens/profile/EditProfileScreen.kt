@@ -29,8 +29,10 @@ import androidx.navigation.NavController
 import com.example.projectse104.R
 import com.example.projectse104.ui.navigation.Screen
 import com.example.projectse104.*
+import com.example.projectse104.Component.*
 import com.example.projectse104.core.Response
 import com.example.projectse104.domain.model.User
+import com.example.projectse104.ui.screens.profile.Component.*
 
 @Composable
 fun EditProfileScreen(navController: NavController, userId: String) {
@@ -45,7 +47,9 @@ fun EditProfileScreen(navController: NavController, userId: String) {
     var input_location by remember { mutableStateOf("") }
     var isLoading:Boolean=true
     var loadingFailed:Boolean=false
-    val state: Response<User> = Response.Loading
+    val state: Response<User> = Response.Success(User(id=userId, fullName = "Nguyễn Xuân Phúc",
+        email="nguyenxuanphuc010205@gmail.com", profilePic = R.drawable.avatar.toString(), location = "Thủ Đức",
+        phoneNumber = "+84 399879888"))
     when(state){
         is Response.Success<User> -> {
             userFullName=state.data?.fullName.toString()
@@ -113,8 +117,6 @@ fun EditProfileScreen(navController: NavController, userId: String) {
                     text = "SAVE CHANGES",
                     onClick = {})
             }
-            Spacer(modifier = Modifier.weight(1f)) // Ensuring the content is aligned above the navbar
-            BottomNavigationBar(navController, userId, 4)
 
         }
     }

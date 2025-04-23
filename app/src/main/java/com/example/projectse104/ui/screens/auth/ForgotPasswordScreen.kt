@@ -17,6 +17,9 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.projectse104.ui.navigation.Screen
 import com.example.projectse104.*
+import com.example.projectse104.Component.*
+import com.example.projectse104.Component.*
+import com.example.projectse104.ui.screens.auth.Component.*
 
 @Composable
 fun ForgotPasswordScreen(navController: NavController) {
