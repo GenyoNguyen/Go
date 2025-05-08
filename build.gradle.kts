@@ -8,3 +8,9 @@ plugins {
     // Apply the Hilt plugin
     id("com.google.dagger.hilt.android") version "2.51.1" apply false
 }
+
+//allprojects {
+//    tasks.matching { it.name.contains("kapt") }.configureEach {
+//        enabled = false
+//    }
+//}

@@ -1,67 +1,144 @@
 package com.example.projectse104.di
 
 import com.example.projectse104.data.repository.ConversationRepositoryImpl
+import com.example.projectse104.data.repository.LocationRepositoryImpl
 import com.example.projectse104.data.repository.MessageRepositoryImpl
 import com.example.projectse104.data.repository.RideOfferRepositoryImpl
 import com.example.projectse104.data.repository.RideRepositoryImpl
+import com.example.projectse104.data.repository.UserFavouriteRiderRepositoryImpl
+import com.example.projectse104.data.repository.UserLocationRepositoryImpl
 import com.example.projectse104.data.repository.UserRepositoryImpl
 import com.example.projectse104.domain.repository.ConversationRepository
+import com.example.projectse104.domain.repository.LocationRepository
 import com.example.projectse104.domain.repository.MessageRepository
 import com.example.projectse104.domain.repository.RideOfferRepository
 import com.example.projectse104.domain.repository.RideRepository
+import com.example.projectse104.domain.repository.UserFavouriteRiderRepository
+import com.example.projectse104.domain.repository.UserLocationRepository
 import com.example.projectse104.domain.repository.UserRepository
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
+import com.example.projectse104.domain.use_case.validation.ValidateEmail
+import com.example.projectse104.domain.use_case.validation.ValidateFullName
+import com.example.projectse104.domain.use_case.validation.ValidateLocation
+import com.example.projectse104.domain.use_case.validation.ValidatePhoneNumber
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import io.github.jan.supabase.SupabaseClient
+import io.github.jan.supabase.createSupabaseClient
+import io.github.jan.supabase.postgrest.Postgrest
+import io.github.jan.supabase.postgrest.from
+import io.github.jan.supabase.realtime.Realtime
+import io.github.jan.supabase.realtime.channel
+import io.github.jan.supabase.realtime.realtime
+import io.github.jan.supabase.serializer.KotlinXSerializer
+import kotlinx.serialization.json.Json
 
-const val USERS = "users"
-const val RIDES = "rides"
-const val RIDE_OFFERS = "ride_offers"
-const val CONVERSATIONS = "conversations"
-const val MESSAGES = "messages"
+const val USER = "User"
+const val RIDE = "Ride"
+const val RIDE_OFFER = "RideOffer"
+const val CONVERSATION = "Conversation"
+const val MESSAGE = "Message"
+const val USER_FAVOURITE_RIDER = "UserFavouriteRider"
+const val USER_LOCATION = "UserLocation"
+const val LOCATION = "Location"
+
+val json = Json {
+    encodeDefaults = true
+    useAlternativeNames = false // Disable snake_case conversion
+    // Alternatively: namingStrategy = JsonNamingStrategy.BuiltIn.CamelCase
+}
 
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
     @Provides
-    fun provideFirebaseFirestore() = Firebase.firestore
+    fun provideSupabaseClient(): SupabaseClient {
+        return createSupabaseClient(
+            supabaseUrl = "https://ouanezsrnbseuupwngww.supabase.co",
+            supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im91YW5lenNybmJzZXV1cHduZ3d3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDM0MzIwMTcsImV4cCI6MjA1OTAwODAxN30.ovsvvFYTUUM2f6HkrjKC2qhHS2IRUeH6TUiGTfsOEAg"
+        ) {
+            install(Postgrest) {
+                serializer = KotlinXSerializer(json)
+            }
+            install(Realtime)
+        }
+    }
 
     @Provides
     fun provideUserRepository(
-        db: FirebaseFirestore
+        db: SupabaseClient
     ): UserRepository = UserRepositoryImpl(
-        usersRef = db.collection(USERS)
+        usersRef = db.from(USER)
     )
 
     @Provides
     fun provideRideRepository(
-        db: FirebaseFirestore
+        db: SupabaseClient
     ): RideRepository = RideRepositoryImpl(
-        ridesRef = db.collection(RIDES)
+        ridesRef = db.from(RIDE),
+        rideChannel = db.realtime.channel("ride")
     )
 
     @Provides
     fun provideRideOfferRepository(
-        db: FirebaseFirestore
+        db: SupabaseClient
     ): RideOfferRepository = RideOfferRepositoryImpl(
-        rideOffersRef = db.collection(RIDE_OFFERS)
+        rideOffersRef = db.from(RIDE_OFFER)
     )
 
     @Provides
     fun provideConversationRepository(
-        db: FirebaseFirestore
+        db: SupabaseClient
     ): ConversationRepository = ConversationRepositoryImpl(
-        conversationsRef = db.collection(CONVERSATIONS)
+        conversationsRef = db.from(CONVERSATION)
     )
 
     @Provides
     fun provideMessageRepository(
-        db: FirebaseFirestore
+        db: SupabaseClient
     ): MessageRepository = MessageRepositoryImpl(
-        messagesRef = db.collection(MESSAGES)
+        messagesRef = db.from(MESSAGE)
     )
+
+    @Provides
+    fun provideUserFavouriteRiderRepository(
+        db: SupabaseClient
+    ): UserFavouriteRiderRepository = UserFavouriteRiderRepositoryImpl(
+        userFavouriteRiderRef = db.from(USER_FAVOURITE_RIDER)
+    )
+
+    @Provides
+    fun provideUserLocationRepository(
+        db: SupabaseClient
+    ): UserLocationRepository = UserLocationRepositoryImpl(
+        userLocationRef = db.from(USER_LOCATION)
+    )
+
+    @Provides
+    fun provideLocationRepository(
+        db: SupabaseClient
+    ): LocationRepository = LocationRepositoryImpl(
+        locationRef = db.from(LOCATION)
+    )
+
+    @Provides
+    fun provideValidateEmail(): ValidateEmail {
+        return ValidateEmail()
+    }
+
+    @Provides
+    fun provideValidateFullName(): ValidateFullName {
+        return ValidateFullName()
+    }
+
+    @Provides
+    fun provideValidateLocation(): ValidateLocation {
+        return ValidateLocation()
+    }
+
+    @Provides
+    fun provideValidatePhoneNumber(): ValidatePhoneNumber {
+        return ValidatePhoneNumber()
+    }
 }

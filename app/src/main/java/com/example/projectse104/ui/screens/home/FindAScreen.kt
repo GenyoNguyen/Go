@@ -1,34 +1,31 @@
 package com.example.projectse104.ui.screens.home
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.projectse104.Component.BottomNavigationBar
+import com.example.projectse104.Component.RideItem
+import com.example.projectse104.Component.ToastMessage
 import com.example.projectse104.R
-import com.example.projectse104.ui.navigation.Screen
-import androidx.compose.ui.draw.clip
-import androidx.compose.runtime.*
-import androidx.compose.material3.*
-import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.ui.text.TextStyle
-import com.example.projectse104.*
-import com.example.projectse104.Component.*
 import com.example.projectse104.core.Response
 import com.example.projectse104.domain.model.User
-import com.example.projectse104.ui.screens.home.Component.*
+import com.example.projectse104.ui.screens.home.Component.HomeHeader
+import com.example.projectse104.ui.screens.home.Component.SearchBar
+import com.example.projectse104.ui.screens.home.Component.ShimmerHomeScreen
+import com.example.projectse104.ui.screens.home.Component.TopNavBar
 
 @Composable
 fun FindARideScreen(navController: NavController, userId: String) {
@@ -41,34 +38,44 @@ fun FindARideScreen(navController: NavController, userId: String) {
         listOf("0054756", "3 Dec, 7:00 am", "Tân Bình", "Quận 10", R.drawable.avatar_1),
         // thêm vài dòng để test cuộn
     )
-    var isLoading:Boolean=true
-    var loadingFailed:Boolean=false
-    val state: Response<User> = Response.Success(User(id="1111", fullName = "Nguyễn Xuân Phúc"))
-    when(state){
+    var isLoading: Boolean = true
+    var loadingFailed: Boolean = false
+    val state: Response<User> = Response.Success(
+        User(
+            id = "1111",
+            fullName = "Nguyễn Xuân Phúc",
+            overallRating = 5.0f,
+            coins = 100,
+            userCode = "kzdf2",
+            vehicleId = "Lmao"
+        )
+    )
+    when (state) {
         is Response.Success<User> -> {
             val fullName = state.data?.fullName?.trim()
             userName = fullName
                 ?.split("\\s+".toRegex())
                 ?.lastOrNull()
                 ?: "Người dùng"
-            isLoading=false
-            loadingFailed=false
+            isLoading = false
+            loadingFailed = false
         }
+
         is Response.Loading -> {
-            isLoading=true
+            isLoading = true
         }
+
         else -> {
-            loadingFailed=true
+            loadingFailed = true
         }
     }
     ToastMessage(
         message = "Không thể tải dữ liệu. Vui lòng thử lại!",
         show = loadingFailed
     )
-    if(isLoading){
-        ShimmerHomeScreen(navController,userId,2,1)
-    }
-    else {
+    if (isLoading) {
+        ShimmerHomeScreen(navController, userId, 2, 1)
+    } else {
         Scaffold(
             bottomBar = {
                 BottomNavigationBar(navController, userId, 1)

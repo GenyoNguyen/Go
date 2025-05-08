@@ -1,62 +1,111 @@
 package com.example.projectse104.data.repository
 
-import com.example.projectse104.core.DEPART_TIME_FIELD
-import com.example.projectse104.core.PASSENGER_ID_FIELD
 import com.example.projectse104.core.Response
-import com.example.projectse104.core.RideStatus
-import com.example.projectse104.core.STATUS_FIELD
-import com.example.projectse104.domain.model.toRide
+import com.example.projectse104.domain.model.Ride
+import com.example.projectse104.domain.repository.AddRideResponse
 import com.example.projectse104.domain.repository.RideListResponse
 import com.example.projectse104.domain.repository.RideRepository
 import com.example.projectse104.domain.repository.RideResponse
-import com.google.firebase.firestore.CollectionReference
-import com.google.firebase.firestore.Query.Direction
+import com.example.projectse104.domain.repository.UpdateRideResponse
+import io.github.jan.supabase.postgrest.query.Order
+import io.github.jan.supabase.postgrest.query.PostgrestQueryBuilder
+import io.github.jan.supabase.realtime.RealtimeChannel
+import io.github.jan.supabase.realtime.postgresListDataFlow
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.launch
 
 class RideRepositoryImpl(
-    private val ridesRef: CollectionReference
+    private val ridesRef: PostgrestQueryBuilder,
+    private val rideChannel: RealtimeChannel
 ) : RideRepository {
-    override fun getPendingRideList(passengerId: String): Flow<RideListResponse> = callbackFlow {
-        val listener = ridesRef
-            .whereEqualTo(STATUS_FIELD, RideStatus.PENDING.value)
-            .orderBy(DEPART_TIME_FIELD, Direction.DESCENDING)
-            .addSnapshotListener { rideListSnapshot, e ->
-                val rideListResponse = if (rideListSnapshot != null) {
-                    val rideList = rideListSnapshot.map { rideSnapshot ->
-                        rideSnapshot.toRide()
-                    }
-                    Response.Success(rideList)
-                } else {
-                    Response.Failure(e)
-                }
-                trySend(rideListResponse)
-            }
-        awaitClose {
-            listener.remove()
-        }
-    }
+    override fun getRideListFlowGivenPassenger(passengerId: String): Flow<RideListResponse> =
+        callbackFlow {
+            val rideListFlow = rideChannel.postgresListDataFlow(
+                primaryKey = Ride::id,
+                schema = "public",
+                table = "Ride"
+            )
 
-    override suspend fun getRideHistoryList(passengerId: String): RideListResponse = try {
-        val rideListSnapshot = ridesRef
-            .whereEqualTo(PASSENGER_ID_FIELD, passengerId)
-            .whereEqualTo(STATUS_FIELD, RideStatus.SUCCESS.value)
-            .orderBy(DEPART_TIME_FIELD, Direction.DESCENDING)
-            .get()
-            .await()
-        val rideListResponse = rideListSnapshot.map { rideSnapshot ->
-            rideSnapshot.toRide()
+            rideListFlow.collect {
+                trySend(Response.Success(it))
+            }
+
+            rideChannel.subscribe()
+            awaitClose {
+                launch {
+                    rideChannel.unsubscribe()
+                }
+            }
         }
-        Response.Success(rideListResponse)
+
+    override suspend fun getRideListGivenPassenger(passengerId: String): RideListResponse =
+        try {
+            println("Lmao")
+            val rideList = ridesRef.select() {
+                filter {
+                    eq("passengerId", passengerId)
+                }
+                order(column = "departTime", order = Order.DESCENDING)
+            }.decodeList<Ride>()
+
+            Response.Success(rideList)
+        } catch (e: Exception) {
+            print("Exception: $e")
+            Response.Failure(e)
+        }
+
+    override suspend fun getRideListGivenDriver(driverId: String): RideListResponse {
+        TODO("Not yet implemented")
+    }
+//
+//    override suspend fun getRideListGivenDriver(driverId: String): RideListResponse = try {
+//        val rideList = ridesRef.select {
+//            filter {
+//                Ride::driverId eq driverId
+//            }
+//            order(column = Ride::departTime.toString(), order = Order.DESCENDING)
+//        }.decodeList<Ride>()
+//
+//        Response.Success(rideList)
+//    } catch (e: Exception) {
+//        Response.Failure(e)
+//    }
+
+
+    override suspend fun getRide(rideId: String): RideResponse = try {
+        val ride = ridesRef.select {
+            filter {
+                Ride::id eq rideId
+            }
+        }.decodeSingle<Ride>()
+        Response.Success(ride)
     } catch (e: Exception) {
         Response.Failure(e)
     }
 
-    override suspend fun getRide(rideId: String): RideResponse = try {
-        val rideSnapshot = ridesRef.document(rideId).get().await()
-        Response.Success(rideSnapshot.toRide())
+    override suspend fun addRide(ride: Ride): AddRideResponse = try {
+        ridesRef.insert(ride)
+        Response.Success(Unit)
+    } catch (e: Exception) {
+        Response.Failure(e)
+    }
+
+    override suspend fun updateRide(
+        rideId: String,
+        rideUpdate: Map<String, String>
+    ): UpdateRideResponse = try {
+        ridesRef.update({
+            for ((key, value) in rideUpdate) {
+                set(key, value)
+            }
+        }) {
+            filter {
+                Ride::id eq rideId
+            }
+        }
+        Response.Success(Unit)
     } catch (e: Exception) {
         Response.Failure(e)
     }

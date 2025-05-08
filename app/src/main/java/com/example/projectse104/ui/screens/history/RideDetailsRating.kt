@@ -1,34 +1,40 @@
 package com.example.projectse104.ui.screens.history
 
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.projectse104.Component.ShimmerRideDetailsScreen
+import com.example.projectse104.Component.ToastMessage
 import com.example.projectse104.R
-import com.example.projectse104.ui.navigation.Screen
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import com.example.projectse104.*
-import com.example.projectse104.Component.*
 import com.example.projectse104.core.Response
 import com.example.projectse104.domain.model.Ride
-import com.example.projectse104.ui.screens.history.Component.*
+import com.example.projectse104.ui.screens.history.Component.OverviewRating
+import com.example.projectse104.ui.screens.history.Component.RatingContent
+import com.example.projectse104.ui.screens.history.Component.ratingStars
 
 @Composable
 fun RideDetailsRatingScreen(
@@ -36,43 +42,48 @@ fun RideDetailsRatingScreen(
     userId: String,
     rideNo: String,
 ) {
-    var riderName: String="Nguyễn Hữu Dũng"
-    var riderUserId: String="10000512"
-    var riderAvatarId:Int=R.drawable.avatar_1
+    var riderName: String = "Nguyễn Hữu Dũng"
+    var riderUserId: String = "10000512"
+    var riderAvatarId: Int = R.drawable.avatar_1
     var rating: Int = 5
     var trustScore: Int = 36
     var keCoins: Int = 103
-    var content:String="The ride from Dĩ An to District 1 was very smooth. The driver, Nguyễn Hữu Dũng, was friendly, professional, and drove safely. Although the journey was quite long, he maintained a steady speed, making the ride comfortable and pleasant."
+    var content: String =
+        "The ride from Dĩ An to District 1 was very smooth. The driver, Nguyễn Hữu Dũng, was friendly, professional, and drove safely. Although the journey was quite long, he maintained a steady speed, making the ride comfortable and pleasant."
     //Id hội thoại tương ứng với chuyến đi
-    var conversationId:String="0001"
-    var isLoading:Boolean=true
-    var loadingFailed:Boolean=false
+    var conversationId: String = "0001"
+    var isLoading: Boolean = true
+    var loadingFailed: Boolean = false
     val state: Response<Ride> = Response.Success(
-        Ride(id=rideNo, rideOfferId = "", passengerId = userId, driverId = riderUserId,
-            departTime = null,arriveTime=null, rating=5f, comment = content))
-    when(state){
+        Ride(
+            id = rideNo, rideOfferId = "", passengerId = userId,
+            departTime = null, arriveTime = null, rating = 5f, comment = content
+        )
+    )
+    when (state) {
         is Response.Success<Ride> -> {
-            riderUserId=state.data?.driverId.toString()
-            content=state.data?.comment.toString()
-            rating=state.data?.rating?.toInt() ?: 0
-            isLoading=false
-            loadingFailed=false
+            riderUserId = "Lmao"
+            content = state.data?.comment.toString()
+            rating = state.data?.rating?.toInt() ?: 0
+            isLoading = false
+            loadingFailed = false
         }
+
         is Response.Loading -> {
-            isLoading=true
+            isLoading = true
         }
+
         else -> {
-            loadingFailed=true
+            loadingFailed = true
         }
     }
     ToastMessage(
         message = "Không thể tải dữ liệu. Vui lòng thử lại!",
         show = loadingFailed
     )
-    if(isLoading) {
-        ShimmerRideDetailsScreen(navController,false)
-    }
-    else {
+    if (isLoading) {
+        ShimmerRideDetailsScreen(navController, false)
+    } else {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -123,7 +134,9 @@ fun RideDetailsRatingScreen(
 
             // Rider Info
             Column(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 RatingContent(

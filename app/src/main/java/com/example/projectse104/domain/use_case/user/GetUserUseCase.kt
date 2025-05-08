@@ -1,4 +1,4 @@
-package com.example.projectse104.domain.use_case.get_user
+package com.example.projectse104.domain.use_case.user
 
 import com.example.projectse104.core.Response
 import com.example.projectse104.domain.repository.UserRepository

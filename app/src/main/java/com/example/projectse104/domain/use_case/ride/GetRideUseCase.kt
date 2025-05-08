@@ -1,7 +1,6 @@
-package com.example.projectse104.domain.use_case.get_ride
+package com.example.projectse104.domain.use_case.ride
 
 import com.example.projectse104.core.Response
-import com.example.projectse104.domain.repository.RideListResponse
 import com.example.projectse104.domain.repository.RideRepository
 import com.example.projectse104.domain.repository.RideResponse
 import kotlinx.coroutines.flow.Flow

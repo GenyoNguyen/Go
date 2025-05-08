@@ -1,62 +1,75 @@
 package com.example.projectse104.ui.screens.profile
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.compose.ui.zIndex
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.example.projectse104.Component.BottomNavigationBar
+import com.example.projectse104.Component.ToastMessage
 import com.example.projectse104.R
-import com.example.projectse104.*
-import com.example.projectse104.Component.*
 import com.example.projectse104.core.Response
 import com.example.projectse104.domain.model.User
-import com.example.projectse104.ui.screens.profile.Component.*
+import com.example.projectse104.ui.screens.profile.Component.HeaderChangeSection
+import com.example.projectse104.ui.screens.profile.Component.ProfileHeader
+import com.example.projectse104.ui.screens.profile.Component.ProfileOption
+import com.example.projectse104.ui.screens.profile.Component.ShimmerProfileScreen
 
 @Composable
-fun ProfileScreen(navController: NavController, userId: String) {
-    var userFullName: String = "Nguyễn Xuân Phúc"
-    var userGmail: String = "nguyenxuanphuc010205@gmail.com"
-    var userAvatarId:Int=R.drawable.avatar
-    var isLoading:Boolean=true
-    var loadingFailed:Boolean=false
-    val state: Response<User> = Response.Success(User(id=userId, fullName = "Nguyễn Xuân Phúc",
-        email="nguyenxuanphuc010205@gmail.com", profilePic = R.drawable.avatar.toString()))
-    when(state){
+fun ProfileScreen(
+    navController: NavController,
+    userId: String,
+    viewModel: ProfileViewModel = hiltViewModel()
+) {
+    val userState by viewModel.userState.collectAsStateWithLifecycle()
+    val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
+
+    var userFullName = null.toString()
+    var userGmail = null.toString()
+    var userCode = null.toString()
+    val userAvatarId: Int = R.drawable.avatar
+
+    when (val state = userState) {
         is Response.Success<User> -> {
-            userFullName=state.data?.fullName.toString()
-            userGmail=state.data?.email.toString()
-            userAvatarId = state.data?.profilePic?.toIntOrNull() ?: R.drawable.avatar
-            isLoading=false
-            loadingFailed=false
+            println(state.data)
+            userCode = state.data?.userCode.toString()
+            userFullName = state.data?.fullName.toString()
+            userGmail = state.data?.email.toString()
+            viewModel.disableLoading()
         }
-        is Response.Loading -> {
-            isLoading=true
+
+        is Response.Failure -> {
+            ToastMessage(
+                message = "Không thể tải dữ liệu. Vui lòng thử lại!",
+                show = true
+            )
         }
-        else -> {
-            loadingFailed=true
-        }
+
+        else -> {}
     }
-    ToastMessage(
-        message = "Không thể tải dữ liệu. Vui lòng thử lại!",
-        show = loadingFailed
-    )
-    if(isLoading) {
+
+
+    if (isLoading) {
         ShimmerProfileScreen(navController, userId)
-    }
-    else {
+    } else {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -64,14 +77,15 @@ fun ProfileScreen(navController: NavController, userId: String) {
         ) {
             // Header section with profile name and icon
             ProfileHeader()
-            Column(modifier = Modifier.offset(y = -70.dp)) {
-                Column(modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-                    .clip(RoundedCornerShape(8.dp)) // Bo tròn 4 góc của header
-                    .background(Color.White)
-                    .border(1.dp, Color.LightGray, RoundedCornerShape(8.dp))
-                    .clickable { navController.navigate("profile_view/$userId/yes") } // Navigate to page1 when the column is clicked
+            Column(modifier = Modifier.offset(y = (-70).dp)) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                        .clip(RoundedCornerShape(8.dp)) // Bo tròn 4 góc của header
+                        .background(Color.White)
+                        .border(1.dp, Color.LightGray, RoundedCornerShape(8.dp))
+                        .clickable { navController.navigate("profile_view/$userId") } // Navigate to page1 when the column is clicked
                 ) {
                     Spacer(modifier = Modifier.height(10.dp))
 
@@ -86,6 +100,7 @@ fun ProfileScreen(navController: NavController, userId: String) {
                             userAvatarId,
                             userFullName,
                             userGmail,
+                            userCode,
                             userId
                         )
                     }
@@ -127,7 +142,7 @@ fun ProfileScreen(navController: NavController, userId: String) {
                         navController = navController,
                         title = "Sign out",
                         avatarID = R.drawable.profile_icon_5,
-                        route="sign_in"
+                        route = "sign_in"
                     )
                 }
 

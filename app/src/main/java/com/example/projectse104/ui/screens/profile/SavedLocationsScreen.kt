@@ -1,62 +1,67 @@
 package com.example.projectse104.ui.screens.profile
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.example.projectse104.Component.BackArrowWithText
+import com.example.projectse104.Component.BigButton
+import com.example.projectse104.Component.BottomNavigationBar
 import com.example.projectse104.R
-import com.example.projectse104.ui.navigation.Screen
-import com.example.projectse104.*
-import com.example.projectse104.Component.*
+import com.example.projectse104.Component.ToastMessage
 import com.example.projectse104.core.Response
-import com.example.projectse104.domain.model.User
-import com.example.projectse104.ui.screens.profile.Component.*
+import com.example.projectse104.domain.model.UserLocationWithLocation
+import com.example.projectse104.ui.screens.profile.Component.SavedLocation
+import com.example.projectse104.ui.screens.profile.Component.ShimmerSavedLocationScreen
 
 @Composable
-fun SavedLocationScreen(navController: NavController, userId: String) {
-    var savedLocatons:List<List<Any>> = listOf(
-        listOf(R.drawable.saved_location_home,"Home","KTX khu B, phường Linh Trung, thành phố Thủ Đức "),
-        listOf(R.drawable.saved_location_work,"Work","Đại học Công nghệ Thông tin ĐHQG TP Hồ Chí Minh"),
-        listOf(R.drawable.saved_location_other,"Other","Tòa BA4, KTX khu B"),
-        )
-    var isLoading:Boolean=true
-    var loadingFailed:Boolean=false
-    val state: Response<User> = Response.Success(
-        User(id=userId, fullName = "Nguyễn Xuân Phúc",
-        email="nguyenxuanphuc010205@gmail.com", profilePic = R.drawable.avatar.toString())
-    )
-    when(state){
-        is Response.Success<User> -> {
-            isLoading=false
-            loadingFailed=false
+fun SavedLocationScreen(
+    navController: NavController,
+    userId: String,
+    viewModel: SavedLocationViewModel = hiltViewModel()
+) {
+
+    val iconMap = mapOf(
+        "Home" to R.drawable.saved_location_home,
+        "Work" to R.drawable.saved_location_work,
+        "Other" to R.drawable.saved_location_other
+    ).withDefault { R.drawable.saved_location_other }
+
+    val savedLocationState by viewModel.savedLocationListState.collectAsStateWithLifecycle()
+    val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
+
+    var savedLocations: List<UserLocationWithLocation> = emptyList()
+
+    when (val state = savedLocationState) {
+        is Response.Success<List<UserLocationWithLocation>> -> {
+            savedLocations = state.data.orEmpty()
+            viewModel.setLoading(false)
         }
-        is Response.Loading -> {
-            isLoading=true
+
+        is Response.Failure -> {
+            ToastMessage(
+                message = "Không thể tải dữ liệu. Vui lòng thử lại!",
+                show = true
+            )
         }
-        else -> {
-            loadingFailed=true
-        }
+
+        else -> {}
     }
-    ToastMessage(
-        message = "Không thể tải dữ liệu. Vui lòng thử lại!",
-        show = loadingFailed
-    )
-    if(isLoading) {
+
+    if (isLoading) {
         ShimmerSavedLocationScreen(navController)
-    }
-    else {
+    } else {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -66,23 +71,24 @@ fun SavedLocationScreen(navController: NavController, userId: String) {
             BackArrowWithText(navController, "Saved location")
 
             Spacer(modifier = Modifier.height(20.dp))
-            Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
-                for (savedLocation in savedLocatons) {
-                    var iconID: Int = when (val value = savedLocation[0]) {
-                        is Int -> value
-                        is String -> value.toIntOrNull()
-                            ?: 0  // Nếu giá trị là String, cố gắng chuyển đổi, nếu không trả về 0
-                        else -> 0 // Nếu không phải Int hoặc String, trả về 0
-                    }
-                    var name = savedLocation[1].toString()
-                    var details = savedLocation[2].toString()
-                    SavedLocation(iconID, name, details)
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+            ) {
+                for (savedLocation in savedLocations) {
+                    SavedLocation(
+                        iconMap[savedLocation.type.nameType]!!,
+                        savedLocation.type.nameType,
+                        savedLocation.location.name
+                    )
                 }
             }
             Spacer(modifier = Modifier.height(50.dp))
 
             Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-                BigButton(navController = navController,
+                BigButton(
+                    navController = navController,
                     text = "ADD NEW ADDRESS",
                     onClick = {navController.navigate("add_new_address/{userId}")})
             }

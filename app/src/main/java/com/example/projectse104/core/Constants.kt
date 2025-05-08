@@ -50,6 +50,9 @@ const val MODEL_FIELD = "model"
 const val SEATS_FIELD = "seats"
 const val PLATE_NUMBER_FIELD = "plate"
 
+// Other
+const val RIDE_NUMBER_FIELD = "rideNo"
+
 enum class RideStatus(val value: String) {
     SUCCESS("success"),
     CANCELLED("cancelled"),
