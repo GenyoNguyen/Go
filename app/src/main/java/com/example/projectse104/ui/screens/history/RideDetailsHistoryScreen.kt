@@ -13,23 +13,26 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.projectse104.BackArrowWithText
+import com.example.projectse104.Component.BackArrowWithText
+import com.example.projectse104.Component.ShimmerRideDetailsScreen
+import com.example.projectse104.Component.ToastMessage
 import com.example.projectse104.R
-import com.example.projectse104.ShimmerRideDetailsScreen
-import com.example.projectse104.ToastMessage
 import com.example.projectse104.core.Response
-import com.example.projectse104.domain.model.Ride
+import com.example.projectse104.domain.model.RideWithRideOfferWithLocation
+import com.example.projectse104.ui.screens.history.Component.OverviewRating
+import com.example.projectse104.ui.screens.history.Component.RideContent
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import com.example.projectse104.ui.screens.history.Component.*
 
 @Composable
 fun RideDetailsHistoryScreen(
     navController: NavController,
     userId: String,
     rideNo: String,
+    viewModel: HistoryViewModel = hiltViewModel()
 ) {
     var mapImageId: Int = R.drawable.map_image
     var estimatedDeparture: String = "06/04/2025 14:30"
@@ -44,15 +47,9 @@ fun RideDetailsHistoryScreen(
     var cost: String = "113"
     var isLoading: Boolean = true
     var loadingFailed: Boolean = false
-    val state: Response<Ride> = Response.Success(
-        Ride(
-            id = rideNo, rideOfferId = "", passengerId = passengerUserId,
-            departTime = date, arriveTime = date, rating = 5f, comment = ""
-        )
-    )
-    when (state) {
-        is Response.Success<Ride> -> {
-            passengerUserId = state.data?.passengerId.toString()
+    when (val state: Response<RideWithRideOfferWithLocation> = viewModel.getRideDetails(rideNo)) {
+        is Response.Success<RideWithRideOfferWithLocation> -> {
+            passengerUserId = state.data?.ride?.passengerId.toString()
             riderUserId = "Lmao"
             isLoading = false
             loadingFailed = false

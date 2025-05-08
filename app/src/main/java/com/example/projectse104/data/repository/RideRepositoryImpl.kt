@@ -2,14 +2,11 @@ package com.example.projectse104.data.repository
 
 import com.example.projectse104.core.Response
 import com.example.projectse104.domain.model.Ride
-import com.example.projectse104.domain.model.RideWithRideOffer
 import com.example.projectse104.domain.repository.AddRideResponse
 import com.example.projectse104.domain.repository.RideListResponse
 import com.example.projectse104.domain.repository.RideRepository
 import com.example.projectse104.domain.repository.RideResponse
-import com.example.projectse104.domain.repository.RideWithRideOfferListResponse
 import com.example.projectse104.domain.repository.UpdateRideResponse
-import io.github.jan.supabase.postgrest.query.Columns
 import io.github.jan.supabase.postgrest.query.Order
 import io.github.jan.supabase.postgrest.query.PostgrestQueryBuilder
 import io.github.jan.supabase.realtime.RealtimeChannel
@@ -43,22 +40,19 @@ class RideRepositoryImpl(
             }
         }
 
-    override suspend fun getRideListGivenPassenger(passengerId: String): RideWithRideOfferListResponse =
+    override suspend fun getRideListGivenPassenger(passengerId: String): RideListResponse =
         try {
-            val columns = Columns.list(
-                "id", "rideOfferId", "rideOffer:RideOffer(*)",
-                "passengerId", "departTime",
-                "arriveTime", "status", "rating", "comment"
-            )
-
-            val rideList = ridesRef.select(columns = columns) {
+            println("Lmao")
+            val rideList = ridesRef.select() {
                 filter {
-                    Ride::passengerId eq passengerId
+                    eq("passengerId", passengerId)
                 }
-                order(column = Ride::departTime.toString(), order = Order.DESCENDING)
-            }.decodeList<RideWithRideOffer>()
+                order(column = "departTime", order = Order.DESCENDING)
+            }.decodeList<Ride>()
+
             Response.Success(rideList)
         } catch (e: Exception) {
+            print("Exception: $e")
             Response.Failure(e)
         }
 

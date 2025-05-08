@@ -10,7 +10,7 @@ import java.util.Date
 import java.util.Locale
 
 object DateSerializer : KSerializer<Date> {
-    private val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US).apply {
+    private val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US).apply {
         timeZone = java.util.TimeZone.getTimeZone("UTC")
     }
 

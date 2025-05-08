@@ -13,18 +13,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.projectse104.BottomNavigationBar
-import com.example.projectse104.Header
+import com.example.projectse104.Component.BottomNavigationBar
+import com.example.projectse104.Component.Header
+import com.example.projectse104.Component.ShimmerScreen
+import com.example.projectse104.Component.ToastMessage
 import com.example.projectse104.R
-import androidx.compose.material3.Text // For material3 Text
-import androidx.compose.ui.draw.clip
-import com.example.projectse104.*
-import com.example.projectse104.Component.*
-import com.example.projectse104.ShimmerScreen
-import com.example.projectse104.ToastMessage
 import com.example.projectse104.core.Response
 import com.example.projectse104.domain.model.User
-import com.example.projectse104.ui.screens.chat.Component.*
+import com.example.projectse104.ui.screens.chat.Component.ChatItem
+
 @Composable
 fun ChatScreen(navController: NavController, userId: String) {
     val conversations: List<List<Any>> = listOf(
@@ -59,7 +56,8 @@ fun ChatScreen(navController: NavController, userId: String) {
             fullName = "Nguyễn Xuân Phúc",
             overallRating = 5.0f,
             coins = 100,
-            userCode = "kzdf2"
+            userCode = "kzdf2",
+            vehicleId = "Lmao"
         )
     )
     when (state) {

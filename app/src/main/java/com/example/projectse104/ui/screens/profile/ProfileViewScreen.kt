@@ -19,16 +19,19 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.projectse104.BackArrowWithText
-import com.example.projectse104.BottomNavigationBar
+import com.example.projectse104.Component.BackArrowWithText
+import com.example.projectse104.Component.BottomNavigationBar
+import com.example.projectse104.Component.ToastMessage
 import com.example.projectse104.R
-import com.example.projectse104.ToastMessage
 import com.example.projectse104.core.Response
 import com.example.projectse104.domain.model.User
-import com.example.projectse104.ui.screens.profile.Component.*
+import com.example.projectse104.ui.screens.profile.Component.RecentAccompany
+import com.example.projectse104.ui.screens.profile.Component.ShimmerProfileViewScreen
+import com.example.projectse104.ui.screens.profile.Component.ViewRideDetails
+import com.example.projectse104.ui.screens.profile.Component.ViewUserDetails
 
 @Composable
-fun ProfileViewScreen(navController: NavController, userId: String,hideNav:String="yes") {
+fun ProfileViewScreen(navController: NavController, userId: String, hideNav: String = "yes") {
     var userFullName: String = "Nguyễn Xuân Phúc"
     var rating: String = "4.5"
     var position: String = "Dĩ An, Bình Dương"
@@ -53,7 +56,8 @@ fun ProfileViewScreen(navController: NavController, userId: String,hideNav:Strin
             password = "",
             phoneNumber = "TODO()",
             coins = 0,
-            userCode = "TODO()"
+            userCode = "TODO()",
+            vehicleId = "Lmao"
         )
     )
     when (state) {

@@ -25,6 +25,7 @@ class UserRepositoryImpl(
         Response.Success(userResponse)
     } catch (e: Exception) {
         println("UserId: $userId")
+        println("U ded")
         println(e.message)
         Response.Failure(e)
     }

@@ -1,5 +1,6 @@
 package com.example.projectse104.data.repository
 
+import com.example.projectse104.core.Response
 import com.example.projectse104.domain.model.RideOffer
 import com.example.projectse104.domain.repository.AcceptRideOfferResponse
 import com.example.projectse104.domain.repository.AcceptedRideOfferListResponse
@@ -75,8 +76,15 @@ class RideOfferRepositoryImpl(
 //    } catch (e: Exception) {
 //        Response.Failure(e)
 //    }
-    override suspend fun getRideOffer(rideOfferId: String): RideOfferResponse {
-        TODO("Not yet implemented")
+    override suspend fun getRideOffer(rideOfferId: String): RideOfferResponse = try {
+        val rideOffer = rideOffersRef.select {
+            filter {
+                RideOffer::id eq rideOfferId
+            }
+        }.decodeSingle<RideOffer>()
+        Response.Success(rideOffer)
+    } catch (e: Exception) {
+        Response.Failure(e)
     }
 
     override fun getRideOfferList(): Flow<RideOfferListResponse> {

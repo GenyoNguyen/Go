@@ -3,8 +3,8 @@ package com.example.projectse104.ui.screens.history
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.projectse104.core.RIDE_NUMBER_FIELD
 import com.example.projectse104.core.Response
-import com.example.projectse104.core.USER_ID_FIELD
 import com.example.projectse104.domain.model.RideWithRideOfferWithLocation
 import com.example.projectse104.domain.use_case.ride.GetRideHistoryUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
 @HiltViewModel
-class HistoryViewModel @Inject constructor(
+class RideDetailsHistoryViewModel @Inject constructor(
     private val getRideHistoryUseCase: GetRideHistoryUseCase,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
@@ -26,7 +26,7 @@ class HistoryViewModel @Inject constructor(
 
     init {
         if (_rideListState.value !is Response.Success) {
-            savedStateHandle.get<String>(USER_ID_FIELD)?.let { userId ->
+            savedStateHandle.get<String>(RIDE_NUMBER_FIELD)?.let { userId ->
                 getRideHistoryList(userId)
             }
         }

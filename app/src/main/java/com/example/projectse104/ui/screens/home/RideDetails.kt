@@ -24,13 +24,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.projectse104.BackArrowWithText
+import com.example.projectse104.Component.BackArrowWithText
+import com.example.projectse104.Component.ShimmerRideDetailsScreen
+import com.example.projectse104.Component.ToastMessage
+import com.example.projectse104.Component.rideDetails
 import com.example.projectse104.R
-import com.example.projectse104.ShimmerRideDetailsScreen
-import com.example.projectse104.ToastMessage
 import com.example.projectse104.core.Response
 import com.example.projectse104.domain.model.Ride
-import com.example.projectse104.rideDetails
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale

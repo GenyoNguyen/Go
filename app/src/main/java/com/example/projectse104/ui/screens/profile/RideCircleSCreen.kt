@@ -25,10 +25,10 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import com.example.projectse104.BackArrowWithText
-import com.example.projectse104.BottomNavigationBar
+import com.example.projectse104.Component.BackArrowWithText
+import com.example.projectse104.Component.BottomNavigationBar
 import com.example.projectse104.R
-import com.example.projectse104.ToastMessage
+import com.example.projectse104.Component.ToastMessage
 import com.example.projectse104.core.Response
 import com.example.projectse104.domain.model.User
 import com.example.projectse104.ui.screens.profile.Component.*

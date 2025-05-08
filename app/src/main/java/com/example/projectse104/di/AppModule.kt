@@ -1,6 +1,7 @@
 package com.example.projectse104.di
 
 import com.example.projectse104.data.repository.ConversationRepositoryImpl
+import com.example.projectse104.data.repository.LocationRepositoryImpl
 import com.example.projectse104.data.repository.MessageRepositoryImpl
 import com.example.projectse104.data.repository.RideOfferRepositoryImpl
 import com.example.projectse104.data.repository.RideRepositoryImpl
@@ -8,6 +9,7 @@ import com.example.projectse104.data.repository.UserFavouriteRiderRepositoryImpl
 import com.example.projectse104.data.repository.UserLocationRepositoryImpl
 import com.example.projectse104.data.repository.UserRepositoryImpl
 import com.example.projectse104.domain.repository.ConversationRepository
+import com.example.projectse104.domain.repository.LocationRepository
 import com.example.projectse104.domain.repository.MessageRepository
 import com.example.projectse104.domain.repository.RideOfferRepository
 import com.example.projectse104.domain.repository.RideRepository
@@ -29,6 +31,8 @@ import io.github.jan.supabase.postgrest.from
 import io.github.jan.supabase.realtime.Realtime
 import io.github.jan.supabase.realtime.channel
 import io.github.jan.supabase.realtime.realtime
+import io.github.jan.supabase.serializer.KotlinXSerializer
+import kotlinx.serialization.json.Json
 
 const val USER = "User"
 const val RIDE = "Ride"
@@ -37,6 +41,13 @@ const val CONVERSATION = "Conversation"
 const val MESSAGE = "Message"
 const val USER_FAVOURITE_RIDER = "UserFavouriteRider"
 const val USER_LOCATION = "UserLocation"
+const val LOCATION = "Location"
+
+val json = Json {
+    encodeDefaults = true
+    useAlternativeNames = false // Disable snake_case conversion
+    // Alternatively: namingStrategy = JsonNamingStrategy.BuiltIn.CamelCase
+}
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -47,7 +58,9 @@ object AppModule {
             supabaseUrl = "https://ouanezsrnbseuupwngww.supabase.co",
             supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im91YW5lenNybmJzZXV1cHduZ3d3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDM0MzIwMTcsImV4cCI6MjA1OTAwODAxN30.ovsvvFYTUUM2f6HkrjKC2qhHS2IRUeH6TUiGTfsOEAg"
         ) {
-            install(Postgrest)
+            install(Postgrest) {
+                serializer = KotlinXSerializer(json)
+            }
             install(Realtime)
         }
     }
@@ -100,6 +113,13 @@ object AppModule {
         db: SupabaseClient
     ): UserLocationRepository = UserLocationRepositoryImpl(
         userLocationRef = db.from(USER_LOCATION)
+    )
+
+    @Provides
+    fun provideLocationRepository(
+        db: SupabaseClient
+    ): LocationRepository = LocationRepositoryImpl(
+        locationRef = db.from(LOCATION)
     )
 
     @Provides

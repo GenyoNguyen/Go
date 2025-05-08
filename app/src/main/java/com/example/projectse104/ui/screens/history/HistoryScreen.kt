@@ -19,14 +19,15 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import com.example.projectse104.BottomNavigationBar
-import com.example.projectse104.Header
+import com.example.projectse104.Component.BottomNavigationBar
+import com.example.projectse104.Component.Header
+import com.example.projectse104.Component.RideItem
+import com.example.projectse104.Component.ShimmerScreen
+import com.example.projectse104.Component.ToastMessage
 import com.example.projectse104.R
-import com.example.projectse104.RideItem
-import com.example.projectse104.ShimmerScreen
-import com.example.projectse104.ToastMessage
 import com.example.projectse104.core.Response
-import com.example.projectse104.domain.model.RideWithRideOffer
+import com.example.projectse104.core.toCustomString
+import com.example.projectse104.domain.model.RideWithRideOfferWithLocation
 
 
 @Composable
@@ -38,14 +39,15 @@ fun HistoryScreen(
     val rideListState by viewModel.rideListState.collectAsStateWithLifecycle()
 
     var isLoading: Boolean = true
-    var rides = emptyList<RideWithRideOffer>()
+    var rides = emptyList<RideWithRideOfferWithLocation>()
     when (val state = rideListState) {
-        is Response.Success<List<RideWithRideOffer>> -> {
+        is Response.Success<List<RideWithRideOfferWithLocation>> -> {
             rides = state.data.orEmpty()
             isLoading = false
         }
 
         is Response.Failure -> {
+            println(state.e)
             ToastMessage(
                 message = "Không thể tải dữ liệu. Vui lòng thử lại!",
                 show = true
@@ -83,9 +85,10 @@ fun HistoryScreen(
 
                     for (ride in rides) {
                         val rideNo = ride.rideOffer.rideCode
-                        val estimatedDeparture = ride.rideOffer.estimatedDepartTime.toString()
-                        val fromLocation = "Lmao"
-                        val toLocation = "Rofl"
+                        val estimatedDeparture =
+                            ride.ride.departTime.toCustomString()
+                        val fromLocation = ride.startLocation
+                        val toLocation = ride.endLocation
                         val avatarResId = R.drawable.avatar_1
 
                         RideItem(

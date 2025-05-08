@@ -30,13 +30,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.projectse104.BackArrowWithText
-import com.example.projectse104.BottomNavigationBar
+import com.example.projectse104.Component.BackArrowWithText
+import com.example.projectse104.Component.BottomNavigationBar
+import com.example.projectse104.Component.ToastMessage
 import com.example.projectse104.R
-import com.example.projectse104.ToastMessage
 import com.example.projectse104.core.Response
 import com.example.projectse104.domain.model.User
-import com.example.projectse104.ui.screens.profile.Component.*
+import com.example.projectse104.ui.screens.profile.Component.KeCoinsDisplay
+import com.example.projectse104.ui.screens.profile.Component.RedeemCodeInputhBar
+import com.example.projectse104.ui.screens.profile.Component.ShimmerPromotionRewardsScreen
 
 @Composable
 fun PromotionRewardsScreen(navController: NavController, userId: String) {
@@ -51,7 +53,8 @@ fun PromotionRewardsScreen(navController: NavController, userId: String) {
             email = "nguyenxuanphuc010205@gmail.com",
             profilePic = R.drawable.avatar.toString(),
             overallRating = 5.0f, userCode = "kzdf2",
-            coins = keCoins.toInt()
+            coins = keCoins.toInt(),
+            vehicleId = "Lmao"
         )
     )
     when (state) {

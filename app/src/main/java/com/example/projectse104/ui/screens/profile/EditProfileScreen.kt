@@ -24,14 +24,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.projectse104.BackArrowWithText
-import com.example.projectse104.BigButton
-import com.example.projectse104.BottomNavigationBar
-import com.example.projectse104.R
-import com.example.projectse104.ui.navigation.Screen
 import com.example.projectse104.*
 import com.example.projectse104.Component.*
-import com.example.projectse104.ToastMessage
 import com.example.projectse104.core.Response
 import com.example.projectse104.core.showToastMessage
 import com.example.projectse104.domain.model.User

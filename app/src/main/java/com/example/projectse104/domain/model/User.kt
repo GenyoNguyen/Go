@@ -13,5 +13,6 @@ data class User(
     val profilePic: String? = null,
     val overallRating: Float,
     val coins: Int,
-    val userCode: String
+    val userCode: String,
+    val vehicleId: String? = null
 )

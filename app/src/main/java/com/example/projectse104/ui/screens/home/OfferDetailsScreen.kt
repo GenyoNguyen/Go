@@ -14,12 +14,14 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.projectse104.BackArrowWithText
+import com.example.projectse104.Component.BackArrowWithText
+import com.example.projectse104.Component.ShimmerRideDetailsScreen
+import com.example.projectse104.Component.ToastMessage
 import com.example.projectse104.R
-import com.example.projectse104.ShimmerRideDetailsScreen
-import com.example.projectse104.ToastMessage
 import com.example.projectse104.core.Response
 import com.example.projectse104.domain.model.RideOffer
+import com.example.projectse104.ui.screens.home.Component.OfferDetails
+import com.example.projectse104.ui.screens.home.Component.PassengerItem
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -50,8 +52,8 @@ fun OfferDetailsScreen(
             id = rideNo,
             userId = userId,
             estimatedDepartTime = date,
-            startLocation = fromLocation,
-            endLocation = toLocation,
+            startLocationId = fromLocation,
+            endLocationId = toLocation,
             coinCost = cost.toIntOrNull() ?: 0,
             status = "",
             rideCode = "Lmao"
@@ -60,8 +62,8 @@ fun OfferDetailsScreen(
     when (state) {
         is Response.Success<RideOffer> -> {
             estimatedDeparture = state.data?.estimatedDepartTime.toString()
-            fromLocation = state.data?.startLocation.toString()
-            toLocation = state.data?.endLocation.toString()
+            fromLocation = state.data?.startLocationId.toString()
+            toLocation = state.data?.endLocationId.toString()
             cost = state.data?.coinCost.toString()
             isLoading = false
             loadingFailed = false

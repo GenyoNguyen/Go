@@ -12,11 +12,11 @@ data class RideOffer(
     val requestTime: Date? = null,
     @Serializable(with = DateSerializer::class)
     val estimatedDepartTime: Date? = null,
-    val startLocation: String? = null,
-    val endLocation: String? = null,
+    val startLocationId: String? = null,
+    val endLocationId: String? = null,
     val coinCost: Int? = null,
-    val status: String? = null,
     @Serializable(with = DateSerializer::class)
     val acceptedTime: Date? = null,
-    val rideCode: String
+    val rideCode: String,
+    val status: String? = null,
 )

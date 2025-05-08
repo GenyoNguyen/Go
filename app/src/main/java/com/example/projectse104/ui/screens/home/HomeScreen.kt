@@ -16,12 +16,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.projectse104.BottomNavigationBar
+import com.example.projectse104.Component.BottomNavigationBar
+import com.example.projectse104.Component.RideItem
+import com.example.projectse104.Component.ToastMessage
 import com.example.projectse104.R
-import com.example.projectse104.RideItem
-import com.example.projectse104.ToastMessage
 import com.example.projectse104.core.Response
 import com.example.projectse104.domain.model.User
+import com.example.projectse104.ui.screens.home.Component.HomeHeader
+import com.example.projectse104.ui.screens.home.Component.ShimmerHomeScreen
+import com.example.projectse104.ui.screens.home.Component.TopNavBar
 
 
 @Composable
@@ -43,7 +46,8 @@ fun HomeScreen(navController: NavController, userId: String) {
             fullName = "Nguyễn Xuân Phúc",
             overallRating = 5.0f,
             coins = 100,
-            userCode = "kzdf2"
+            userCode = "kzdf2",
+            vehicleId = "Lmao"
         )
     )
     when (state) {

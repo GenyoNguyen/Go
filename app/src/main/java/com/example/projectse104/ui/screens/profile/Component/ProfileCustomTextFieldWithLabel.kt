@@ -37,8 +37,8 @@ import com.valentinilk.shimmer.rememberShimmer
 fun ProfileCustomTextFieldWithLabel(
     label: String,
     value: String,
-    onValueChange: (String) -> Unit,
-    remain_value: String = "" // Add default value parameter
+    remain_value: String = "", // Add default value parameter
+    onValueChange: (String) -> Unit
 ) {
     val focusedColor = Color(0xFF8FC79A)
 

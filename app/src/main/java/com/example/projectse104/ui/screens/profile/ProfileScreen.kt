@@ -23,12 +23,15 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import com.example.projectse104.BottomNavigationBar
+import com.example.projectse104.Component.BottomNavigationBar
+import com.example.projectse104.Component.ToastMessage
 import com.example.projectse104.R
-import com.example.projectse104.ToastMessage
 import com.example.projectse104.core.Response
 import com.example.projectse104.domain.model.User
-import com.example.projectse104.ui.screens.profile.Component.*
+import com.example.projectse104.ui.screens.profile.Component.HeaderChangeSection
+import com.example.projectse104.ui.screens.profile.Component.ProfileHeader
+import com.example.projectse104.ui.screens.profile.Component.ProfileOption
+import com.example.projectse104.ui.screens.profile.Component.ShimmerProfileScreen
 
 @Composable
 fun ProfileScreen(
@@ -139,7 +142,7 @@ fun ProfileScreen(
                         navController = navController,
                         title = "Sign out",
                         avatarID = R.drawable.profile_icon_5,
-                        route="sign_in"
+                        route = "sign_in"
                     )
                 }
 
