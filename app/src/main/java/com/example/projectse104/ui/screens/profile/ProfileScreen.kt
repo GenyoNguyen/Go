@@ -28,6 +28,7 @@ import com.example.projectse104.R
 import com.example.projectse104.ToastMessage
 import com.example.projectse104.core.Response
 import com.example.projectse104.domain.model.User
+import com.example.projectse104.ui.screens.profile.Component.*
 
 @Composable
 fun ProfileScreen(
@@ -137,7 +138,8 @@ fun ProfileScreen(
                     ProfileOption(
                         navController = navController,
                         title = "Sign out",
-                        avatarID = R.drawable.profile_icon_5
+                        avatarID = R.drawable.profile_icon_5,
+                        route="sign_in"
                     )
                 }
 

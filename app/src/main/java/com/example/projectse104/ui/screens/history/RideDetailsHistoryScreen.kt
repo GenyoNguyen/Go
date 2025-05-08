@@ -23,6 +23,7 @@ import com.example.projectse104.domain.model.Ride
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import com.example.projectse104.ui.screens.history.Component.*
 
 @Composable
 fun RideDetailsHistoryScreen(

@@ -15,6 +15,16 @@ import com.example.projectse104.ui.screens.auth.SignUpAndSignInScreen
 import com.example.projectse104.ui.screens.auth.SignupScreen
 import com.example.projectse104.ui.screens.auth.VerifyEmailScreen
 import com.example.projectse104.ui.screens.chat.ChatDetailsScreen
+import com.example.projectse104.ui.screens.profile.ProfileScreen
+import com.example.projectse104.ui.screens.profile.FAQDetailScreen
+import com.example.projectse104.ui.screens.profile.ProfileViewScreen
+import com.example.projectse104.ui.screens.profile.EditProfileScreen
+import com.example.projectse104.ui.screens.profile.RideCircleScreen
+import com.example.projectse104.ui.screens.profile.PromotionRewardsScreen
+import com.example.projectse104.ui.screens.profile.SavedLocationScreen
+import com.example.projectse104.ui.screens.profile.HelpSupportScreen
+import com.example.projectse104.ui.screens.profile.ContactUsScreen
+import com.example.projectse104.ui.screens.profile.AddNewAddressScreen
 import com.example.projectse104.ui.screens.chat.ChatScreen
 import com.example.projectse104.ui.screens.history.HistoryScreen
 import com.example.projectse104.ui.screens.history.RideDetailsHistoryScreen
@@ -300,10 +310,13 @@ fun AppNavigation(navController: NavHostController) {
         }
         composable(
             Screen.ProfileView.route,
-            arguments = listOf(navArgument("userId") { type = NavType.StringType })
+            arguments = listOf(
+                navArgument("userId") { type = NavType.StringType },
+                navArgument("hideNav") { type = NavType.StringType },)
         ) { backStackEntry ->
             val userId = backStackEntry.arguments?.getString("userId") ?: ""
-            ProfileViewScreen(navController, userId)
+            val hideNav = backStackEntry.arguments?.getString("hideNav") ?: ""
+            ProfileViewScreen(navController, userId,hideNav)
         }
         composable(
             Screen.EditProfile.route,
@@ -346,6 +359,20 @@ fun AppNavigation(navController: NavHostController) {
         ) { backStackEntry ->
             val userId = backStackEntry.arguments?.getString("userId") ?: ""
             ContactUsScreen(navController, userId)
+        }
+        composable(
+            Screen.AddNewAddress.route,
+            arguments = listOf(navArgument("userId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val userId = backStackEntry.arguments?.getString("userId") ?: ""
+            AddNewAddressScreen(navController, userId)
+        }
+        composable(
+            Screen.FAQDetail.route,
+            arguments = listOf(navArgument("index") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val index = backStackEntry.arguments?.getString("index") ?: ""
+            FAQDetailScreen(navController, index)
         }
     }
 

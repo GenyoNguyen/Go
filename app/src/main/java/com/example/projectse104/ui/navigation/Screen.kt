@@ -32,12 +32,13 @@ sealed class Screen(val route: String) {
     object ChatDetails: Screen("chat_details/{userId}/{conversationId}")
     object RideDetailsHistory : Screen("ride_details_history/{userId}/{rideNo}")
     object RideDetailsRating : Screen("ride_details_rating/{userId}/{rideNo}")
-    object ProfileView : Screen("profile_view/{userId}")
+    object ProfileView : Screen("profile_view/{userId}/{hideNav}")
     object EditProfile : Screen("edit_profile/{userId}")
     object RideCircle: Screen("ride_circle/{userId}")
     object PromotionRewards: Screen("promotion_rewards/{userId}")
     object SavedLocations: Screen("saved_locations/{userId}")
     object HelpSupport: Screen("help_support/{userId}")
     object ContactUs: Screen("contact_us/{userId}")
-
+    object FAQDetail: Screen("faq_detail/{index}")
+    object AddNewAddress: Screen("add_new_address/{userId}")
 }

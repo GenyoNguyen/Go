@@ -36,6 +36,7 @@ import com.example.projectse104.R
 import com.example.projectse104.ToastMessage
 import com.example.projectse104.core.Response
 import com.example.projectse104.domain.model.User
+import com.example.projectse104.ui.screens.profile.Component.*
 
 @Composable
 fun PromotionRewardsScreen(navController: NavController, userId: String) {

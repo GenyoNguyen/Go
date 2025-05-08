@@ -25,76 +25,79 @@ import androidx.navigation.NavController
 import com.example.projectse104.R
 import com.example.projectse104.ui.navigation.Screen
 import com.example.projectse104.*
+import com.example.projectse104.Component.*
+import com.example.projectse104.ui.screens.auth.Component.*
 @Composable
 fun LoginScreen(navController: NavController) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 24.dp)
-            .background(Color.White),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Spacer(modifier = Modifier.height(40.dp))
-
-        Text(
-            text = "Sign In",
-            fontSize = 26.sp,
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Start,
-            modifier = Modifier.align(Alignment.Start)
-        )
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        CustomTextFieldWithLabel(
-            label = "EMAIL",
-            value = email,
-            onValueChange = { email = it }
-        )
-
-        Spacer(modifier = Modifier.height(15.dp))
-
-        CustomPasswordTextField(
-            label = "Password",
-            value = password,
-            onValueChange = { password = it }
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.End
+    Row(modifier = Modifier.fillMaxSize().background(Color.White)) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 24.dp)
+                .background(Color.White),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            Spacer(modifier = Modifier.height(40.dp))
+
             Text(
-                text = "Forgot password?",
-                color = Color(0xFF8FC79A),
-                fontSize = 14.sp,
-                modifier = Modifier.clickable { navController.navigate("forgot_password") } // Chuyển tới ForgotPasswordScreen
+                text = "Sign In",
+                fontSize = 26.sp,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Start,
+                modifier = Modifier.align(Alignment.Start)
             )
-        }
 
-        Spacer(modifier = Modifier.height(36.dp))
-        BigButton(navController,"SIGN IN", {navController.navigate("Login_successful")})
-        Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
-        Row {
-            Text(text = "Don't have an account? ", fontSize = 14.sp, color = Color.Gray)
-            Text(
-                text = "Sign up.",
-                fontSize = 14.sp,
-                color = Color(0xFF8FC79A),
-                modifier = Modifier.clickable { navController.navigate(Screen.SignUp.route) }
+            CustomTextFieldWithLabel(
+                label = "EMAIL",
+                value = email,
+                onValueChange = { email = it }
             )
+
+            Spacer(modifier = Modifier.height(15.dp))
+
+            CustomPasswordTextField(
+                label = "Password",
+                value = password,
+                onValueChange = { password = it }
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
+            ) {
+                Text(
+                    text = "Forgot password?",
+                    color = Color(0xFF8FC79A),
+                    fontSize = 14.sp,
+                    modifier = Modifier.clickable { navController.navigate("forgot_password") } // Chuyển tới ForgotPasswordScreen
+                )
+            }
+
+            Spacer(modifier = Modifier.height(36.dp))
+            BigButton(navController, "SIGN IN", { navController.navigate("Login_successful") })
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Row {
+                Text(text = "Don't have an account? ", fontSize = 14.sp, color = Color.Gray)
+                Text(
+                    text = "Sign up.",
+                    fontSize = 14.sp,
+                    color = Color(0xFF8FC79A),
+                    modifier = Modifier.clickable { navController.navigate(Screen.SignUp.route) }
+                )
+            }
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+            SocialMedia()
+
+            Spacer(modifier = Modifier.height(32.dp))
         }
-
-        Spacer(modifier = Modifier.height(32.dp))
-
-        SocialMedia()
-
-        Spacer(modifier = Modifier.height(32.dp))
     }
 }

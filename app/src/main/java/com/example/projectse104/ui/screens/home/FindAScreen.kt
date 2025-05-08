@@ -22,6 +22,7 @@ import com.example.projectse104.RideItem
 import com.example.projectse104.ToastMessage
 import com.example.projectse104.core.Response
 import com.example.projectse104.domain.model.User
+import com.example.projectse104.ui.screens.home.Component.*
 
 @Composable
 fun FindARideScreen(navController: NavController, userId: String) {

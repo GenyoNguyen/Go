@@ -32,6 +32,7 @@ import com.example.projectse104.ShimmerRideDetailsScreen
 import com.example.projectse104.ToastMessage
 import com.example.projectse104.core.Response
 import com.example.projectse104.domain.model.Ride
+import com.example.projectse104.ui.screens.history.Component.*
 
 @Composable
 fun RideDetailsRatingScreen(

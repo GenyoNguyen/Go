@@ -19,6 +19,7 @@ import androidx.navigation.NavController
 import com.example.projectse104.R
 import com.example.projectse104.ui.navigation.Screen
 import com.example.projectse104.*
+import com.example.projectse104.Component.*
 
 @Composable
 fun BookingSuccessfulScreen(navController: NavController, userId: String) {
@@ -29,7 +30,7 @@ fun BookingSuccessfulScreen(navController: NavController, userId: String) {
         // Navigate to the specified route after delay
         navController.navigate("home/$userId")
     }
-
+    Row(modifier = Modifier.fillMaxSize().background(Color.White)) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -57,4 +58,5 @@ fun BookingSuccessfulScreen(navController: NavController, userId: String) {
 
         Spacer(modifier = Modifier.height(24.dp))
     }
+}
 }

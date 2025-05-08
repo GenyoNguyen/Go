@@ -28,10 +28,14 @@ import com.example.projectse104.BackArrowWithText
 import com.example.projectse104.BigButton
 import com.example.projectse104.BottomNavigationBar
 import com.example.projectse104.R
+import com.example.projectse104.ui.navigation.Screen
+import com.example.projectse104.*
+import com.example.projectse104.Component.*
 import com.example.projectse104.ToastMessage
 import com.example.projectse104.core.Response
 import com.example.projectse104.core.showToastMessage
 import com.example.projectse104.domain.model.User
+import com.example.projectse104.ui.screens.profile.Component.*
 
 
 @Composable
@@ -141,8 +145,6 @@ fun EditProfileScreen(
                     text = "SAVE CHANGES",
                     onClick = { formViewModel.onEvent(UserDataFormEvent.Submit) })
             }
-            Spacer(modifier = Modifier.weight(1f)) // Ensuring the content is aligned above the navbar
-            BottomNavigationBar(navController, userId, 4)
 
         }
     }

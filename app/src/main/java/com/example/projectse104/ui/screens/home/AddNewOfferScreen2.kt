@@ -24,6 +24,8 @@ import androidx.navigation.NavController
 import com.example.projectse104.R
 import com.example.projectse104.ui.navigation.Screen
 import com.example.projectse104.*
+import com.example.projectse104.Component.*
+import com.example.projectse104.ui.screens.home.Component.*
 
 
 @Composable
@@ -48,7 +50,24 @@ fun AddNewOfferScreen2(navController: NavController, userId: String) {
         Spacer(modifier = Modifier.height(32.dp))
 
         Column(Modifier.fillMaxWidth(0.8f)) {
-            BigButton(navController, "NEXT", {navController.navigate("add_new_offer3/$userId")})
-        }
+            var showError by remember { mutableStateOf(false) }
+
+            BigButton(navController, "NEXT") {
+                if (departureLocation.isNotBlank()) {
+                    navController.navigate("add_new_offer3/$userId")
+                } else {
+                    showError = true
+                }
+            }
+
+            if (showError) {
+                Text(
+                    text = "Please enter a location.",
+                    color = Color.Red,
+                    fontSize = 14.sp,
+                    modifier = Modifier.padding(top = 12.dp).fillMaxWidth(),
+                    textAlign = TextAlign.Center
+                )
+            }}
     }
 }

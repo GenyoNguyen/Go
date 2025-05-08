@@ -18,35 +18,40 @@ import androidx.navigation.NavController
 import com.example.projectse104.R
 import com.example.projectse104.ui.navigation.Screen
 import com.example.projectse104.*
+import com.example.projectse104.Component.*
+import com.example.projectse104.ui.screens.auth.Component.*
+
 
 @Composable
 fun ResetPasswordSuccessfulScreen(navController: NavController) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(24.dp)
-            .background(Color.White),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        // Display custom image as icon
-        Image(
-            painter = painterResource(id = R.drawable.reset_password_icon), // Replace with your image file name
-            contentDescription = "Password Reset",
-            modifier = Modifier.size(180.dp)
-        )
+    Row(modifier = Modifier.fillMaxSize().background(Color.White)) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(24.dp)
+                .background(Color.White),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            // Display custom image as icon
+            Image(
+                painter = painterResource(id = R.drawable.reset_password_icon), // Replace with your image file name
+                contentDescription = "Password Reset",
+                modifier = Modifier.size(180.dp)
+            )
 
-        Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
-        Text(
-            text = "Your password has been reset!",
-            fontSize = 34.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.Black,
-            textAlign = TextAlign.Center // Center align the text
-        )
+            Text(
+                text = "Your password has been reset!",
+                fontSize = 34.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Black,
+                textAlign = TextAlign.Center // Center align the text
+            )
 
-        Spacer(modifier = Modifier.height(24.dp))
-        BigButton(navController,"DONE",{navController.navigate("sign_in")})
+            Spacer(modifier = Modifier.height(24.dp))
+            BigButton(navController, "DONE", { navController.navigate("sign_in") })
+        }
     }
 }
