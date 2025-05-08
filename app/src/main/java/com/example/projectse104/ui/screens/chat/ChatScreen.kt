@@ -21,9 +21,10 @@ import com.example.projectse104.R
 import androidx.compose.material3.Text // For material3 Text
 import androidx.compose.ui.draw.clip
 import com.example.projectse104.*
+import com.example.projectse104.Component.*
 import com.example.projectse104.core.Response
 import com.example.projectse104.domain.model.User
-
+import com.example.projectse104.ui.screens.chat.Component.*
 @Composable
 fun ChatScreen(navController: NavController, userId: String) {
     val conversations: List<List<Any>> = listOf(

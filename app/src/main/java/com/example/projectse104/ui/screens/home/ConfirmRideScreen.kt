@@ -23,6 +23,8 @@ import androidx.navigation.NavController
 import com.example.projectse104.R
 import com.example.projectse104.ui.navigation.Screen
 import com.example.projectse104.*
+import com.example.projectse104.Component.*
+import com.example.projectse104.ui.screens.home.Component.*
 
 @Composable
 fun ConfirmRideScreen(

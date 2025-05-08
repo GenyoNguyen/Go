@@ -20,8 +20,10 @@ import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import com.example.projectse104.R
 import com.example.projectse104.*
+import com.example.projectse104.Component.*
 import com.example.projectse104.core.Response
 import com.example.projectse104.domain.model.User
+import com.example.projectse104.ui.screens.profile.Component.*
 
 @Composable
 fun ProfileScreen(navController: NavController, userId: String) {
@@ -69,7 +71,7 @@ fun ProfileScreen(navController: NavController, userId: String) {
                     .clip(RoundedCornerShape(8.dp)) // Bo tròn 4 góc của header
                     .background(Color.White)
                     .border(1.dp, Color.LightGray, RoundedCornerShape(8.dp))
-                    .clickable { navController.navigate("profile_view/$userId") } // Navigate to page1 when the column is clicked
+                    .clickable { navController.navigate("profile_view/$userId/yes") } // Navigate to page1 when the column is clicked
                 ) {
                     Spacer(modifier = Modifier.height(10.dp))
 
@@ -124,7 +126,8 @@ fun ProfileScreen(navController: NavController, userId: String) {
                     ProfileOption(
                         navController = navController,
                         title = "Sign out",
-                        avatarID = R.drawable.profile_icon_5
+                        avatarID = R.drawable.profile_icon_5,
+                        route="sign_in"
                     )
                 }
 

@@ -28,6 +28,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
+import com.example.projectse104.ui.screens.onboarding.Component.*
 
 @Composable
 fun OnBoardingScreen1(navController: NavController) {

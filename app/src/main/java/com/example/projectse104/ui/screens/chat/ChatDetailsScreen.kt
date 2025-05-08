@@ -28,10 +28,11 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import com.example.projectse104.*
+import com.example.projectse104.Component.*
 import com.example.projectse104.core.Response
 import com.example.projectse104.domain.model.Conversation
 import com.example.projectse104.domain.model.User
-import com.example.projectse104.ui.screens.home.ShimmerHomeScreen
+import com.example.projectse104.ui.screens.chat.Component.*
 
 @Composable
 fun ChatDetailsScreen(
@@ -40,6 +41,7 @@ fun ChatDetailsScreen(
     conversationId: String,
 ) {
     val friendName = "Nguyễn Hữu Dũng"
+    val friendId="2222"
     val messages: List<List<String>> = listOf(
         listOf("Bạn đi đến Quận 1 phải không?", "7:52", "receive"),
         listOf("Đúng vậy, tớ ở KTX khu B ấy, tòa B4?", "7:53", "send"),
@@ -77,13 +79,14 @@ fun ChatDetailsScreen(
             topBar = {
                 ChatHeader(
                     navController = navController,
+                    friendId = friendId,
                     name = friendName,
                     avatarID = R.drawable.avatar_1,
                     isActive = "yes"
                 )
             },
             bottomBar = {
-                ChatInputField()
+                ChatInputField(sendMessage = { /* Do nothing */ })
             }
         ) { innerPadding ->
             Column(

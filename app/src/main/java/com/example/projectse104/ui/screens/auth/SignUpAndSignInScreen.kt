@@ -19,6 +19,9 @@ import androidx.navigation.NavController
 import com.example.projectse104.R
 import com.example.projectse104.ui.navigation.Screen
 import com.example.projectse104.*
+import com.example.projectse104.Component.*
+import com.example.projectse104.ui.screens.auth.Component.*
+
 
 @Composable
 fun SignUpAndSignInScreen(navController: NavController) {
@@ -81,7 +84,7 @@ fun SignUpAndSignInScreen(navController: NavController) {
             // Tiêu đề cho màn hình
             Text(
                 text = "Every journey is better when shared",
-                fontSize = 20.sp,
+                fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.Black,
                 modifier = Modifier.padding(bottom = 10.dp),
@@ -92,7 +95,7 @@ fun SignUpAndSignInScreen(navController: NavController) {
             // Mô tả
             Text(
                 text = "Join thousands of people who are using\nGo to find safe and convenient rides every day.",
-                fontSize = 16.sp,
+                fontSize = 13.sp,
                 color = Color.Gray,
                 textAlign = androidx.compose.ui.text.style.TextAlign.Center,
                 modifier = Modifier.padding(start = 35.dp, end = 35.dp, bottom = 30.dp) // Thêm padding dưới và ngang

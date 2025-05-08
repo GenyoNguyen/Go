@@ -25,7 +25,10 @@ import com.example.projectse104.ui.navigation.Screen
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
-import com.example.projectse104.BigButton
+import com.example.projectse104.*
+import com.example.projectse104.Component.*
+import com.example.projectse104.ui.screens.onboarding.Component.*
+
 
 @Composable
 fun OnBoardingScreen3(navController: NavController) {
@@ -56,7 +59,7 @@ fun OnBoardingScreen3(navController: NavController) {
             verticalArrangement = Arrangement.Bottom,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            BigButton(navController,"GET STARTED",{navController.navigate("sign_in")})
+            BigButton(navController,"GET STARTED",{navController.navigate("sign_up_and_sign_in")})
         }
 
     }

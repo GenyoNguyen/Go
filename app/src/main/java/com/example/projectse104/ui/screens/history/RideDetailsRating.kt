@@ -25,8 +25,10 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import com.example.projectse104.*
+import com.example.projectse104.Component.*
 import com.example.projectse104.core.Response
 import com.example.projectse104.domain.model.Ride
+import com.example.projectse104.ui.screens.history.Component.*
 
 @Composable
 fun RideDetailsRatingScreen(

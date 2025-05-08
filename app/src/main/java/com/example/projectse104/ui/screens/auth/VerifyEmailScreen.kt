@@ -24,6 +24,9 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import com.example.projectse104.*
+import com.example.projectse104.Component.*
+import com.example.projectse104.ui.screens.auth.Component.*
+
 
 @Composable
 fun VerifyEmailScreen(navController: NavController) {
