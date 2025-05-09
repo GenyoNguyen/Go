@@ -125,6 +125,7 @@ fun FindARideScreen(navController: NavController, userId: String) {
                         RideItem(
                             navController = navController,
                             rideNo = rideNo,
+                            rideId = "Lmao",
                             estimatedDeparture = estimatedDeparture,
                             fromLocation = fromLocation,
                             toLocation = toLocation,

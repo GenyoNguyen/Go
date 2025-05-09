@@ -18,6 +18,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -26,12 +27,14 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.projectse104.Component.ShimmerRideDetailsScreen
 import com.example.projectse104.Component.ToastMessage
 import com.example.projectse104.R
 import com.example.projectse104.core.Response
-import com.example.projectse104.domain.model.Ride
+import com.example.projectse104.domain.model.RideWithPassengerAndRider
 import com.example.projectse104.ui.screens.history.Component.OverviewRating
 import com.example.projectse104.ui.screens.history.Component.RatingContent
 import com.example.projectse104.ui.screens.history.Component.ratingStars
@@ -40,33 +43,19 @@ import com.example.projectse104.ui.screens.history.Component.ratingStars
 fun RideDetailsRatingScreen(
     navController: NavController,
     userId: String,
-    rideNo: String,
+    rideId: String,
+    viewModel: RideDetailsRatingViewModel = hiltViewModel()
 ) {
-    var riderName: String = "Nguyễn Hữu Dũng"
-    var riderUserId: String = "10000512"
-    var riderAvatarId: Int = R.drawable.avatar_1
-    var rating: Int = 5
-    var trustScore: Int = 36
-    var keCoins: Int = 103
-    var content: String =
-        "The ride from Dĩ An to District 1 was very smooth. The driver, Nguyễn Hữu Dũng, was friendly, professional, and drove safely. Although the journey was quite long, he maintained a steady speed, making the ride comfortable and pleasant."
-    //Id hội thoại tương ứng với chuyến đi
-    var conversationId: String = "0001"
+    val rideState by viewModel.rideState.collectAsStateWithLifecycle()
+
+    val riderAvatarId: Int = R.drawable.avatar_1
+
     var isLoading: Boolean = true
-    var loadingFailed: Boolean = false
-    val state: Response<Ride> = Response.Success(
-        Ride(
-            id = rideNo, rideOfferId = "", passengerId = userId,
-            departTime = null, arriveTime = null, rating = 5f, comment = content
-        )
-    )
-    when (state) {
-        is Response.Success<Ride> -> {
-            riderUserId = "Lmao"
-            content = state.data?.comment.toString()
-            rating = state.data?.rating?.toInt() ?: 0
+    var rideWithPassengerAndRider: RideWithPassengerAndRider? = null
+    when (val state = rideState) {
+        is Response.Success<RideWithPassengerAndRider> -> {
             isLoading = false
-            loadingFailed = false
+            rideWithPassengerAndRider = state.data
         }
 
         is Response.Loading -> {
@@ -74,13 +63,13 @@ fun RideDetailsRatingScreen(
         }
 
         else -> {
-            loadingFailed = true
+            ToastMessage(
+                message = "Không thể tải dữ liệu. Vui lòng thử lại!",
+                show = true
+            )
         }
     }
-    ToastMessage(
-        message = "Không thể tải dữ liệu. Vui lòng thử lại!",
-        show = loadingFailed
-    )
+
     if (isLoading) {
         ShimmerRideDetailsScreen(navController, false)
     } else {
@@ -105,7 +94,9 @@ fun RideDetailsRatingScreen(
                     )
                 }
                 Text(
-                    text = "Details of Ride No. $rideNo", // Sử dụng tham số rideNo
+                    text = "Details of Ride No. ${rideWithPassengerAndRider?.rideOffer?.rideCode}", // Sử
+                    // dụng tham số
+                    // rideNo
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier
@@ -121,13 +112,13 @@ fun RideDetailsRatingScreen(
                 navController,
                 state = "rating",
                 userId,
-                rideNo,
+                rideId,
             )
 
             Spacer(modifier = Modifier.height(20.dp))
 
             // Rating and feedback section
-            ratingStars(rating)
+            ratingStars(rideWithPassengerAndRider?.ride?.rating?.toInt() ?: 0)
 
 
             Spacer(modifier = Modifier.height(20.dp))
@@ -141,11 +132,11 @@ fun RideDetailsRatingScreen(
             ) {
                 RatingContent(
                     riderAvatarId,
-                    trustScore,
-                    keCoins,
-                    riderName,
-                    riderUserId,
-                    content
+                    trustScore = (rideWithPassengerAndRider?.ride?.rating?.toInt() ?: 0) - 3 * 10,
+                    keCoins = rideWithPassengerAndRider?.rideOffer?.coinCost ?: 0,
+                    riderName = rideWithPassengerAndRider?.rider?.fullName.toString(),
+                    riderUserId = rideWithPassengerAndRider?.rider?.userCode.toString(),
+                    content = rideWithPassengerAndRider?.ride?.comment.toString()
                 )
 
 
@@ -160,7 +151,7 @@ fun RideDetailsRatingScreen(
                         text = buildAnnotatedString {
                             append("Want to contact again with ")
                             pushStyle(SpanStyle(fontWeight = FontWeight.Bold)) // In đậm tên tài xế
-                            append(riderName) // In đậm tên tài xế
+                            append(rideWithPassengerAndRider?.rider?.fullName) // In đậm tên tài xế
                             pop() // Kết thúc phần in đậm
                             append(", ")
                             pushStyle(SpanStyle(color = Color(0xFF35B82A))) // Đổi màu xanh cho phần "click here"
@@ -170,7 +161,7 @@ fun RideDetailsRatingScreen(
                         fontSize = 16.sp,
                         modifier = Modifier
                             .clickable {
-                                navController.navigate("chat_details/$userId/$conversationId")
+                                navController.navigate("chat_details/${rideWithPassengerAndRider?.conversationId}/${"Lmao"}")
                             }
                     )
                 }

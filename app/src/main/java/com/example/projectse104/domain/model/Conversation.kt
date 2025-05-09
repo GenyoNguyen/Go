@@ -1,9 +1,10 @@
 package com.example.projectse104.domain.model
 
-import com.google.firebase.firestore.Exclude
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class Conversation(
-    @Exclude
     val id: String,
-    val rideId: String? = null
+    val firstUserId: String,
+    val secondUserId: String
 )

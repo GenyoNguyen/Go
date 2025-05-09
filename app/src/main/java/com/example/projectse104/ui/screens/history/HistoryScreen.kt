@@ -42,6 +42,7 @@ fun HistoryScreen(
     var rides = emptyList<RideWithRideOfferWithLocation>()
     when (val state = rideListState) {
         is Response.Success<List<RideWithRideOfferWithLocation>> -> {
+            println("Fetched rides")
             rides = state.data.orEmpty()
             isLoading = false
         }
@@ -94,6 +95,7 @@ fun HistoryScreen(
                         RideItem(
                             navController = navController,
                             rideNo = rideNo,
+                            rideId = ride.ride.id,
                             estimatedDeparture = estimatedDeparture,
                             fromLocation = fromLocation,
                             toLocation = toLocation,

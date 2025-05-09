@@ -37,21 +37,23 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
 import com.example.projectse104.core.Response
 import com.example.projectse104.Component.*
+
 @Composable
 fun RideItem(
     navController: NavController,
-    rideNo: String="",
-    estimatedDeparture: String="",
-    fromLocation: String="",
-    toLocation: String="",
+    rideNo: String = "",
+    rideId: String = "",
+    estimatedDeparture: String = "",
+    fromLocation: String = "",
+    toLocation: String = "",
     avatarResId: Int, // Thêm tham số avatarResId để truyền ảnh
-    route: String="", // Thêm tham số route
-    userId:String="",
-    addGoButton:String=""
+    route: String = "", // Thêm tham số route
+    userId: String = "",
+    addGoButton: String = ""
 ) {
-    var path:String=if (route=="ride_details") "$route/$userId/$rideNo/$addGoButton"
-    else if (route=="ride_details_history") "$route/$userId/$rideNo"
-    else "$route/$userId/$rideNo"
+    var path: String = if (route == "ride_details") "$route/$userId/$rideId/$addGoButton"
+    else if (route == "ride_details_history") "$route/$userId/$rideId"
+    else "$route/$userId/$rideId"
 
     Column(
         modifier = Modifier
