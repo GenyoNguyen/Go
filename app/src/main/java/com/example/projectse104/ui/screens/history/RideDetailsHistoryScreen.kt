@@ -14,45 +14,36 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.projectse104.Component.BackArrowWithText
 import com.example.projectse104.Component.ShimmerRideDetailsScreen
 import com.example.projectse104.Component.ToastMessage
 import com.example.projectse104.R
 import com.example.projectse104.core.Response
-import com.example.projectse104.domain.model.RideWithRideOfferWithLocation
+import com.example.projectse104.core.toCustomString
+import com.example.projectse104.domain.model.RideWithUserWithLocation
 import com.example.projectse104.ui.screens.history.Component.OverviewRating
 import com.example.projectse104.ui.screens.history.Component.RideContent
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 @Composable
 fun RideDetailsHistoryScreen(
     navController: NavController,
     userId: String,
-    rideNo: String,
-    viewModel: HistoryViewModel = hiltViewModel()
+    rideId: String,
+    viewModel: RideDetailsHistoryViewModel = hiltViewModel()
 ) {
-    var mapImageId: Int = R.drawable.map_image
-    var estimatedDeparture: String = "06/04/2025 14:30"
-    val format = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
-    val date: Date? = format.parse(estimatedDeparture)
-    var fromLocation: String = "Dĩ An"
-    var toLocation: String = "Quận 1"
-    var riderName: String = "Nguyễn Hữu Dũng"
-    var riderUserId: String = "10000512"
-    var passengerName: String = "Nguyễn Xuân Phúc"
-    var passengerUserId: String = userId
-    var cost: String = "113"
-    var isLoading: Boolean = true
-    var loadingFailed: Boolean = false
-    when (val state: Response<RideWithRideOfferWithLocation> = viewModel.getRideDetails(rideNo)) {
-        is Response.Success<RideWithRideOfferWithLocation> -> {
-            passengerUserId = state.data?.ride?.passengerId.toString()
-            riderUserId = "Lmao"
-            isLoading = false
-            loadingFailed = false
+    val rideState = viewModel.rideState.collectAsStateWithLifecycle()
+
+    val mapImageId: Int = R.drawable.map_image
+    var isLoading = true
+    var ride: RideWithUserWithLocation? = null
+    when (val state = rideState.value) {
+        is Response.Success -> {
+            state.data?.let {
+                isLoading = false
+                ride = it
+            }
         }
 
         is Response.Loading -> {
@@ -60,13 +51,13 @@ fun RideDetailsHistoryScreen(
         }
 
         else -> {
-            loadingFailed = true
+            ToastMessage(
+                message = "Không thể tải dữ liệu. Vui lòng thử lại!",
+                show = true
+            )
         }
     }
-    ToastMessage(
-        message = "Không thể tải dữ liệu. Vui lòng thử lại!",
-        show = loadingFailed
-    )
+
     if (isLoading) {
         ShimmerRideDetailsScreen(navController, false)
     } else {
@@ -75,7 +66,7 @@ fun RideDetailsHistoryScreen(
                 .fillMaxSize()
                 .padding(16.dp)
         ) {
-            BackArrowWithText(navController, "Details of Ride No. $rideNo")
+            BackArrowWithText(navController, "Details of Ride No. ${ride?.rideOffer?.rideCode}")
 
 
             Spacer(modifier = Modifier.height(20.dp))
@@ -85,7 +76,7 @@ fun RideDetailsHistoryScreen(
                 navController,
                 state = "overview",
                 userId,
-                rideNo,
+                rideId,
             )
             Spacer(modifier = Modifier.height(24.dp))
 
@@ -101,14 +92,14 @@ fun RideDetailsHistoryScreen(
 
             // Details Section
             RideContent(
-                estimatedDeparture,
-                fromLocation,
-                toLocation,
-                riderName,
-                riderUserId,
-                passengerName,
-                passengerUserId,
-                cost
+                ride?.ride?.departTime.toCustomString(),
+                ride?.startLocation.toString(),
+                ride?.endLocation.toString(),
+                ride?.rider?.fullName.toString(),
+                ride?.rider?.userCode.toString(),
+                ride?.passenger?.fullName.toString(),
+                ride?.passenger?.userCode.toString(),
+                ride?.rideOffer?.coinCost.toString()
             )
         }
     }

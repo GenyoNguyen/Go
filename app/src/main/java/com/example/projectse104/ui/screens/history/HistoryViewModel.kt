@@ -40,15 +40,4 @@ class HistoryViewModel @Inject constructor(
             }
             .launchIn(viewModelScope)
     }
-
-    fun getRideDetails(rideId: String): Response<RideWithRideOfferWithLocation> {
-        val currentState = _rideListState.value
-        if (currentState is Response.Success) {
-            val res = currentState.data?.find { it.ride.id == rideId }
-            return if (res != null) {
-                Response.Success(res)
-            } else Response.Failure(Exception("Cannot find Ride"))
-        }
-        return Response.Failure(Exception("Cannot find Ride"))
-    }
 }
