@@ -37,7 +37,7 @@ import com.example.projectse104.ui.screens.profile.Component.ShimmerProfileScree
 fun ProfileScreen(
     navController: NavController,
     userId: String,
-    viewModel: ProfileViewModel = hiltViewModel()
+    viewModel: ProfileViewModel = hiltViewModel() // lấy dữ liệu người dùng từ viewModel
 ) {
     val userState by viewModel.userState.collectAsStateWithLifecycle()
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()

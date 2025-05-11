@@ -7,6 +7,7 @@ import com.example.projectse104.data.repository.RideOfferRepositoryImpl
 import com.example.projectse104.data.repository.RideRepositoryImpl
 import com.example.projectse104.data.repository.UserFavouriteRiderRepositoryImpl
 import com.example.projectse104.data.repository.UserLocationRepositoryImpl
+import com.example.projectse104.data.repository.UserLoginImpl
 import com.example.projectse104.data.repository.UserRepositoryImpl
 import com.example.projectse104.domain.repository.ConversationRepository
 import com.example.projectse104.domain.repository.LocationRepository
@@ -15,16 +16,22 @@ import com.example.projectse104.domain.repository.RideOfferRepository
 import com.example.projectse104.domain.repository.RideRepository
 import com.example.projectse104.domain.repository.UserFavouriteRiderRepository
 import com.example.projectse104.domain.repository.UserLocationRepository
+import com.example.projectse104.domain.repository.UserLogin
 import com.example.projectse104.domain.repository.UserRepository
 import com.example.projectse104.domain.use_case.validation.ValidateEmail
 import com.example.projectse104.domain.use_case.validation.ValidateFullName
 import com.example.projectse104.domain.use_case.validation.ValidateLocation
 import com.example.projectse104.domain.use_case.validation.ValidatePhoneNumber
+import com.example.projectse104.domain.use_case.validation.ValidateConfirmPassword
+import com.example.projectse104.domain.use_case.validation.ValidatePassword
+import io.github.jan.supabase.postgrest.query.PostgrestQueryBuilder
+import io.github.jan.supabase.postgrest.postgrest
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import io.github.jan.supabase.SupabaseClient
+import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.postgrest.from
@@ -61,6 +68,7 @@ object AppModule {
             install(Postgrest) {
                 serializer = KotlinXSerializer(json)
             }
+            install(Auth)
             install(Realtime)
         }
     }
@@ -69,7 +77,7 @@ object AppModule {
     fun provideUserRepository(
         db: SupabaseClient
     ): UserRepository = UserRepositoryImpl(
-        usersRef = db.from(USER)
+        usersRef = db.from(USER),
     )
 
     @Provides
@@ -138,7 +146,28 @@ object AppModule {
     }
 
     @Provides
+    fun provideValidatePassword(): ValidatePassword {
+        return ValidatePassword()
+    }
+
+    @Provides
+    fun provideValidateConfirmPassword(): ValidateConfirmPassword {
+        return ValidateConfirmPassword()
+    }
+
+    @Provides
     fun provideValidatePhoneNumber(): ValidatePhoneNumber {
         return ValidatePhoneNumber()
     }
+
+    @Provides
+    fun provideUserLogin(impl: UserLoginImpl): UserLogin {
+        return impl
+    }
+
+    @Provides
+    fun providePostgrestQueryBuilder(client: SupabaseClient): PostgrestQueryBuilder {
+        return client.postgrest[USER]
+    }
+
 }

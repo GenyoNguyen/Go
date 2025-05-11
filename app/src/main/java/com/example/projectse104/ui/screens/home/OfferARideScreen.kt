@@ -44,6 +44,7 @@ fun OfferARideScreen(navController: NavController, userId: String) {
         User(
             id = "1111",
             fullName = "Nguyễn Xuân Phúc",
+            email = "test@gmail.com",
             overallRating = 5.0f,
             coins = 100,
             userCode = "kzdf2",

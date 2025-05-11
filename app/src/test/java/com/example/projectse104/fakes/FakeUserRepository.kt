@@ -36,7 +36,7 @@ class FakeUserRepository : UserRepository {
             Response.Success(user)
         }
 
-    override suspend fun addUser(user: User): AddUserResponse =
+    override suspend fun insertUser(user: User): AddUserResponse =
         if (shouldReturnNetworkError) {
             Response.Failure(Exception("Network error"))
         } else {

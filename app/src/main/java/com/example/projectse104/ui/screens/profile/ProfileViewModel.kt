@@ -5,8 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.projectse104.core.Response
 import com.example.projectse104.core.USER_ID_FIELD
-import com.example.projectse104.domain.repository.UserResponse
-import com.example.projectse104.domain.use_case.user.GetUserUseCase
+import com.example.projectse104.domain.repository.UserResponse // Lấy trạng thái người dùng
+import com.example.projectse104.domain.use_case.user.GetUserUseCase // Lấy thông tin người dùng
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

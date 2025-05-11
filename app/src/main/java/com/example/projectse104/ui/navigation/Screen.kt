@@ -13,7 +13,7 @@ sealed class Screen(val route: String) {
     object VerifyEmail : Screen("verify_email")
     object NewPassword : Screen("new_password")
     object ResetPasswordSuccessful : Screen("reset_password_successful")
-    object LoginSuccessful : Screen("login_successful")
+    object LoginSuccessful : Screen("login_successful/{userId}")
     object Chat : Screen("chat/{userId}")
     object History : Screen("history/{userId}")
     object Profile : Screen("profile/{userId}")
@@ -42,3 +42,4 @@ sealed class Screen(val route: String) {
     object FAQDetail: Screen("faq_detail/{index}")
     object AddNewAddress: Screen("add_new_address/{userId}")
 }
+
