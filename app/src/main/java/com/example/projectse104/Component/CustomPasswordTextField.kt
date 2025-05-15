@@ -36,11 +36,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
 import com.example.projectse104.core.Response
+import com.example.projectse104.domain.use_case.data.ValidationError
+
 @Composable
 fun CustomPasswordTextField(
     label: String,
     value: String,
-    onValueChange: (String) -> Unit
+    onValueChange: (String) -> Unit,
+    error: ValidationError? = null
 ) {
     val focusedColor = Color(0xFF8FC79A)
     var isPasswordVisible by remember { mutableStateOf(false) }
@@ -78,16 +81,19 @@ fun CustomPasswordTextField(
                 unfocusedIndicatorColor = Color.Gray,
                 cursorColor = focusedColor,
                 focusedContainerColor = Color.White,
-                unfocusedContainerColor = Color.White
-            )
+                unfocusedContainerColor = Color.White,
+                errorIndicatorColor = Color.Red,
+                errorCursorColor = Color.Red
+            ),
+            isError = error != null
         )
         val coverWidth = when (label) {
-            "EMAIL"->100.dp
-            "Password"->80.dp
+            "EMAIL" -> 100.dp
+            "Password" -> 80.dp
             "New password" -> 100.dp
-            "Confirm password"->120.dp
-            "Confirm new password"->140.dp
-            else ->10.dp
+            "Confirm password" -> 120.dp
+            "Confirm new password" -> 140.dp
+            else -> 10.dp
         }
         Box(
             modifier = Modifier
@@ -96,5 +102,26 @@ fun CustomPasswordTextField(
                 .background(Color.White)
                 .offset(x = 20.dp, y = 7.dp)
         )
+
+        // Display error message if present
+        error?.let { validationError ->
+            val errorMessage = when (validationError) {
+                ValidationError.EMPTY_FIELD -> "This field is required"
+                ValidationError.INVALID_EMAIL -> "Invalid email format"
+                ValidationError.INVALID_PHONE_NUMBER -> "Invalid phone number"
+                ValidationError.MISSING -> "This field is missing"
+                ValidationError.TOO_SHORT -> "Password is too short"
+                ValidationError.NOT_MATCH -> "Passwords do not match"
+                ValidationError.INVALID_PASSWORD -> "Invalid password format"
+            }
+            Text(
+                text = errorMessage,
+                color = Color.Red,
+                fontSize = 12.sp,
+                modifier = Modifier
+                    .padding(start = 16.dp, top = 4.dp)
+                    .fillMaxWidth()
+            )
+        }
     }
 }

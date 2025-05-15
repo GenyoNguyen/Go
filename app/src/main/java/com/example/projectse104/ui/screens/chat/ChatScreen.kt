@@ -54,6 +54,7 @@ fun ChatScreen(navController: NavController, userId: String) {
         User(
             id = "1111",
             fullName = "Nguyễn Xuân Phúc",
+            email = "Pux@gmail.com",
             overallRating = 5.0f,
             coins = 100,
             userCode = "kzdf2",

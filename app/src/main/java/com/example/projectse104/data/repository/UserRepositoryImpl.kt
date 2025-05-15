@@ -7,32 +7,34 @@ import com.example.projectse104.domain.repository.DeleteUserResponse
 import com.example.projectse104.domain.repository.UpdateUserResponse
 import com.example.projectse104.domain.repository.UserRepository
 import com.example.projectse104.domain.repository.UserResponse
+import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.postgrest.query.PostgrestQueryBuilder
+import javax.inject.Inject
 
-class UserRepositoryImpl(
-    private val usersRef: PostgrestQueryBuilder
+class UserRepositoryImpl @Inject constructor(
+    private val usersRef: PostgrestQueryBuilder,
 ) : UserRepository {
 
-    override suspend fun getUser(userId: String): UserResponse = try {
-        val userResponse =
-            usersRef.select {
-                filter {
-                    User::id eq userId
-                }
-            }.decodeSingle<User>()
-        println("UserId: $userId")
-        println(userResponse)
-        Response.Success(userResponse)
-    } catch (e: Exception) {
-        println("UserId: $userId")
-        println("U ded")
-        println(e.message)
-        Response.Failure(e)
-    }
-
-    override suspend fun addUser(user: User) = try {
+    override suspend fun insertUser(user: User): Response<Unit> = try {
         usersRef.insert(user)
         Response.Success(Unit)
+    } catch (e: Exception) {
+        when {
+            e.message?.contains("duplicate key") == true -> {
+                Response.Failure(Exception("User already exists in database"))
+            }
+            e.message?.contains("network") == true -> {
+                Response.Failure(Exception("Network error"))
+            }
+            else -> Response.Failure(Exception(e.message ?: "Unknown error"))
+        }
+    }
+
+    override suspend fun getUser(userId: String): UserResponse = try {
+        val userResponse = usersRef.select {
+            filter { User::id eq userId }
+        }.decodeSingle<User>()
+        Response.Success(userResponse)
     } catch (e: Exception) {
         Response.Failure(e)
     }
@@ -44,9 +46,7 @@ class UserRepositoryImpl(
                 set(key, value)
             }
         }) {
-            filter {
-                User::id eq userId
-            }
+            filter { User::id eq userId }
         }
         Response.Success(Unit)
     } catch (e: Exception) {
@@ -55,9 +55,7 @@ class UserRepositoryImpl(
 
     override suspend fun deleteUser(userId: String): DeleteUserResponse = try {
         usersRef.delete {
-            filter {
-                User::id eq userId
-            }
+            filter { User::id eq userId }
         }
         Response.Success(Unit)
     } catch (e: Exception) {
