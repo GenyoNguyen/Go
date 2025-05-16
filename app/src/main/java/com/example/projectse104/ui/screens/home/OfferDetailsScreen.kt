@@ -9,10 +9,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.projectse104.Component.BackArrowWithText
 import com.example.projectse104.Component.ShimmerRideDetailsScreen
@@ -20,6 +23,11 @@ import com.example.projectse104.Component.ToastMessage
 import com.example.projectse104.R
 import com.example.projectse104.core.Response
 import com.example.projectse104.domain.model.RideOffer
+import com.example.projectse104.domain.model.RideOfferWithLocation
+import com.example.projectse104.domain.model.RideOfferWithLocationRider
+import com.example.projectse104.domain.model.RideWithRideOfferWithLocation
+import com.example.projectse104.domain.model.RideWithUserWithLocation
+import com.example.projectse104.domain.model.User
 import com.example.projectse104.ui.screens.home.Component.OfferDetails
 import com.example.projectse104.ui.screens.home.Component.PassengerItem
 import java.text.SimpleDateFormat
@@ -31,56 +39,51 @@ fun OfferDetailsScreen(
     navController: NavController,
     userId: String,
     rideNo: String,
+    viewModel: OfferDetailsViewModel = hiltViewModel()
+
 ) {
+    val offerState = viewModel.offerState.collectAsStateWithLifecycle()
+    val userState by viewModel.user.collectAsStateWithLifecycle()
     var mapImageId = R.drawable.small_map_image
-    var estimatedDeparture: String = "29/11/2025 1:20"
-    val format = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
-    val date: Date? = format.parse(estimatedDeparture)
-    var fromLocation: String = "KTX"
-    var toLocation: String = "UIT"
-    var riderName: String = "Nguyễn Xuân Phúc"
-    var riderUserId: String = userId
-    var cost: String = "43"
     var requests: List<List<Any>> = listOf(
         listOf(R.drawable.avatar_1, "Nguyễn Hữu Dũng"),
         listOf(R.drawable.avatar_2, "Độ PC")
     )
-    var isLoading: Boolean = true
-    var loadingFailed: Boolean = false
-    val state: Response<RideOffer> = Response.Success(
-        RideOffer(
-            id = rideNo,
-            userId = userId,
-            estimatedDepartTime = date,
-            startLocationId = fromLocation,
-            endLocationId = toLocation,
-            coinCost = cost.toIntOrNull() ?: 0,
-            status = "",
-            rideCode = "Lmao"
-        )
-    )
-    when (state) {
-        is Response.Success<RideOffer> -> {
-            estimatedDeparture = state.data?.estimatedDepartTime.toString()
-            fromLocation = state.data?.startLocationId.toString()
-            toLocation = state.data?.endLocationId.toString()
-            cost = state.data?.coinCost.toString()
-            isLoading = false
-            loadingFailed = false
+    var user:User? = null
+    var isLoading = true
+    var showErrorToast = false
+    var errorMessage = ""
+    var rideOffer: RideOfferWithLocationRider? = null
+    // Handle userState
+    when (val state = userState) {
+        is Response.Success<User> -> {
+            user = state.data//?.fullName.toString().split(" ").last()
         }
-
-        is Response.Loading -> {
-            isLoading = true
+        is Response.Failure -> {
+            errorMessage = "Không thể tải thông tin người dùng. Vui lòng thử lại!"
+            showErrorToast = true
         }
-
-        else -> {
-            loadingFailed = true
-        }
+        else -> {} // Loading or initial state
     }
-    ToastMessage(
-        message = "Không thể tải dữ liệu. Vui lòng thử lại!",
-        show = loadingFailed
-    )
+    // Handle rideListState
+    when (val state = offerState.value) {
+        is Response.Success<RideOfferWithLocationRider> -> {
+            rideOffer = state.data
+        }
+        is Response.Failure -> {
+            errorMessage = "Không thể tải danh sách chuyến đi. Vui lòng thử lại!"
+            showErrorToast = true
+        }
+        else -> {} // Loading or initial state
+    }
+
+    // Determine loading state: only show shimmer if either state is still loading
+    isLoading = userState is Response.Loading || offerState.value is Response.Loading
+
+    // Show toast for errors
+    if (showErrorToast) {
+        ToastMessage(message = errorMessage, show = true)
+    }
     if (isLoading) {
         ShimmerRideDetailsScreen(navController, false)
     } else {
@@ -89,7 +92,7 @@ fun OfferDetailsScreen(
                 .fillMaxSize()
                 .padding(16.dp)
         ) {
-            BackArrowWithText(navController, "Details of Ride No. $rideNo")
+            BackArrowWithText(navController, "Details of Ride No. ${rideOffer?.rideOffer?.rideCode.toString()}")
             Spacer(modifier = Modifier.height(24.dp))
 
             // Map image (Use the uploaded map image here)
@@ -104,12 +107,13 @@ fun OfferDetailsScreen(
 
             // Details Section
             OfferDetails(
-                estimatedDeparture = estimatedDeparture,
-                fromLocation = fromLocation,
-                toLocation = toLocation,
-                riderName = riderName,
-                riderUserId = riderUserId,
-                cost = cost
+                estimatedDeparture = rideOffer?.rideOffer?.estimatedDepartTime.toString(),
+                fromLocation = rideOffer?.startLocation.toString(),
+                toLocation = rideOffer?.endLocation.toString(),
+                riderName = user?.fullName.toString().split(" ").last(),
+                riderUserId = user?.userCode.toString(),
+                cost = rideOffer?.rideOffer?.coinCost.toString(),
+                status = rideOffer?.rideOffer?.status.toString()
             )
 
             Spacer(modifier = Modifier.height(16.dp))

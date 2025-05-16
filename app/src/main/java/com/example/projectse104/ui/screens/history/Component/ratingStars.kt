@@ -38,15 +38,18 @@ fun ratingStars(rating:Int){
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(0.8f), // Điều chỉnh độ rộng của Row (80% của chiều rộng màn hình)
-            horizontalArrangement = Arrangement.SpaceBetween // Sử dụng SpaceBetween trong Row
+            horizontalArrangement = Arrangement.Center // Sử dụng SpaceBetween trong Row
         ) {
             // Display the 5 stars based on the rating value
             repeat(rating) {
+                Spacer(modifier = Modifier.width(10.dp))
                 Image(
                     painter = painterResource(id = R.drawable.star_icon), // Replace with the actual star image resource
                     contentDescription = "Star",
                     modifier = Modifier.size(40.dp)
                 )
+                Spacer(modifier = Modifier.width(10.dp))
+
             }
         }
     }

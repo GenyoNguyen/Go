@@ -11,16 +11,23 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.projectse104.Component.BottomNavigationBar
 import com.example.projectse104.Component.RideItem
 import com.example.projectse104.Component.ToastMessage
 import com.example.projectse104.R
 import com.example.projectse104.core.Response
+import com.example.projectse104.core.toCustomString
+import com.example.projectse104.domain.model.RideOffer
+import com.example.projectse104.domain.model.RideOfferWithLocation
+import com.example.projectse104.domain.model.RideWithRideOfferWithLocation
 import com.example.projectse104.domain.model.User
 import com.example.projectse104.ui.screens.home.Component.AddNewOffer
 import com.example.projectse104.ui.screens.home.Component.HomeHeader
@@ -29,50 +36,48 @@ import com.example.projectse104.ui.screens.home.Component.TopNavBar
 
 
 @Composable
-fun OfferARideScreen(navController: NavController, userId: String) {
-    var userName = "Phúc"
-    val rides: List<List<Any>> = listOf(
-        listOf("0054752", "29 Nov, 1:20 pm", "Dĩ An", "Quận 1", R.drawable.avatar_1),
-        listOf("0054753", "30 Nov, 2:00 pm", "HCM", "Quận 5", R.drawable.avatar_1),
-        listOf("0054754", "1 Dec, 3:45 pm", "Bình Dương", "Thủ Đức", R.drawable.avatar_1),
-        listOf("0054755", "2 Dec, 5:10 pm", "Quận 9", "Quận 3", R.drawable.avatar_1),
-        listOf("0054756", "3 Dec, 7:00 am", "Tân Bình", "Quận 10", R.drawable.avatar_1),
-    )
-    var isLoading: Boolean = true
-    var loadingFailed: Boolean = false
-    val state: Response<User> = Response.Success(
-        User(
-            id = "1111",
-            fullName = "Nguyễn Xuân Phúc",
-            overallRating = 5.0f,
-            coins = 100,
-            userCode = "kzdf2",
-            vehicleId = "Lmao"
-        )
-    )
-    when (state) {
+fun OfferARideScreen(navController: NavController,
+                     userId: String,
+                     viewModel: OfferARideVIewModel = hiltViewModel()
+) {
+    val rideOfferListState by viewModel.rideOfferListState.collectAsStateWithLifecycle()
+    val userState by viewModel.user.collectAsStateWithLifecycle()
+    var rides = emptyList<RideOfferWithLocation>()
+    var userName = ""
+    var isLoading = true
+    var showErrorToast = false
+    var errorMessage = ""
+    // Handle userState
+    when (val state = userState) {
         is Response.Success<User> -> {
-            val fullName = state.data?.fullName?.trim()
-            userName = fullName
-                ?.split("\\s+".toRegex())
-                ?.lastOrNull()
-                ?: "Người dùng"
-            isLoading = false
-            loadingFailed = false
+            userName = state.data?.fullName.toString().split(" ").last()
         }
-
-        is Response.Loading -> {
-            isLoading = true
+        is Response.Failure -> {
+            errorMessage = "Không thể tải thông tin người dùng. Vui lòng thử lại!"
+            showErrorToast = true
         }
-
-        else -> {
-            loadingFailed = true
-        }
+        else -> {} // Loading or initial state
     }
-    ToastMessage(
-        message = "Không thể tải dữ liệu. Vui lòng thử lại!",
-        show = loadingFailed
-    )
+
+    // Handle rideListState
+    when (val state = rideOfferListState) {
+        is Response.Success<List<RideOfferWithLocation>> -> {
+            rides = state.data.orEmpty()
+        }
+        is Response.Failure -> {
+            errorMessage = "Không thể tải danh sách chuyến đi. Vui lòng thử lại!"
+            showErrorToast = true
+        }
+        else -> {} // Loading or initial state
+    }
+
+    // Determine loading state: only show shimmer if either state is still loading
+    isLoading = userState is Response.Loading || rideOfferListState is Response.Loading
+
+    // Show toast for errors
+    if (showErrorToast) {
+        ToastMessage(message = errorMessage, show = true)
+    }
     if (isLoading) {
         ShimmerHomeScreen(navController, userId, 3, 1)
     } else {
@@ -103,20 +108,16 @@ fun OfferARideScreen(navController: NavController, userId: String) {
 
                     // Danh sách các chuyến đi
                     for (ride in rides) {
-                        val rideNo = ride[0].toString()
-                        val estimatedDeparture = ride[1].toString()
-                        val fromLocation = ride[2].toString()
-                        val toLocation = ride[3].toString()
-                        val avatarResId: Int = when (val value = ride[4]) {
-                            is Int -> value
-                            is String -> value.toIntOrNull() ?: 0
-                            else -> 0
-                        }
+                        val rideNo = ride.rideOffer.rideCode
+                        val estimatedDeparture = ride.rideOffer.estimatedDepartTime.toCustomString()
+                        val fromLocation = ride.startLocation
+                        val toLocation = ride.endLocation
+                        val avatarResId: Int = R.drawable.avatar_1
 
                         RideItem(
                             navController = navController,
                             rideNo = rideNo,
-                            rideId = "Lmao",
+                            rideId = ride.rideOffer.id,
                             estimatedDeparture = estimatedDeparture,
                             fromLocation = fromLocation,
                             toLocation = toLocation,

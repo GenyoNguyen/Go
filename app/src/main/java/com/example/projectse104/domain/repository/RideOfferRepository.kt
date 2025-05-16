@@ -7,17 +7,15 @@ import kotlinx.coroutines.flow.Flow
 typealias RideOfferListResponse = Response<List<RideOffer>>
 typealias RideOfferResponse = Response<RideOffer>
 typealias AcceptRideOfferResponse = Response<Unit>
-typealias AcceptedRideOfferListResponse = Response<List<RideOffer>>
-typealias AddRideOfferResponse = Response<Unit>
 
 interface RideOfferRepository {
     suspend fun getRideOffer(rideOfferId: String): RideOfferResponse
 
-    fun getRideOfferList(): Flow<RideOfferListResponse>
+    suspend fun getRideOfferList(): RideOfferListResponse
 
-    fun getAcceptedRideOfferList(userId: String): Flow<AcceptedRideOfferListResponse>
+    suspend fun getRideOfferListByUserId(userId: String,state:String): RideOfferListResponse
 
-    suspend fun acceptRideOffer(rideOfferId: String): AcceptRideOfferResponse
+    suspend fun getRideOfferListByOtherUser(userId: String,state: String): RideOfferListResponse
 
-    suspend fun addRideOffer(rideOffer: RideOffer): AddRideOfferResponse
+    suspend fun getAcceptedRideOfferList(userId: String): RideOfferListResponse
 }

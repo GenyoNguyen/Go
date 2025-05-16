@@ -27,7 +27,7 @@ import com.example.projectse104.R
 @Composable
 fun LoginSuccessfulScreen(navController: NavController) {
     val userName: String = "Phúc"
-    val userId: String = "59afa3c4-e280-4916-99ef-eca2b0b27a3e"
+    val userId: String = "147a5c50-9e83-4a1b-9b2e-d54d989b3d4f"
     // Automatically navigate to HomeScreen after 2 seconds
     LaunchedEffect(true) {
         // Delay for 2 seconds

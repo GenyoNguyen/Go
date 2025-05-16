@@ -99,7 +99,8 @@ fun RideDetailsHistoryScreen(
                 ride?.rider?.userCode.toString(),
                 ride?.passenger?.fullName.toString(),
                 ride?.passenger?.userCode.toString(),
-                ride?.rideOffer?.coinCost.toString()
+                ride?.rideOffer?.coinCost.toString(),
+                ride?.ride?.status.toString()
             )
         }
     }

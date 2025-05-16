@@ -42,7 +42,8 @@ fun OfferDetails(estimatedDeparture: String,
                  toLocation: String,
                  riderName:String,
                  riderUserId:String,
-                 cost:String){
+                 cost:String,
+                 status:String){
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -83,7 +84,7 @@ fun OfferDetails(estimatedDeparture: String,
                 fontSize = 15.sp
             )
             Text(
-                text = "Success",
+                text = status,
                 fontSize = 15.sp,
                 color = Color.Green
             )

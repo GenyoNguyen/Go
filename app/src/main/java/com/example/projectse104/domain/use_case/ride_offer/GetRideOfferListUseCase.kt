@@ -8,5 +8,4 @@ import javax.inject.Inject
 class GetRideOfferListUseCase @Inject constructor(
     private val repository: RideOfferRepository
 ) {
-    operator fun invoke(): Flow<RideOfferListResponse> = repository.getRideOfferList()
 }
