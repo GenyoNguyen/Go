@@ -114,4 +114,3 @@ fun VerifyEmailScreen(navController: NavController) {
         }
     }
 }
-

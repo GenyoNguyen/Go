@@ -19,7 +19,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class UserDataViewModel @Inject constructor(
+class   UserDataViewModel @Inject constructor(
     private val validateFullName: ValidateFullName,
     private val validateEmail: ValidateEmail,
     private val validatePhoneNumber: ValidatePhoneNumber,

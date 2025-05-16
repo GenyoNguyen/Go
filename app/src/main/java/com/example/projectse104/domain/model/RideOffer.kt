@@ -7,16 +7,16 @@ import java.util.Date
 @Serializable
 data class RideOffer(
     val id: String,
-    val userId: String? = null,
+    val userId: String,
     @Serializable(with = DateSerializer::class)
-    val requestTime: Date? = null,
+    val requestTime: Date,
     @Serializable(with = DateSerializer::class)
-    val estimatedDepartTime: Date? = null,
-    val startLocationId: String? = null,
-    val endLocationId: String? = null,
-    val coinCost: Int? = null,
+    val estimatedDepartTime: Date,
+    val startLocationId: String,
+    val endLocationId: String,
+    val coinCost: Int,
     @Serializable(with = DateSerializer::class)
     val acceptedTime: Date? = null,
     val rideCode: String,
-    val status: String? = null,
+    val status: String
 )

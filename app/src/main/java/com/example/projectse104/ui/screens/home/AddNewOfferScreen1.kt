@@ -32,8 +32,8 @@ fun AddNewOfferScreen1(navController: NavController, userId: String) {
 
 
         Spacer(modifier = Modifier.height(16.dp))
-        TimePickerField(
-            timeText = timeText,
+        DateTimePickerField(
+            dateTimeText = timeText,
             onValueChange = { selectedTime ->
                 timeText = selectedTime
             }
@@ -42,7 +42,7 @@ fun AddNewOfferScreen1(navController: NavController, userId: String) {
         Column(Modifier.fillMaxWidth(0.8f)) {
             BigButton(navController, "NEXT") {
                 if (timeText != "Select Time") {
-                    navController.navigate("add_new_offer2/$userId")
+                    navController.navigate("add_new_offer2/$userId/$timeText")
                 } else {
                     showError = true
                 }

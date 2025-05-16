@@ -1,5 +1,6 @@
 package com.example.projectse104.ui.screens.home
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -20,17 +21,31 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.projectse104.R
 import com.example.projectse104.ui.navigation.Screen
-import com.example.projectse104.*
 import com.example.projectse104.Component.*
+import com.example.projectse104.core.Response
+import com.example.projectse104.domain.model.Location
 import com.example.projectse104.ui.screens.home.Component.*
 
-
 @Composable
-fun AddNewOfferScreen2(navController: NavController, userId: String) {
-    var departureLocation by remember { mutableStateOf("") } // Trạng thái nhập thời gian
+fun AddNewOfferScreen2(
+    navController: NavController,
+    userId: String,
+    time: String,
+    viewModel: AddNewOfferViewModel = hiltViewModel()
+) {
+    var departureLocation by remember { mutableStateOf("") }
+    var departureLocationId by remember { mutableStateOf("") }
+
+    val locationListState by viewModel.locationListState.collectAsStateWithLifecycle()
+    val locationOptions: List<String> = when (locationListState) {
+        is Response.Success -> (locationListState as Response.Success<List<Location>>).data?.map { it.name } ?: emptyList()
+        else -> emptyList()
+    }
 
     Column(
         modifier = Modifier
@@ -38,23 +53,38 @@ fun AddNewOfferScreen2(navController: NavController, userId: String) {
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        BackArrowWithText(navController,"Add new offer")
+        BackArrowWithText(navController, "Add new offer")
 
         Spacer(modifier = Modifier.height(100.dp))
 
-        AddNewOfferContent(R.drawable.flag_icon,"Where is the departure location?")
-
+        AddNewOfferContent(R.drawable.flag_icon, "Where is the departure location?")
 
         Spacer(modifier = Modifier.height(16.dp))
-        InputhBar(departureLocation,{departureLocation=it})
+
+        InputBar(
+            value = departureLocation,
+            options = locationOptions,
+            onValueChange = { selectedLocation ->
+                departureLocation = selectedLocation
+                val selectedLocationId = when (locationListState) {
+                    is Response.Success -> {
+                        val locations = (locationListState as Response.Success<List<Location>>).data
+                        locations?.find { it.name == selectedLocation }?.id ?: ""
+                    }
+                    else -> ""
+                }
+                departureLocationId = selectedLocationId
+                Log.d("AddNewOfferScreen2", "Selected departureLocationId: $departureLocationId") // Log ID vào Logcat
+            }
+        )
+
         Spacer(modifier = Modifier.height(32.dp))
 
         Column(Modifier.fillMaxWidth(0.8f)) {
             var showError by remember { mutableStateOf(false) }
-
             BigButton(navController, "NEXT") {
-                if (departureLocation.isNotBlank()) {
-                    navController.navigate("add_new_offer3/$userId")
+                if (departureLocation.isNotBlank() && departureLocationId.isNotBlank()) {
+                    navController.navigate("add_new_offer3/$userId/$time/$departureLocationId")
                 } else {
                     showError = true
                 }
@@ -62,12 +92,13 @@ fun AddNewOfferScreen2(navController: NavController, userId: String) {
 
             if (showError) {
                 Text(
-                    text = "Please enter a location.",
+                    text = "Please select a location.",
                     color = Color.Red,
                     fontSize = 14.sp,
                     modifier = Modifier.padding(top = 12.dp).fillMaxWidth(),
                     textAlign = TextAlign.Center
                 )
-            }}
+            }
+        }
     }
 }

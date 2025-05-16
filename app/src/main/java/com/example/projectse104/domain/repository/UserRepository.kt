@@ -11,9 +11,10 @@ typealias DeleteUserResponse = Response<Unit>
 
 
 interface UserRepository {
+
     suspend fun getUser(userId: String): UserResponse
 
-    suspend fun addUser(user: User): AddUserResponse
+    suspend fun insertUser(user: User): AddUserResponse
 
     suspend fun updateUser(userUpdate: Map<String, String>): UpdateUserResponse
 

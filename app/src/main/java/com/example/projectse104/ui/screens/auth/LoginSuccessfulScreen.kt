@@ -23,19 +23,16 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.projectse104.R
 
-
 @Composable
-fun LoginSuccessfulScreen(navController: NavController) {
-    val userName: String = "Phúc"
-    val userId: String = "147a5c50-9e83-4a1b-9b2e-d54d989b3d4f"
-    // Automatically navigate to HomeScreen after 2 seconds
+fun LoginSuccessfulScreen(
+    navController: NavController,
+    userId: String
+) {
     LaunchedEffect(true) {
-        // Delay for 2 seconds
-        kotlinx.coroutines.delay(1000)
-        // Navigate to HomeScreen after delay
-        navController.navigate(
-            "home/$userId"
-        )
+        kotlinx.coroutines.delay(1000) // Delay 1 giây
+        navController.navigate("home/$userId") { // Điều hướng đến HomeScreen
+            popUpTo("login_successful/$userId") { inclusive = true }
+        }
     }
 
     Column(
@@ -46,10 +43,9 @@ fun LoginSuccessfulScreen(navController: NavController) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        // Display custom image as icon (replace with your image)
         Image(
-            painter = painterResource(id = R.drawable.check_icon), // Replace with your image file name
-            contentDescription = "Login Successful",
+            painter = painterResource(id = R.drawable.check_icon),
+            contentDescription = "Login erfolgreich",
             modifier = Modifier.size(200.dp)
         )
 

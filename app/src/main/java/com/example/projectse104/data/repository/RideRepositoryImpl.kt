@@ -96,7 +96,6 @@ override suspend fun getRideListByRideOfferIds(rideOfferIds: List<String>): Ride
         print("Exception: $e")
         Response.Failure(e)
     }
-//
 //    override suspend fun getRideListGivenDriver(driverId: String): RideListResponse = try {
 //        val rideList = ridesRef.select {
 //            filter {
