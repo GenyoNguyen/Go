@@ -212,24 +212,37 @@ fun AppNavigation(navController: NavHostController) {
         }
         composable(
             Screen.AddNewOffer2.route,
-            arguments = listOf(navArgument("userId") { type = NavType.StringType })
+            arguments = listOf(navArgument("userId") { type = NavType.StringType },
+                navArgument("time") { type = NavType.StringType })
         ) { backStackEntry ->
             val userId = backStackEntry.arguments?.getString("userId") ?: ""
-            AddNewOfferScreen2(navController, userId)
+            val time = backStackEntry.arguments?.getString("time") ?: ""
+            AddNewOfferScreen2(navController, userId,time)
         }
         composable(
             Screen.AddNewOffer3.route,
-            arguments = listOf(navArgument("userId") { type = NavType.StringType })
+            arguments = listOf(navArgument("userId") { type = NavType.StringType },
+                navArgument("time") { type = NavType.StringType },
+                navArgument("departureLocationId") { type = NavType.StringType })
         ) { backStackEntry ->
             val userId = backStackEntry.arguments?.getString("userId") ?: ""
-            AddNewOfferScreen3(navController, userId)
+            val time = backStackEntry.arguments?.getString("time") ?: ""
+            val departureLocationId = backStackEntry.arguments?.getString("departureLocationId") ?: ""
+
+            AddNewOfferScreen3(navController, userId,time,departureLocationId)
         }
         composable(
             Screen.AddNewOffer4.route,
-            arguments = listOf(navArgument("userId") { type = NavType.StringType })
+            arguments = listOf(navArgument("userId") { type = NavType.StringType },
+                navArgument("time") { type = NavType.StringType },
+                navArgument("departureLocationId") { type = NavType.StringType },
+                navArgument("toLocationId") { type = NavType.StringType })
         ) { backStackEntry ->
             val userId = backStackEntry.arguments?.getString("userId") ?: ""
-            AddNewOfferScreen4(navController, userId)
+            val time = backStackEntry.arguments?.getString("time") ?: ""
+            val departureLocationId = backStackEntry.arguments?.getString("departureLocationId") ?: ""
+            val toLocationId = backStackEntry.arguments?.getString("toLocationId") ?: ""
+            AddNewOfferScreen4(navController, userId, time, departureLocationId, toLocationId)
         }
         composable(
             Screen.AddNewOfferSuccessfully.route,

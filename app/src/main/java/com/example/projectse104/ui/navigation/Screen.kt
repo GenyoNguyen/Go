@@ -25,9 +25,9 @@ sealed class Screen(val route: String) {
     object ConfirmRequest : Screen("confirm_request/{passengerName}/{rideID}/{riderName}") // ✅ Thêm màn hình RideDetails
     object RideDetails : Screen("ride_details/{userId}/{rideNo}/{addGoButton}")
     object AddNewOffer1 : Screen("add_new_offer1/{userId}")
-    object AddNewOffer2 : Screen("add_new_offer2/{userId}")
-    object AddNewOffer3 : Screen("add_new_offer3/{userId}")
-    object AddNewOffer4 : Screen("add_new_offer4/{userId}")
+    object AddNewOffer2 : Screen("add_new_offer2/{userId}/{time}")
+    object AddNewOffer3 : Screen("add_new_offer3/{userId}/{time}/{departureLocationId}")
+    object AddNewOffer4 : Screen("add_new_offer4/{userId}/{time}/{departureLocationId}/{toLocationId}")
     object AddNewOfferSuccessfully: Screen("add_new_offer_successfully/{userId}")
     object ChatDetails: Screen("chat_details/{userId}/{conversationId}")
     object RideDetailsHistory : Screen("ride_details_history/{userId}/{rideNo}")

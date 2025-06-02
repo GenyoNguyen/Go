@@ -38,27 +38,48 @@ import java.util.Calendar
 import com.example.projectse104.ui.screens.home.Component.*
 
 @Composable
-fun InputhBar(value:String,onValueChange:(String)->Unit) {
-    TextField(
-        value = value,
-        onValueChange = onValueChange,
+fun InputBar(
+    value: String,
+    onValueChange: (String) -> Unit,
+    options: List<String> // Thêm danh sách các tùy chọn
+) {
+    var expanded by remember { mutableStateOf(false) }
+    var selectedOption by remember { mutableStateOf(value) }
+
+    Box(
         modifier = Modifier
             .fillMaxWidth(0.8f)
-            .padding(horizontal = 16.dp)
-            .height(50.dp) // Tăng nhẹ chiều cao để có thêm không gian hiển thị
+            .height(50.dp)
             .clip(RoundedCornerShape(25.dp))
-            .background(Color(0xFFEFF8F2)),
-        textStyle = TextStyle(
+            .background(Color(0xFFEFF8F2))
+            .clickable { expanded = true },
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = if (selectedOption.isEmpty()) "Select an option" else selectedOption,
             fontSize = 16.sp,
-            lineHeight = 20.sp // Đảm bảo dòng chữ không bị cắt
-        ),
-        colors = TextFieldDefaults.colors(
-            focusedContainerColor = Color(0xFFEFF8F2),
-            unfocusedContainerColor = Color(0xFFEFF8F2),
-            disabledContainerColor = Color(0xFFEFF8F2),
-            focusedIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent
-        ),
-        singleLine = true
-    )
+            fontWeight = FontWeight.Medium,
+            color = if (selectedOption.isEmpty()) Color.Gray else Color.Black,
+            modifier = Modifier.padding(horizontal = 16.dp)
+        )
+
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            modifier = Modifier
+                .background(Color.White)
+                .shadow(4.dp)
+        ) {
+            options.forEach { option ->
+                DropdownMenuItem(
+                    text = { Text(text = option, fontSize = 16.sp) },
+                    onClick = {
+                        selectedOption = option
+                        onValueChange(option)
+                        expanded = false
+                    }
+                )
+            }
+        }
+    }
 }

@@ -38,7 +38,8 @@ fun RideContent(estimatedDeparture:String,
                 riderUserId: String,
                 passengerName:String,
                 passengerUserId: String,
-                cost:String){
+                cost:String,
+                status:String="Success"){
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -79,7 +80,7 @@ fun RideContent(estimatedDeparture:String,
                 fontSize = 15.sp
             )
             Text(
-                text = "Success", // Trạng thái cố định, bạn có thể thay đổi nếu cần
+                text = status, // Trạng thái cố định, bạn có thể thay đổi nếu cần
                 fontSize = 15.sp,
                 color = Color(0xFF35B82A)
             )

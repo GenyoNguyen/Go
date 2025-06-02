@@ -37,7 +37,6 @@ fun HistoryScreen(
     viewModel: HistoryViewModel = hiltViewModel()
 ) {
     val rideListState by viewModel.rideListState.collectAsStateWithLifecycle()
-
     var isLoading: Boolean = true
     var rides = emptyList<RideWithRideOfferWithLocation>()
     when (val state = rideListState) {

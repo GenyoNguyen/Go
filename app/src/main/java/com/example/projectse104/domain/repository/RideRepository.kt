@@ -23,4 +23,7 @@ interface RideRepository {
     suspend fun addRide(ride: Ride): AddRideResponse
 
     suspend fun updateRide(rideId: String, rideUpdate: Map<String, String>): UpdateRideResponse
+
+    suspend fun getRideListByRideOfferIds(rideOfferIds: List<String>): RideListResponse
+
 }

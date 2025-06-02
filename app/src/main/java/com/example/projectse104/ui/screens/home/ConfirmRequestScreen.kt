@@ -29,9 +29,9 @@ import com.example.projectse104.ui.screens.home.Component.*
 @Composable
 fun ConfirmRequestScreen(
     navController: NavController,
-    passengerName: String, // Thêm tham số userName
+    passengerName: String,
     rideID: String,
-    riderName:String// Thêm tham số rideID
+    riderName:String
 ) {
     Column(
         modifier = Modifier

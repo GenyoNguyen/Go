@@ -1,23 +1,28 @@
 package com.example.projectse104.domain.repository
 
 import com.example.projectse104.core.Response
+import com.example.projectse104.domain.model.Ride
 import com.example.projectse104.domain.model.RideOffer
 import kotlinx.coroutines.flow.Flow
 
 typealias RideOfferListResponse = Response<List<RideOffer>>
 typealias RideOfferResponse = Response<RideOffer>
 typealias AcceptRideOfferResponse = Response<Unit>
-typealias AcceptedRideOfferListResponse = Response<List<RideOffer>>
 typealias AddRideOfferResponse = Response<Unit>
 
 interface RideOfferRepository {
     suspend fun getRideOffer(rideOfferId: String): RideOfferResponse
 
-    fun getRideOfferList(): Flow<RideOfferListResponse>
+    suspend fun getRideOfferList(): RideOfferListResponse
 
-    fun getAcceptedRideOfferList(userId: String): Flow<AcceptedRideOfferListResponse>
+    suspend fun getRideOfferListByUserId(userId: String,state:String): RideOfferListResponse
 
-    suspend fun acceptRideOffer(rideOfferId: String): AcceptRideOfferResponse
+    suspend fun getRideOfferListByOtherUser(userId: String,state: String): RideOfferListResponse
+
+    suspend fun getAcceptedRideOfferList(userId: String): RideOfferListResponse
+
+    suspend fun updateRideOfferStatus(rideOfferId: String, status: String): Response<Unit>
 
     suspend fun addRideOffer(rideOffer: RideOffer): AddRideOfferResponse
+
 }

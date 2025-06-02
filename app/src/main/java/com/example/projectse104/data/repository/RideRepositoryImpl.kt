@@ -55,11 +55,47 @@ class RideRepositoryImpl(
             print("Exception: $e")
             Response.Failure(e)
         }
-
-    override suspend fun getRideListGivenDriver(driverId: String): RideListResponse {
-        TODO("Not yet implemented")
-    }
 //
+override suspend fun getRideListByRideOfferIds(rideOfferIds: List<String>): RideListResponse =
+    try {
+        val ridelist = ridesRef.select {
+            filter {
+                isIn("rideOfferId",rideOfferIds)
+            }
+        }.decodeList<Ride>()
+        val rideIds = ridelist.map { it.id }
+
+        print("RIDE IDS IN THIS FUNCTION: $rideIds")
+        val rides = if (rideIds.isNotEmpty()) {
+            ridesRef.select {
+                filter {
+                    isIn("id",rideIds)
+                }
+                order(column = "departTime", order = Order.DESCENDING)
+            }.decodeList<Ride>()
+        } else {
+            emptyList()
+        }
+        Response.Success(rides)
+    } catch (e: Exception) {
+        print("An error occured")
+        Response.Failure(e)
+    }
+    override suspend fun getRideListGivenDriver(driverId: String): RideListResponse =
+        try {
+        println("Lmao")
+        val rideList = ridesRef.select() {
+            filter {
+                eq("driverId", driverId)
+            }
+            order(column = "departTime", order = Order.DESCENDING)
+        }.decodeList<Ride>()
+
+        Response.Success(rideList)
+    } catch (e: Exception) {
+        print("Exception: $e")
+        Response.Failure(e)
+    }
 //    override suspend fun getRideListGivenDriver(driverId: String): RideListResponse = try {
 //        val rideList = ridesRef.select {
 //            filter {
@@ -109,4 +145,5 @@ class RideRepositoryImpl(
     } catch (e: Exception) {
         Response.Failure(e)
     }
+
 }
