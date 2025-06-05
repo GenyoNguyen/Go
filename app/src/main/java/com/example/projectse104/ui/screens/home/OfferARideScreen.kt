@@ -1,5 +1,6 @@
 package com.example.projectse104.ui.screens.home
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -15,6 +16,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -79,17 +82,29 @@ fun OfferARideScreen(navController: NavController,
         ToastMessage(message = errorMessage, show = true)
     }
     if (isLoading) {
-        ShimmerHomeScreen(navController, userId, 3, 1)
+        ShimmerHomeScreen(navController, userId, 3, 1, userName)
     } else {
+        Image(
+            painter = painterResource(id = R.drawable.background), // Thay bằng ID của hình nền trong res/drawable
+            contentDescription = "Background Image",
+            modifier = Modifier
+                .fillMaxSize(),
+            contentScale = ContentScale.FillWidth,
+            alpha = 0.2f
+
+            // Hình nền sẽ được scale để phủ toàn màn hình
+        )
         Scaffold(
             bottomBar = {
                 BottomNavigationBar(navController, userId, 1)
-            }
+            },
+            containerColor = Color.Transparent, // Đặt containerColor trong suốt để thấy hình nền
+            modifier = Modifier.fillMaxSize()
+
         ) { innerPadding ->
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color.White)
                     .padding(innerPadding)
             ) {
                 HomeHeader(userName)

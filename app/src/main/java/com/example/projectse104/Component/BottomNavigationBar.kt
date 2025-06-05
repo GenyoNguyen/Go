@@ -39,8 +39,10 @@ import com.example.projectse104.core.Response
 @Composable
 fun BottomNavigationBar(navController: NavController, userId: String, activate: Int) {
     NavigationBar(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth()
+                           .height(60.dp),
         containerColor = Color.White // Nền trắng, không nổi bật
+
     ) {
         NavigationBarItem(
             icon = {
@@ -49,7 +51,7 @@ fun BottomNavigationBar(navController: NavController, userId: String, activate: 
                         id = if (activate == 1) R.drawable.home_icon_active else R.drawable.home_icon
                     ),
                     contentDescription = "Home",
-                    modifier = Modifier.size(100.dp),
+                    modifier = Modifier.size(80.dp),
                     tint = Color.Unspecified // Không thay màu icon
                 )
             },
@@ -70,7 +72,7 @@ fun BottomNavigationBar(navController: NavController, userId: String, activate: 
                         id = if (activate == 2) R.drawable.chat_icon_active else R.drawable.chat_icon
                     ),
                     contentDescription = "Chat",
-                    modifier = Modifier.size(100.dp),
+                    modifier = Modifier.size(80.dp),
                     tint = Color.Unspecified
                 )
             },
@@ -78,7 +80,7 @@ fun BottomNavigationBar(navController: NavController, userId: String, activate: 
             alwaysShowLabel = false,
             colors = NavigationBarItemDefaults.colors(
                 indicatorColor = Color.Transparent,
-                selectedIconColor = Color.Unspecified,
+                selectedIconColor = Color.Transparent,
                 unselectedIconColor = Color.Unspecified
             ),
             onClick = { navController.navigate("chat/$userId") }
@@ -91,7 +93,7 @@ fun BottomNavigationBar(navController: NavController, userId: String, activate: 
                         id = if (activate == 3) R.drawable.history_icon_active else R.drawable.history_icon
                     ),
                     contentDescription = "History",
-                    modifier = Modifier.size(100.dp),
+                    modifier = Modifier.size(80.dp),
                     tint = Color.Unspecified
                 )
             },
@@ -112,7 +114,7 @@ fun BottomNavigationBar(navController: NavController, userId: String, activate: 
                         id = if (activate == 4) R.drawable.profile_icon_active else R.drawable.profile_icon
                     ),
                     contentDescription = "Profile",
-                    modifier = Modifier.size(100.dp),
+                    modifier = Modifier.size(80.dp),
                     tint = Color.Unspecified
                 )
             },

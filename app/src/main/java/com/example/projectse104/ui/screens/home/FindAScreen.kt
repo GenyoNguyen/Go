@@ -1,6 +1,8 @@
 package com.example.projectse104.ui.screens.home
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,6 +17,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.projectse104.Component.BottomNavigationBar
@@ -48,10 +52,12 @@ fun FindARideScreen(navController: NavController,
         is Response.Success<User> -> {
             userName = state.data?.fullName.toString().split(" ").last()
         }
+
         is Response.Failure -> {
             errorMessage = "Không thể tải thông tin người dùng. Vui lòng thử lại!"
             showErrorToast = true
         }
+
         else -> {} // Loading or initial state
     }
 
@@ -60,10 +66,12 @@ fun FindARideScreen(navController: NavController,
         is Response.Success<List<RideOfferWithLocation>> -> {
             rides = state.data.orEmpty()
         }
+
         is Response.Failure -> {
             errorMessage = "Không thể tải danh sách chuyến đi. Vui lòng thử lại!"
             showErrorToast = true
         }
+
         else -> {} // Loading or initial state
     }
 
@@ -75,61 +83,77 @@ fun FindARideScreen(navController: NavController,
         ToastMessage(message = errorMessage, show = true)
     }
     if (isLoading) {
-        ShimmerHomeScreen(navController, userId, 2, 1)
+        ShimmerHomeScreen(navController, userId, 2, 1, userName)
     } else {
-        Scaffold(
-            bottomBar = {
-                BottomNavigationBar(navController, userId, 1)
-            }
-        ) { innerPadding ->
-            Column(
+
+        Box(modifier = Modifier.fillMaxSize()) {
+            Image(
+                painter = painterResource(id = R.drawable.background), // Thay bằng ID của hình nền trong res/drawable
+                contentDescription = "Background Image",
                 modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.White)
-                    .padding(innerPadding)
-            ) {
-                HomeHeader(userName)
+                    .fillMaxSize(),
+                contentScale = ContentScale.FillWidth,
+                alpha = 0.2f
+
+                // Hình nền sẽ được scale để phủ toàn màn hình
+            )
+            Scaffold(
+                bottomBar = {
+                    BottomNavigationBar(navController, userId, 1)
+                },
+                containerColor = Color.Transparent, // Đặt containerColor trong suốt để thấy hình nền
+                modifier = Modifier.fillMaxSize()
+            )
+            { innerPadding ->
                 Column(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                        .fillMaxSize()
+                        .padding(innerPadding)
                 ) {
-                    TopNavBar(navController, userId, 2)
+                    HomeHeader(userName)
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        TopNavBar(navController, userId, 2)
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(16.dp))
 
-                    SearchBar()
+                        SearchBar()
 
-                    Spacer(modifier = Modifier.height(16.dp))
-                }
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f) // nội dung cuộn được
-                        .verticalScroll(rememberScrollState())
-                        .padding(horizontal = 16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
+                        Spacer(modifier = Modifier.height(16.dp))
+                    }
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f) // nội dung cuộn được
+                            .verticalScroll(rememberScrollState())
+                            .padding(horizontal = 16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
 
-                    for (ride in rides) {
-                        val rideNo = ride.rideOffer.rideCode
-                        val estimatedDeparture = ride.rideOffer.estimatedDepartTime.toCustomString()
-                        val fromLocation = ride.startLocation
-                        val toLocation = ride.endLocation
-                        val avatarResId: Int = R.drawable.avatar_1
-                        RideItem(
-                            navController = navController,
-                            rideNo = rideNo,
-                            rideId = ride.rideOffer.id,
-                            estimatedDeparture = estimatedDeparture,
-                            fromLocation = fromLocation,
-                            toLocation = toLocation,
-                            avatarResId = avatarResId,
-                            route = "ride_details",
-                            userId = userId,
-                            addGoButton = "yes"
-                        )
+                        for (ride in rides) {
+                            val rideNo = ride.rideOffer.rideCode
+                            val estimatedDeparture =
+                                ride.rideOffer.estimatedDepartTime.toCustomString()
+                            val fromLocation = ride.startLocation
+                            val toLocation = ride.endLocation
+                            val avatarResId: Int = R.drawable.avatar_1
+                            RideItem(
+                                navController = navController,
+                                rideNo = rideNo,
+                                rideId = ride.rideOffer.id,
+                                estimatedDeparture = estimatedDeparture,
+                                fromLocation = fromLocation,
+                                toLocation = toLocation,
+                                avatarResId = avatarResId,
+                                route = "ride_details",
+                                userId = userId,
+                                addGoButton = "yes"
+                            )
+                        }
                     }
                 }
             }

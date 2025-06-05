@@ -28,6 +28,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.TextFieldValue
@@ -38,43 +39,62 @@ import java.util.Calendar
 import com.example.projectse104.ui.screens.home.Component.*
 
 @Composable
-fun ShimmerHomeScreen(navController: NavController, userId: String, index:Int,active:Int) {
+fun ShimmerHomeScreen(navController: NavController, userId: String, index:Int,active:Int, userName: String) {
+    Box(
+        modifier = Modifier.fillMaxSize()
 
-    Scaffold(
-        bottomBar = {
-            BottomNavigationBar(navController, userId, active)
-        }
-    ) { innerPadding ->
-        Column(
+    ) {
+        // Background Image
+        Image(
+            painter = painterResource(id = R.drawable.background), // Thay bằng ID của hình nền trong res/drawable
+            contentDescription = "Background Image",
             modifier = Modifier
-                .fillMaxSize()
-                .background(Color.White)
-                .padding(innerPadding)
-        ) {
-            ShimmerHomeHeader()
+                .fillMaxSize(),
+            contentScale = ContentScale.FillWidth,
+            alpha = 0.2f
 
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                TopNavBar(navController, userId, index)
+
+            // Hình nền sẽ được scale để phủ toàn màn hình
+        )
+        Scaffold(
+            bottomBar = {
+                BottomNavigationBar(navController, userId, active)
             }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
+            ,
+            contentColor = Color.Red,
+            containerColor = Color.Transparent, // Đặt containerColor trong suốt để thấy hình nền
+            modifier = Modifier.fillMaxSize()
+        ) { innerPadding ->
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-                    .verticalScroll(rememberScrollState())
-                    .padding(horizontal = 16.dp)
-                    .shimmer(), // 💫 shimmer ở đây
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .fillMaxSize()
+                    .padding(innerPadding)
             ) {
-                repeat(6) { // giả lập 6 dòng shimmer
-                    ShimmerRideItem()
+                HomeHeader(userName)
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    TopNavBar(navController, userId, index)
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                        .verticalScroll(rememberScrollState())
+                        .padding(horizontal = 16.dp)
+                        .shimmer(), // 💫 shimmer ở đây
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    repeat(6) { // giả lập 6 dòng shimmer
+                        ShimmerRideItem()
+                    }
                 }
             }
         }

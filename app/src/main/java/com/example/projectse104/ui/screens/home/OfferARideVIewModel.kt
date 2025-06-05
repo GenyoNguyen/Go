@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 import com.example.projectse104.domain.use_case.user.*
 import com.example.projectse104.domain.use_case.ride_offer.*
+
 @HiltViewModel
 class OfferARideVIewModel @Inject constructor(
     private val getUserPendingOfferUseCase: GetUserPendingOfferUseCase,

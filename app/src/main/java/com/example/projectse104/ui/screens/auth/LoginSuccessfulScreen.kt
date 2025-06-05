@@ -22,16 +22,19 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.projectse104.R
+import kotlinx.coroutines.delay
 
 @Composable
 fun LoginSuccessfulScreen(
     navController: NavController,
     userId: String
 ) {
-    LaunchedEffect(true) {
-        kotlinx.coroutines.delay(1000) // Delay 1 giây
-        navController.navigate("home/$userId") { // Điều hướng đến HomeScreen
-            popUpTo("login_successful/$userId") { inclusive = true }
+    LaunchedEffect(userId) {
+        if (userId.isNotEmpty()) {
+            delay(1000) // Delay 1 giây để hiển thị màn hình
+            navController.navigate("home/$userId") {
+                popUpTo("login_successful/$userId") { inclusive = true }
+            }
         }
     }
 
@@ -45,7 +48,7 @@ fun LoginSuccessfulScreen(
     ) {
         Image(
             painter = painterResource(id = R.drawable.check_icon),
-            contentDescription = "Login erfolgreich",
+            contentDescription = "Login successful",
             modifier = Modifier.size(200.dp)
         )
 

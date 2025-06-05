@@ -48,6 +48,7 @@ fun TopNavBar(navController: NavController,userId:String,index:Int){
         ) {
             Text(text = "Rides", color = Color(if(index==1) 0xFF186FF0 else 0xFFBFBFBF))
         }
+        Spacer(modifier = Modifier.width(12.dp))
         Button(
             onClick = {if (index==2) {} else{navController.navigate("find_a_ride/$userId")} },
             modifier = Modifier,
@@ -56,6 +57,7 @@ fun TopNavBar(navController: NavController,userId:String,index:Int){
         ) {
             Text(text = "Find a Ride", color = Color(if(index==2) 0xFF186FF0 else 0xFFBFBFBF))
         }
+        Spacer(modifier = Modifier.width(12.dp))
         Button(
             onClick = { if (index==3) {} else {navController.navigate("offer_a_ride/$userId")} },
             modifier = Modifier,

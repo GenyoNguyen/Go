@@ -54,7 +54,6 @@ fun LoginScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 24.dp)
             .background(Color.White),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -66,9 +65,11 @@ fun LoginScreen(
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Start,
             modifier = Modifier.align(Alignment.Start)
+                .padding(horizontal = 24.dp)
         )
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(6.dp))
+
 
         CustomTextFieldWithLabel(
             label = "EMAIL",
@@ -77,7 +78,6 @@ fun LoginScreen(
             error = state.emailError
         )
 
-        Spacer(modifier = Modifier.height(15.dp))
 
         CustomPasswordTextField(
             label = "Password",
@@ -86,7 +86,6 @@ fun LoginScreen(
             error = state.passwordError
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
 
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -96,11 +95,10 @@ fun LoginScreen(
                 text = "Forgot password?",
                 color = Color(0xFF8FC79A),
                 fontSize = 14.sp,
-                modifier = Modifier.clickable { navController.navigate("forgot_password") }
+                modifier = Modifier.clickable { navController.navigate("forgot_password") }.padding(24.dp)
             )
         }
 
-        Spacer(modifier = Modifier.height(36.dp))
 
         BigButton(
             navController = navController,

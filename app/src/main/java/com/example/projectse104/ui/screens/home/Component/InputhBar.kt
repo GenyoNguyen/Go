@@ -37,44 +37,50 @@ import com.valentinilk.shimmer.shimmer
 import java.util.Calendar
 import com.example.projectse104.ui.screens.home.Component.*
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InputBar(
     value: String,
     onValueChange: (String) -> Unit,
-    options: List<String> // Thêm danh sách các tùy chọn
+    options: List<String>
 ) {
     var expanded by remember { mutableStateOf(false) }
-    var selectedOption by remember { mutableStateOf(value) }
+    var textFieldValue by remember { mutableStateOf(TextFieldValue(value)) }
 
-    Box(
-        modifier = Modifier
-            .fillMaxWidth(0.8f)
-            .height(50.dp)
-            .clip(RoundedCornerShape(25.dp))
-            .background(Color(0xFFEFF8F2))
-            .clickable { expanded = true },
-        contentAlignment = Alignment.Center
+    val filteredOptions = options.filter {
+        it.contains(textFieldValue.text, ignoreCase = true)
+    }
+
+    ExposedDropdownMenuBox(
+        expanded = expanded,
+        onExpandedChange = { expanded = !expanded }
     ) {
-        Text(
-            text = if (selectedOption.isEmpty()) "Select an option" else selectedOption,
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Medium,
-            color = if (selectedOption.isEmpty()) Color.Gray else Color.Black,
-            modifier = Modifier.padding(horizontal = 16.dp)
+        TextField(
+            value = textFieldValue,
+            onValueChange = {
+                textFieldValue = it
+                onValueChange(it.text)
+                expanded = true
+            },
+            modifier = Modifier
+                .menuAnchor()
+                .fillMaxWidth(0.8f),
+            placeholder = { Text("Type or select location") },
+            singleLine = true,
+            colors = TextFieldDefaults.textFieldColors(
+                containerColor = Color(0xFFEFF8F2)
+            )
         )
 
-        DropdownMenu(
+        ExposedDropdownMenu(
             expanded = expanded,
-            onDismissRequest = { expanded = false },
-            modifier = Modifier
-                .background(Color.White)
-                .shadow(4.dp)
+            onDismissRequest = { expanded = false }
         ) {
-            options.forEach { option ->
+            filteredOptions.forEach { option ->
                 DropdownMenuItem(
-                    text = { Text(text = option, fontSize = 16.sp) },
+                    text = { Text(option) },
                     onClick = {
-                        selectedOption = option
+                        textFieldValue = TextFieldValue(option)
                         onValueChange(option)
                         expanded = false
                     }

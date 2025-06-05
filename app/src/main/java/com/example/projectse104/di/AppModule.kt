@@ -1,5 +1,6 @@
 package com.example.projectse104.di
 
+import android.content.Context
 import com.example.projectse104.data.repository.ConversationRepositoryImpl
 import com.example.projectse104.data.repository.LocationRepositoryImpl
 import com.example.projectse104.data.repository.MessageRepositoryImpl
@@ -24,11 +25,13 @@ import com.example.projectse104.domain.use_case.validation.ValidateLocation
 import com.example.projectse104.domain.use_case.validation.ValidatePhoneNumber
 import com.example.projectse104.domain.use_case.validation.ValidateConfirmPassword
 import com.example.projectse104.domain.use_case.validation.ValidatePassword
+import com.example.projectse104.utils.DataStoreSessionManager
 import io.github.jan.supabase.postgrest.query.PostgrestQueryBuilder
 import io.github.jan.supabase.postgrest.postgrest
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.auth.Auth
@@ -168,6 +171,11 @@ object AppModule {
     @Provides
     fun providePostgrestQueryBuilder(client: SupabaseClient): PostgrestQueryBuilder {
         return client.postgrest[USER]
+    }
+
+    @Provides
+    fun provideDataStoreSessionManager(@ApplicationContext context: Context): DataStoreSessionManager {
+        return DataStoreSessionManager(context)
     }
 
 }

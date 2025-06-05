@@ -10,6 +10,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -46,9 +47,11 @@ fun SignUpAndSignInScreen(navController: NavController) {
                 Image(
                     painter = painterResource(id = R.drawable.susi3), // Thay bằng tên ảnh của bạn
                     contentDescription = "Sign Up Image",
+                    contentScale = ContentScale.FillWidth,
                     modifier = Modifier
                         .fillMaxSize() // Đảm bảo ảnh chiếm toàn bộ không gian Box
                         .align(Alignment.BottomCenter) // Căn chỉnh ảnh ở dưới cùng
+
                 )
 
                 // Hình ảnh Susi2 ở trên Susi3

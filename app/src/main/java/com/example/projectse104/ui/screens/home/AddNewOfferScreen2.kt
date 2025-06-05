@@ -51,7 +51,7 @@ fun AddNewOfferScreen2(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         BackArrowWithText(navController, "Add new offer")
 
@@ -66,15 +66,14 @@ fun AddNewOfferScreen2(
             options = locationOptions,
             onValueChange = { selectedLocation ->
                 departureLocation = selectedLocation
-                val selectedLocationId = when (locationListState) {
+                departureLocationId = when (val state = locationListState) {
                     is Response.Success -> {
-                        val locations = (locationListState as Response.Success<List<Location>>).data
-                        locations?.find { it.name == selectedLocation }?.id ?: ""
+                        val matchedLocation = state.data?.find { it.name.equals(selectedLocation, ignoreCase = true) }
+                        matchedLocation?.id ?: ""
                     }
                     else -> ""
                 }
-                departureLocationId = selectedLocationId
-                Log.d("AddNewOfferScreen2", "Selected departureLocationId: $departureLocationId") // Log ID vào Logcat
+                Log.d("AddNewOfferScreen2", "Selected departureLocationId: $departureLocationId")
             }
         )
 
@@ -89,7 +88,6 @@ fun AddNewOfferScreen2(
                     showError = true
                 }
             }
-
             if (showError) {
                 Text(
                     text = "Please select a location.",

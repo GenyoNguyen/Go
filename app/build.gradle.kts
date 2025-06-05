@@ -127,6 +127,20 @@ dependencies {
     //Scope
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
+
+    //Map
+    implementation("org.osmdroid:osmdroid-android:6.1.10")
+    implementation("org.slf4j:slf4j-android:1.7.30")
+    implementation("com.github.MKergall:osmbonuspack:6.9.0")
+
+    //store
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
+    implementation("androidx.datastore:datastore-preferences-core:1.0.0")
+
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
+    implementation("androidx.compose.runtime:runtime-livedata:1.5.4")
+
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
 }
 
 // Allow references to generated code
