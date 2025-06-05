@@ -48,7 +48,7 @@ fun CustomPasswordTextField(
     val focusedColor = Color(0xFF8FC79A)
     var isPasswordVisible by remember { mutableStateOf(false) }
 
-    Box(modifier = Modifier.fillMaxWidth()) {
+    Box(modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp)) {
         Text(
             text = label,
             fontSize = 12.sp,

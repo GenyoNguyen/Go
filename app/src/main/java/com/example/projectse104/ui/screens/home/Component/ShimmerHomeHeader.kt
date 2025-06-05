@@ -28,6 +28,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.TextFieldValue
@@ -38,53 +39,73 @@ import java.util.Calendar
 import com.example.projectse104.ui.screens.home.Component.*
 @Composable
 fun ShimmerHomeHeader() {
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxWidth()
+            .height(100.dp)
             .padding(bottom = 16.dp)
-            .clip(RoundedCornerShape(8.dp))
-            .background(Color(0xFF8FC79A)) // cùng màu với HomeHeader gốc
-            .shimmer(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+            .shimmer() // Apply shimmer effect
     ) {
-        Spacer(modifier = Modifier.height(60.dp))
+        // Background Image
+        Image(
+            painter = painterResource(id = R.drawable.mask_group), // Ensure 'mask_group' exists
+            contentDescription = "Background Image",
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop,
+            alpha = 0.7f
+        )
 
-        Row(
+        // Overlay
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color(0xFFECB692).copy(alpha = 0.8f)) // Orange overlay from HomeHeader
+        )
+
+        // Main content
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+                .padding(vertical = 24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
             Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                // Home Title Placeholder
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .height(30.dp)
+                            .width(100.dp)
+                            .clip(RoundedCornerShape(6.dp))
+                            .background(Color.LightGray) // Placeholder for "Home" text
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Box(
+                        modifier = Modifier
+                            .size(30.dp)
+                            .clip(RoundedCornerShape(6.dp))
+                            .background(Color.LightGray) // Placeholder for home icon
+                    )
+                }
+
+                // Greeting Placeholder
                 Box(
                     modifier = Modifier
-                        .height(30.dp)
-                        .width(100.dp)
+                        .height(24.dp)
+                        .width(120.dp)
                         .clip(RoundedCornerShape(6.dp))
-                        .background(Color.LightGray)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Box(
-                    modifier = Modifier
-                        .size(30.dp)
-                        .clip(RoundedCornerShape(6.dp))
-                        .background(Color.LightGray)
+                        .background(Color.LightGray) // Placeholder for greeting text
                 )
             }
-
-            Box(
-                modifier = Modifier
-                    .height(24.dp)
-                    .width(120.dp)
-                    .clip(RoundedCornerShape(6.dp))
-                    .background(Color.LightGray)
-            )
         }
-
-        Spacer(modifier = Modifier.height(30.dp))
     }
 }

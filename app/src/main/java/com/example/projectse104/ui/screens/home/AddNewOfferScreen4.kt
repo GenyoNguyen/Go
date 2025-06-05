@@ -13,7 +13,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -33,7 +35,8 @@ import com.example.projectse104.ui.screens.home.Component.*
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.random.Random
-
+import com.example.projectse104.domain.model.Location
+import kotlinx.coroutines.delay
 @Composable
 fun AddNewOfferScreen4(
     navController: NavController,
@@ -43,8 +46,26 @@ fun AddNewOfferScreen4(
     toLocationId: String,
     viewModel: AddNewOfferViewModel = hiltViewModel()
 ) {
-    // Theo dõi trạng thái tạo RideOffer
+    var isRideOfferSent by remember { mutableStateOf(false) }
+    var rideOfferCreated by remember { mutableStateOf(false) }
     val addRideOfferState by viewModel.addRideOfferState.collectAsStateWithLifecycle()
+    var distance by remember { mutableStateOf("Đang tính khoảng cách...") }
+    var departureLocationName by remember { mutableStateOf("") }
+    var toLocationName by remember { mutableStateOf("") }
+
+    // Lấy locationList từ ViewModel
+    val locationListState by viewModel.locationListState.collectAsStateWithLifecycle()
+    LaunchedEffect(locationListState) {
+        when (locationListState) {
+            is Response.Success -> {
+                val locations = (locationListState as Response.Success<List<Location>>).data
+                departureLocationName = locations?.find { it.id == departureLocationId }?.name ?: ""
+                toLocationName = locations?.find { it.id == toLocationId }?.name ?: ""
+                Log.d("AddNewOfferScreen4", "Departure: $departureLocationName, Destination: $toLocationName")
+            }
+            else -> {}
+        }
+    }
 
     // Chuẩn hóa và parse time
     val normalizedTime = if (time.length == 16) "$time:00" else time
@@ -70,11 +91,14 @@ fun AddNewOfferScreen4(
         null
     }
 
-    LaunchedEffect(true) {
-        // Delay for 2 seconds
-        kotlinx.coroutines.delay(1000)
-        // Tạo RideOffer
-        if (parsedDate != null && requestTimeDate != null) {
+    // Tạo RideOffer
+    LaunchedEffect(parsedDate, requestTimeDate, departureLocationName, toLocationName) {
+        if (!isRideOfferSent &&
+            parsedDate != null &&
+            requestTimeDate != null &&
+            departureLocationName.isNotBlank() &&
+            toLocationName.isNotBlank()
+        ) {
             val rideOffer = RideOffer(
                 id = UUID.randomUUID().toString(),
                 userId = userId,
@@ -88,8 +112,7 @@ fun AddNewOfferScreen4(
             )
             Log.d("AddNewOfferScreen4", "Creating RideOffer: $rideOffer")
             viewModel.addRideOffer(rideOffer)
-        } else {
-            Log.e("AddNewOfferScreen4", "Cannot create RideOffer: parsedDate or requestTimeDate is null")
+            isRideOfferSent = true
         }
     }
 
@@ -98,13 +121,12 @@ fun AddNewOfferScreen4(
         when (addRideOfferState) {
             is Response.Success -> {
                 Log.d("AddNewOfferScreen4", "RideOffer created successfully")
-                navController.navigate("add_new_offer_successfully/$userId")
+                rideOfferCreated = true
             }
             is Response.Failure -> {
                 Log.e("AddNewOfferScreen4", "Failed to create RideOffer: ${(addRideOfferState as Response.Failure).e?.message}")
-                // Có thể hiển thị lỗi cho người dùng nếu cần
             }
-            else -> Unit // Không làm gì khi đang loading
+            else -> Unit
         }
     }
 
@@ -112,25 +134,62 @@ fun AddNewOfferScreen4(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.estimate_icon),
-            contentDescription = "Clock Icon",
-            modifier = Modifier.size(200.dp)
-        )
+        BackArrowWithText(navController, "Add new offer")
 
-        Spacer(modifier = Modifier.height(60.dp))
+        Spacer(modifier = Modifier.height(24.dp))
 
-        Text(
-            text = "Estimated Ké Coins to be earned",
-            fontSize = 22.sp,
-            fontWeight = FontWeight.Medium,
-            color = Color.Black
-        )
+        // Hiển thị bản đồ
+        if (departureLocationName.isNotBlank() && toLocationName.isNotBlank()) {
+            OsmMapView(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(400.dp)
+                    .clipToBounds(),
+                fromLocation = departureLocationName,
+                toLocation = toLocationName,
+                context = LocalContext.current,
+                onDistanceCalculated = { distanceText ->
+                    distance = distanceText
+                }
+            )
+        }
 
-        // Hiển thị lỗi nếu có (tùy chọn)
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Hiển thị khoảng cách
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Text(
+                text = "Khoảng cách: ",
+                fontSize = 15.sp
+            )
+            Text(
+                text = distance,
+                fontSize = 15.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Blue
+            )
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+        if (rideOfferCreated) {
+            Button(
+                onClick = {
+                    navController.navigate("add_new_offer_successfully/$userId")
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp)
+            ) {
+                Text(text = "Finish!")
+            }
+        }
+        Spacer(modifier = Modifier.height(32.dp))
+
+        // Hiển thị lỗi nếu có
         addRideOfferState?.let { state ->
             if (state is Response.Failure) {
                 Text(

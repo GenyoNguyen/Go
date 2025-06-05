@@ -39,6 +39,7 @@ fun RideContent(estimatedDeparture:String,
                 passengerName:String,
                 passengerUserId: String,
                 cost:String,
+                distance:String,
                 status:String="Success"){
     Column(
         modifier = Modifier.fillMaxWidth()
@@ -83,6 +84,20 @@ fun RideContent(estimatedDeparture:String,
                 text = status, // Trạng thái cố định, bạn có thể thay đổi nếu cần
                 fontSize = 15.sp,
                 color = Color(0xFF35B82A)
+            )
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Row {
+            Text(
+                text = "Khoảng cách: ",
+                fontSize = 15.sp
+            )
+            Text(
+                text = distance,
+                fontSize = 15.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Blue
             )
         }
 

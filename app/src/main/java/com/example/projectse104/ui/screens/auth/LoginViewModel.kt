@@ -6,9 +6,11 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.projectse104.core.Response
+import com.example.projectse104.domain.model.User
 import com.example.projectse104.domain.use_case.auth.LoginUseCase
 import com.example.projectse104.domain.use_case.data.ValidationError
 import com.example.projectse104.domain.use_case.data.ValidationEvent
+import com.example.projectse104.utils.DataStoreSessionManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -17,7 +19,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val loginUseCase: LoginUseCase
+    private val loginUseCase: LoginUseCase,
+    private val sessionManager: DataStoreSessionManager
 ) : ViewModel() {
 
     var state by mutableStateOf(LoginFormState())
@@ -25,15 +28,12 @@ class LoginViewModel @Inject constructor(
     private val validationEventChannel = Channel<ValidationEvent>()
     val validationEvents = validationEventChannel.receiveAsFlow()
 
-    // Hàm kiểm tra định dạng email
     private fun isValidEmail(email: String): Boolean {
         val emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$".toRegex()
         return emailRegex.matches(email)
     }
 
-    // Hàm kiểm tra định dạng mật khẩu
     private fun isValidPassword(password: String): Boolean {
-        // Mật khẩu phải có ít nhất 6 ký tự
         return password.length >= 6
     }
 
@@ -52,7 +52,6 @@ class LoginViewModel @Inject constructor(
     }
 
     private fun submitData() {
-        // Kiểm tra email trống
         if (state.email.isBlank()) {
             state = state.copy(emailError = ValidationError.EMPTY_FIELD)
             viewModelScope.launch {
@@ -61,7 +60,6 @@ class LoginViewModel @Inject constructor(
             return
         }
 
-        // Kiểm tra định dạng email
         if (!isValidEmail(state.email)) {
             state = state.copy(emailError = ValidationError.INVALID_EMAIL)
             viewModelScope.launch {
@@ -70,7 +68,6 @@ class LoginViewModel @Inject constructor(
             return
         }
 
-        // Kiểm tra mật khẩu trống
         if (state.password.isBlank()) {
             state = state.copy(passwordError = ValidationError.EMPTY_FIELD)
             viewModelScope.launch {
@@ -79,7 +76,6 @@ class LoginViewModel @Inject constructor(
             return
         }
 
-        // Kiểm tra định dạng mật khẩu
         if (!isValidPassword(state.password)) {
             state = state.copy(passwordError = ValidationError.INVALID_PASSWORD)
             viewModelScope.launch {
@@ -88,7 +84,6 @@ class LoginViewModel @Inject constructor(
             return
         }
 
-        // Nếu tất cả hợp lệ, gửi yêu cầu lên server
         viewModelScope.launch {
             loginUseCase(state.email, state.password).collect { response ->
                 when (response) {
@@ -97,16 +92,20 @@ class LoginViewModel @Inject constructor(
                         validationEventChannel.send(ValidationEvent.Loading)
                     }
                     is Response.Success -> {
-                        val userId = response.data?.id // Kiểm tra null an toàn
-                        if (userId != null) {
-                            validationEventChannel.send(ValidationEvent.Success(userId))
+                        val user = response.data as? User
+                        if (user != null) {
+                            sessionManager.saveUserSession(
+                                userId = user.id,
+                                email = user.email,
+                                userName = user.fullName
+                            )
+                            validationEventChannel.send(ValidationEvent.Success(user.id))
                         } else {
                             validationEventChannel.send(ValidationEvent.Error(Exception("User data is missing")))
                         }
                     }
                     is Response.Failure -> {
                         val errorMessage = response.e?.message ?: "Unknown error"
-                        // Xử lý lỗi từ server
                         when {
                             errorMessage.contains("Invalid password") -> {
                                 state = state.copy(passwordError = ValidationError.INVALID_PASSWORD)

@@ -76,7 +76,7 @@ class GetRideDetailsHistoryUseCase @Inject constructor(
                                 startLocation = startLocation,
                                 endLocation = endLocation,
                                 rider = rider,
-                                passenger = passenger
+                                passenger = passenger,
                             )
                         )
                     )

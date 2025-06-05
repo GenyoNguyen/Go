@@ -40,9 +40,9 @@ fun AddNewOfferScreen3(
     viewModel: AddNewOfferViewModel = hiltViewModel()
 ) {
     var toLocation by remember { mutableStateOf("") }
-    var toLocationId by remember { mutableStateOf("") } // Thêm biến để lưu ID của đích đến
+    var toLocationId by remember { mutableStateOf("") }
 
-    // Lấy locationList từ ViewModel và đảm bảo là List<String>
+    // Lấy locationList từ ViewModel
     val locationListState by viewModel.locationListState.collectAsStateWithLifecycle()
     val locationOptions: List<String> = when (locationListState) {
         is Response.Success -> (locationListState as Response.Success<List<Location>>).data?.map { it.name } ?: emptyList()
@@ -53,13 +53,13 @@ fun AddNewOfferScreen3(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         BackArrowWithText(navController, "Add new offer")
 
-        Spacer(modifier = Modifier.height(100.dp))
+        Spacer(modifier = Modifier.height(24.dp))
 
-        AddNewOfferContent(R.drawable.destination_icon, "Where is the destination")
+        AddNewOfferContent(R.drawable.destination_icon, "Where is the destination?")
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -68,7 +68,6 @@ fun AddNewOfferScreen3(
             options = locationOptions,
             onValueChange = { selectedLocation ->
                 toLocation = selectedLocation
-                // Tìm ID tương ứng với location đã chọn
                 val selectedLocationId = when (locationListState) {
                     is Response.Success -> {
                         val locations = (locationListState as Response.Success<List<Location>>).data
@@ -77,7 +76,7 @@ fun AddNewOfferScreen3(
                     else -> ""
                 }
                 toLocationId = selectedLocationId
-                Log.d("AddNewOfferScreen3", "Selected toLocationId: $toLocationId") // Log ID vào Logcat
+                Log.d("AddNewOfferScreen3", "Selected toLocationId: $toLocationId")
             }
         )
 
@@ -96,10 +95,12 @@ fun AddNewOfferScreen3(
 
             if (showError) {
                 Text(
-                    text = "Please select a destination.",
+                    text = "Please select a destination location.",
                     color = Color.Red,
                     fontSize = 14.sp,
-                    modifier = Modifier.padding(top = 12.dp).fillMaxWidth(),
+                    modifier = Modifier
+                        .padding(top = 12.dp)
+                        .fillMaxWidth(),
                     textAlign = TextAlign.Center
                 )
             }

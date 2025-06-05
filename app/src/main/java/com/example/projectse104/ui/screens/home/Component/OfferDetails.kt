@@ -43,6 +43,7 @@ fun OfferDetails(estimatedDeparture: String,
                  riderName:String,
                  riderUserId:String,
                  cost:String,
+                 distance: String,
                  status:String){
     Column(
         modifier = Modifier.fillMaxWidth()
@@ -94,7 +95,19 @@ fun OfferDetails(estimatedDeparture: String,
             text = "Passenger Information: ???",
             fontSize = 15.sp
         )
-
+        Spacer(modifier = Modifier.height(8.dp))
+        Row {
+            Text(
+                text = "Distance: ",
+                fontSize = 15.sp
+            )
+            Text(
+                text = distance,
+                fontSize = 15.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Blue
+            )
+        }
         Spacer(modifier = Modifier.height(8.dp))
         Row {
             Text(
@@ -128,5 +141,6 @@ fun OfferDetails(estimatedDeparture: String,
                     .weight(1f) // Chiếm toàn bộ không gian còn lại của Row để kéo dài đường kẻ
             )
         }
+
     }
 }

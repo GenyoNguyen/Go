@@ -30,7 +30,8 @@ fun CustomTextFieldWithLabel(
 ) {
     val focusedColor = Color(0xFF8FC79A)
 
-    Box(modifier = Modifier.fillMaxWidth()) {
+    Box(modifier = Modifier.fillMaxWidth()
+        .padding(24.dp)) {
         Text(
             text = label,
             fontSize = 12.sp,

@@ -16,10 +16,14 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -40,10 +44,13 @@ import com.example.projectse104.domain.model.RideOfferWithLocationRider
 import com.example.projectse104.domain.model.RideWithUserWithLocation
 import com.example.projectse104.domain.model.User
 import com.example.projectse104.ui.screens.history.Component.RideContent
+import com.example.projectse104.ui.screens.home.Component.OsmMapView
 import com.example.projectse104.ui.screens.home.RideDetailsViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 
 @Composable
 fun RideDetailsScreen(
@@ -52,6 +59,8 @@ fun RideDetailsScreen(
     rideNo: String,
     addGoButton: String,
 ) {
+    var distance by remember { mutableStateOf("Đang tính khoảng cách...") }
+
     if (addGoButton=="no") {
         val viewModel: RideDetailsViewModel = hiltViewModel()
         val rideState = viewModel.rideState.collectAsStateWithLifecycle()
@@ -93,12 +102,20 @@ fun RideDetailsScreen(
                 Spacer(modifier = Modifier.height(24.dp))
 
                 // Map image (Use the uploaded map image here)
-                Image(
-                    painter = painterResource(id = mapImageID), // Thay thế bằng hình ảnh bản đồ thực tế
-                    contentDescription = "Map Image",
-                    modifier = Modifier.fillMaxWidth(), // Ảnh sẽ chiếm toàn bộ chiều rộng của container
-                    contentScale = ContentScale.Crop // Cắt bớt ảnh nếu cần thiết
-                )
+                ride?.let {
+                    OsmMapView(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(400.dp)
+                            .clipToBounds(),
+                        fromLocation = ride.startLocation.toString(),
+                        toLocation = ride.endLocation.toString(),
+                        context = LocalContext.current,
+                        onDistanceCalculated = { distanceText ->
+                            distance = distanceText // Cập nhật khoảng cách
+                        }
+                    )
+                }
 
                 Spacer(modifier = Modifier.height(24.dp))
 
@@ -112,7 +129,8 @@ fun RideDetailsScreen(
                     ride?.passenger?.fullName.toString(),
                     ride?.passenger?.userCode.toString(),
                     ride?.rideOffer?.coinCost.toString(),
-                    ride?.ride?.status.toString()
+                    ride?.ride?.status.toString(),
+                    distance
                 )
                 val riderName = ride?.rider?.fullName.toString()
 
@@ -129,6 +147,7 @@ fun RideDetailsScreen(
         var isLoading = true
         var showErrorToast = false
         var errorMessage = ""
+        var distance by remember { mutableStateOf("Đang tính khoảng cách...") }
         var rideOffer: RideOfferWithLocationRider? = null
         // Handle userState
         when (val state = userState) {
@@ -173,13 +192,20 @@ fun RideDetailsScreen(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // Map image (Use the uploaded map image here)
-                Image(
-                    painter = painterResource(id = mapImageId), // Thay thế bằng hình ảnh bản đồ thực tế
-                    contentDescription = "Map Image",
-                    modifier = Modifier.fillMaxWidth(), // Ảnh sẽ chiếm toàn bộ chiều rộng của container
-                    contentScale = ContentScale.Crop // Cắt bớt ảnh nếu cần thiết
-                )
+                rideOffer?.let {
+                    OsmMapView(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(400.dp)
+                            .clipToBounds(),
+                        fromLocation = rideOffer.startLocation.toString(),
+                        toLocation = rideOffer.endLocation.toString(),
+                        context = LocalContext.current,
+                        onDistanceCalculated = { distanceText ->
+                            distance = distanceText
+                        }
+                    )
+                }
 
                 Spacer(modifier = Modifier.height(24.dp))
 
@@ -193,7 +219,8 @@ fun RideDetailsScreen(
                     user?.fullName.toString(),
                     user?.userCode.toString(),
                     rideOffer?.rideOffer?.coinCost.toString(),
-                    rideOffer?.rideOffer?.status.toString()
+                    rideOffer?.rideOffer?.status.toString(),
+                    distance
                 )
                 val riderName = rideOffer?.rider?.fullName.toString()
                 Spacer(modifier = Modifier.height(16.dp))

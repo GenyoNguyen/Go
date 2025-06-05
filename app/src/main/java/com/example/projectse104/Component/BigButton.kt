@@ -45,7 +45,8 @@ fun BigButton(navController: NavController,
             onClick = { onClick()},
             modifier = Modifier
                 .fillMaxWidth()
-                .height(50.dp),
+                .height(50.dp)
+                .padding(horizontal = 24.dp),
             shape = RoundedCornerShape(25.dp),
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8FC79A))
         ) {
