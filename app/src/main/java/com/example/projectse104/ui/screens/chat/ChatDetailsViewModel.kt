@@ -43,7 +43,7 @@ class ChatDetailsViewModel @Inject constructor(
     private val _currentConversation = MutableStateFlow<Conversation?>(null)
     val currentConversation: StateFlow<Conversation?> = _currentConversation.asStateFlow()
 
-    private val _isLoading = MutableStateFlow(false)
+    private val _isLoading = MutableStateFlow(true)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
     init {
@@ -63,6 +63,7 @@ class ChatDetailsViewModel @Inject constructor(
                     is Response.Success -> {
                         _otherUser.value = result.data!!
                         _isLoading.value = false
+                        println("Turned off loading")
                     }
 
                     else -> {}
@@ -103,7 +104,6 @@ class ChatDetailsViewModel @Inject constructor(
 
     private fun loadMessages(conversationId: String) {
         viewModelScope.launch {
-            _isLoading.value = true
             when (val messageResponse = getMessageListUseCase(conversationId)) {
                 is Response.Success -> {
                     _messages.value = messageResponse.data ?: emptyList()
