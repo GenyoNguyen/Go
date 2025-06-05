@@ -81,7 +81,10 @@ fun AppNavigation(navController: NavHostController) {
 
     // Chỉ hiển thị NavHost khi đã kiểm tra phiên
     if (isSessionChecked) {
-        NavHost(navController, startDestination = if (userInfo.isLoggedIn && userInfo.userId != null) "home/${userInfo.userId}" else Screen.Welcome.route) {
+        NavHost(
+            navController,
+            startDestination = if (userInfo.isLoggedIn && userInfo.userId != null) "home/${userInfo.userId}" else Screen.Welcome.route
+        ) {
             composable(Screen.Welcome.route) { WelcomeScreen(navController) }
             composable(Screen.OnBoarding1.route) { OnBoardingScreen1(navController) }
             composable(Screen.OnBoarding2.route) { OnBoardingScreen2(navController) }
@@ -267,7 +270,8 @@ fun AppNavigation(navController: NavHostController) {
             ) { backStackEntry ->
                 val userId = backStackEntry.arguments?.getString("userId") ?: ""
                 val time = backStackEntry.arguments?.getString("time") ?: ""
-                val departureLocationId = backStackEntry.arguments?.getString("departureLocationId") ?: ""
+                val departureLocationId =
+                    backStackEntry.arguments?.getString("departureLocationId") ?: ""
                 AddNewOfferScreen3(navController, userId, time, departureLocationId)
             }
             composable(
@@ -281,7 +285,8 @@ fun AppNavigation(navController: NavHostController) {
             ) { backStackEntry ->
                 val userId = backStackEntry.arguments?.getString("userId") ?: ""
                 val time = backStackEntry.arguments?.getString("time") ?: ""
-                val departureLocationId = backStackEntry.arguments?.getString("departureLocationId") ?: ""
+                val departureLocationId =
+                    backStackEntry.arguments?.getString("departureLocationId") ?: ""
                 val toLocationId = backStackEntry.arguments?.getString("toLocationId") ?: ""
                 AddNewOfferScreen4(navController, userId, time, departureLocationId, toLocationId)
             }
@@ -296,12 +301,12 @@ fun AppNavigation(navController: NavHostController) {
                 Screen.ChatDetails.route,
                 arguments = listOf(
                     navArgument("userId") { type = NavType.StringType },
-                    navArgument("conversationId") { type = NavType.StringType }
+                    navArgument("otherId") { type = NavType.StringType }
                 )
             ) { backStackEntry ->
                 val userId = backStackEntry.arguments?.getString("userId") ?: ""
-                val conversationId = backStackEntry.arguments?.getString("conversationId") ?: ""
-                ChatDetailsScreen(navController, userId, conversationId)
+                val otherId = backStackEntry.arguments?.getString("otherId") ?: ""
+                ChatDetailsScreen(navController, userId, otherId)
             }
             composable(
                 Screen.RideDetailsRating.route,

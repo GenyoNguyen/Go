@@ -102,7 +102,8 @@ object AppModule {
     fun provideConversationRepository(
         db: SupabaseClient
     ): ConversationRepository = ConversationRepositoryImpl(
-        conversationsRef = db.from(CONVERSATION)
+        conversationsRef = db.from(CONVERSATION),
+        realtimeChannel = db.channel("schema-db-changes")
     )
 
     @Provides
