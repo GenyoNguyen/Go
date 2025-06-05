@@ -37,12 +37,14 @@ import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.postgrest.Postgrest
+import io.github.jan.supabase.storage.Storage
 import io.github.jan.supabase.postgrest.from
 import io.github.jan.supabase.realtime.Realtime
 import io.github.jan.supabase.realtime.channel
 import io.github.jan.supabase.realtime.realtime
 import io.github.jan.supabase.serializer.KotlinXSerializer
 import kotlinx.serialization.json.Json
+import kotlin.time.Duration.Companion.seconds
 
 const val USER = "User"
 const val RIDE = "Ride"
@@ -73,6 +75,9 @@ object AppModule {
             }
             install(Auth)
             install(Realtime)
+            install(Storage) {
+                transferTimeout = 90.seconds
+            }
         }
     }
 
@@ -81,6 +86,7 @@ object AppModule {
         db: SupabaseClient
     ): UserRepository = UserRepositoryImpl(
         usersRef = db.from(USER),
+        supabaseClient = db
     )
 
     @Provides
@@ -178,5 +184,4 @@ object AppModule {
     fun provideDataStoreSessionManager(@ApplicationContext context: Context): DataStoreSessionManager {
         return DataStoreSessionManager(context)
     }
-
 }

@@ -11,4 +11,7 @@ data class UserDataFormState(
     val phoneNumberError: ValidationError? = null,
     val location: String = "",
     val locationError: ValidationError? = null,
+    val profilePicUri: String? = null,
+    val profilePicError: ValidationError? = null,
+    val isUploadingProfilePic: Boolean = false // Thêm flag này
 )
