@@ -8,7 +8,7 @@ typealias UserListResponse = Response<List<User>>
 typealias AddUserResponse = Response<Unit>
 typealias UpdateUserResponse = Response<Unit>
 typealias DeleteUserResponse = Response<Unit>
-
+typealias UploadProfilePicResponse = Response<String> // Returns the public URL
 
 interface UserRepository {
 
@@ -19,4 +19,7 @@ interface UserRepository {
     suspend fun updateUser(userUpdate: Map<String, String>): UpdateUserResponse
 
     suspend fun deleteUser(userId: String): DeleteUserResponse
+
+    suspend fun uploadProfilePic(userId: String, imageUri: String): UploadProfilePicResponse
+
 }

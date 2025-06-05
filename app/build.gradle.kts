@@ -120,6 +120,7 @@ dependencies {
     implementation("io.github.jan-tennert.supabase:realtime-kt")
     implementation("io.github.jan-tennert.supabase:auth-kt")
     implementation("org.mindrot:jbcrypt:0.4")
+    implementation("io.github.jan-tennert.supabase:storage-kt")
 
     //Ktor
     implementation("io.ktor:ktor-client-cio:3.1.2")
@@ -133,7 +134,7 @@ dependencies {
     implementation("org.slf4j:slf4j-android:1.7.30")
     implementation("com.github.MKergall:osmbonuspack:6.9.0")
 
-    //store
+    //store session
     implementation("androidx.datastore:datastore-preferences:1.0.0")
     implementation("androidx.datastore:datastore-preferences-core:1.0.0")
 
@@ -141,6 +142,8 @@ dependencies {
     implementation("androidx.compose.runtime:runtime-livedata:1.5.4")
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
+
+    implementation("io.coil-kt:coil-compose:2.4.0")
 }
 
 // Allow references to generated code

@@ -3,16 +3,17 @@ package com.example.projectse104.data.repository
 import com.example.projectse104.core.ID_FIELD
 import com.example.projectse104.core.Response
 import com.example.projectse104.domain.model.User
-import com.example.projectse104.domain.repository.DeleteUserResponse
-import com.example.projectse104.domain.repository.UpdateUserResponse
-import com.example.projectse104.domain.repository.UserRepository
-import com.example.projectse104.domain.repository.UserResponse
+import com.example.projectse104.domain.repository.*
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.postgrest.query.PostgrestQueryBuilder
+import io.github.jan.supabase.storage.storage
+import java.io.File
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.minutes
 
 class UserRepositoryImpl @Inject constructor(
     private val usersRef: PostgrestQueryBuilder,
+    private val supabaseClient: SupabaseClient
 ) : UserRepository {
 
     override suspend fun insertUser(user: User): Response<Unit> = try {
@@ -60,5 +61,28 @@ class UserRepositoryImpl @Inject constructor(
         Response.Success(Unit)
     } catch (e: Exception) {
         Response.Failure(e)
+    }
+
+    override suspend fun uploadProfilePic(userId: String, imageUri: String): UploadProfilePicResponse = try {
+        val file = File(imageUri) // Assuming imageUri is a local file path
+        val fileName = "$userId${System.currentTimeMillis()}.jpg"
+        val bucket = supabaseClient.storage.from("profile-picture")
+
+        // Upload file to the bucket
+        bucket.update(fileName, file.readBytes()) {upsert = true}
+
+        // Get the public URL
+        val publicUrl = bucket.publicUrl(fileName)
+
+        // Update the user's profilePic field
+        usersRef.update({
+            set("profilePic", publicUrl)
+        }) {
+            filter { User::id eq userId }
+        }
+
+        Response.Success(publicUrl)
+    } catch (e: Exception) {
+        Response.Failure(Exception("Failed to upload profile picture: ${e.message}"))
     }
 }

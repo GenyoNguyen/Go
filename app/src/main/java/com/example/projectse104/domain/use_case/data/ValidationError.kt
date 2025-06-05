@@ -8,4 +8,5 @@ enum class ValidationError {
     MISSING,
     TOO_SHORT,
     NOT_MATCH,
+    CANT_GET_PIC,
 }

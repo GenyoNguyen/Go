@@ -113,6 +113,7 @@ fun CustomPasswordTextField(
                 ValidationError.TOO_SHORT -> "Password is too short"
                 ValidationError.NOT_MATCH -> "Passwords do not match"
                 ValidationError.INVALID_PASSWORD -> "Invalid password format"
+                ValidationError.CANT_GET_PIC -> ""
             }
             Text(
                 text = errorMessage,

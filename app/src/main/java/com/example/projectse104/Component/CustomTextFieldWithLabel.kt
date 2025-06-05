@@ -85,6 +85,7 @@ fun CustomTextFieldWithLabel(
                 ValidationError.TOO_SHORT -> "Input is too short"
                 ValidationError.NOT_MATCH -> "Input does not match"
                 ValidationError.INVALID_PASSWORD -> "Invalid password format"
+                ValidationError.CANT_GET_PIC -> ""
             }
             Text(
                 text = errorMessage,
