@@ -161,7 +161,7 @@ fun RideDetailsRatingScreen(
                         fontSize = 16.sp,
                         modifier = Modifier
                             .clickable {
-                                navController.navigate("chat_details/${rideWithPassengerAndRider?.conversationId}/${"Lmao"}")
+                                navController.navigate("chat_details/${userId}/${rideWithPassengerAndRider?.rider?.id}")
                             }
                     )
                 }

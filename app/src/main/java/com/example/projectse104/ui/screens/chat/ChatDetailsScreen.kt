@@ -33,8 +33,10 @@ fun ChatDetailsScreen(
     val otherUser by viewModel.otherUser.collectAsStateWithLifecycle()
 
     if (isLoading) {
+        println("Loading chat details screen...")
         ShimmerChatDetailsScreen(navController)
     } else {
+        println("Lmao")
         Scaffold(
             topBar = {
                 ChatHeader(
