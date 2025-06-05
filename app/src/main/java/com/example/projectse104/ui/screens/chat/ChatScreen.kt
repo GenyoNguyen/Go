@@ -9,9 +9,12 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.projectse104.Component.BottomNavigationBar
 import com.example.projectse104.Component.Header
@@ -19,52 +22,25 @@ import com.example.projectse104.Component.ShimmerScreen
 import com.example.projectse104.Component.ToastMessage
 import com.example.projectse104.R
 import com.example.projectse104.core.Response
-import com.example.projectse104.domain.model.User
+import com.example.projectse104.core.toCustomString
+import com.example.projectse104.domain.model.ConversationWithLastMessage
 import com.example.projectse104.ui.screens.chat.Component.ChatItem
 
 @Composable
-fun ChatScreen(navController: NavController, userId: String) {
-    val conversations: List<List<Any>> = listOf(
-        listOf(
-            "0001",
-            "Nguyễn Hữu Dũng",
-            "You: Cảm ơn bạn nhiều !",
-            "4 mins",
-            R.drawable.avatar_1,
-            "yes",
-            "yes"
-        ),
-        listOf("0002", "Nguyễn Minh Triết", "Thanks", "43 mins", R.drawable.avatar_2, "yes", "no"),
-        listOf(
-            "0003",
-            "Nguyễn Phong Huy",
-            "Lần sau đi nữa nhé!",
-            "4 hours",
-            R.drawable.avatar_1,
-            "no",
-            "yes"
-        ),
-        listOf("0004", "Xuân Phúc", "You: Oke bro", "4 days", R.drawable.avatar_2, "yes", "no"),
-        listOf("0005", "Trần Văn An", "Hẹn gặp lại!", "6 days", R.drawable.avatar_1, "no", "no"),
-        listOf("0006", "Lê Hoàng", "Đi vui vẻ nha!", "1 week", R.drawable.avatar_2, "yes", "yes"),
-    )
-    var isLoading: Boolean = true
-    var loadingFailed: Boolean = false
-    val state: Response<User> = Response.Success(
-        User(
-            id = "1111",
-            fullName = "Nguyễn Xuân Phúc",
-            email = "Pux@gmail.com",
-            overallRating = 5.0f,
-            coins = 100,
-            userCode = "kzdf2",
-            vehicleId = "Lmao"
-        )
-    )
-    when (state) {
-        is Response.Success<User> -> {
+fun ChatScreen(
+    navController: NavController,
+    userId: String,
+    viewModel: ChatViewModel = hiltViewModel()
+) {
+
+    val conversationListState by viewModel.conversationListState.collectAsStateWithLifecycle()
+
+    var isLoading = true
+    var conversationWithLastMessageList = listOf<ConversationWithLastMessage>()
+    when (val state = conversationListState) {
+        is Response.Success -> {
+            conversationWithLastMessageList = state.data.orEmpty()
             isLoading = false
-            loadingFailed = false
         }
 
         is Response.Loading -> {
@@ -72,13 +48,13 @@ fun ChatScreen(navController: NavController, userId: String) {
         }
 
         else -> {
-            loadingFailed = true
+            ToastMessage(
+                message = "Không thể tải dữ liệu. Vui lòng thử lại!",
+                show = true
+            )
         }
     }
-    ToastMessage(
-        message = "Không thể tải dữ liệu. Vui lòng thử lại!",
-        show = loadingFailed
-    )
+
     if (isLoading) {
         ShimmerScreen(navController, userId, 2)
     } else {
@@ -102,24 +78,21 @@ fun ChatScreen(navController: NavController, userId: String) {
                         .verticalScroll(rememberScrollState())
                         .padding(horizontal = 16.dp)
                 ) {
-                    for (conversation in conversations) {
-                        val conversationId = conversation[0].toString()
-                        val name = conversation[1].toString()
-                        val message = conversation[2].toString()
-                        val time = conversation[3].toString()
-                        val imageRes: Int = when (val value = conversation[4]) {
-                            is Int -> value
-                            is String -> value.toIntOrNull() ?: 0
-                            else -> 0
-                        }
-                        val haveSeen = conversation[5].toString()
-                        val isOnline = conversation[6].toString()
+                    for (conversation in conversationWithLastMessageList) {
+                        val otherId =
+                            if (conversation.conversation!!.firstUserId == userId) conversation.conversation.secondUserId else conversation.conversation.firstUserId
+                        val name = conversation.otherName
+                        val message = conversation.lastMessage?.content.toString()
+                        val time = conversation.lastMessage?.timeSent.toCustomString()
+                        val imageRes: Int = R.drawable.avatar_1
+                        val haveSeen = conversation.lastMessage?.isRead ?: false
+                        val isOnline = true /*TODO: Implement online function*/
 
                         ChatItem(
                             navController = navController,
                             userId = userId,
-                            conversationId = conversationId,
-                            friendName = name,
+                            otherId = otherId,
+                            otherName = name,
                             message = message,
                             time = time,
                             imageRes = imageRes,

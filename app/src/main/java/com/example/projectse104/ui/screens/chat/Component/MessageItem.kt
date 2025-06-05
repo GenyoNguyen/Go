@@ -2,45 +2,37 @@ package com.example.projectse104.ui.screens.chat.Component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.TextField
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Send
-import androidx.compose.runtime.*
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import com.example.projectse104.R
-import androidx.compose.material3.Text // For material3 Text
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
-import com.example.projectse104.*
-import com.example.projectse104.Component.*
-import com.valentinilk.shimmer.shimmer
-import com.valentinilk.shimmer.rememberShimmer
+
 @Composable
-fun MessageItem(message: String, time: String, type: String) {
+fun MessageItem(message: String, time: String, isSent: Boolean) {
     Row(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = if (type == "receive") Arrangement.Start else Arrangement.End,
+        horizontalArrangement = if (isSent) Arrangement.Start else Arrangement.End,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        if (type == "receive") {
+        if (isSent) {
             // Avatar của người gửi
             Image(
                 painter = painterResource(id = R.drawable.avatar),
@@ -59,7 +51,7 @@ fun MessageItem(message: String, time: String, type: String) {
                 modifier = Modifier
                     .padding(8.dp)
                     .background(
-                        if (type == "receive") Color(0xFFDCE8F8) else Color(0xFFDCF8EA),
+                        if (isSent) Color(0xFFDCE8F8) else Color(0xFFDCF8EA),
                         RoundedCornerShape(16.dp)
                     )
             ) {
@@ -78,11 +70,11 @@ fun MessageItem(message: String, time: String, type: String) {
                 color = Color.Gray,
                 modifier = Modifier
                     .padding(horizontal = 8.dp)
-                    .align(if (type == "send") Alignment.Start else Alignment.End)
+                    .align(if (isSent) Alignment.Start else Alignment.End)
             )
         }
 
-        if (type == "send") {
+        if (isSent) {
             Spacer(modifier = Modifier.width(10.dp))
             Image(
                 painter = painterResource(id = R.drawable.avatar),

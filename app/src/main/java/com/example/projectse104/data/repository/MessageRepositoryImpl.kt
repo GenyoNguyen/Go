@@ -1,11 +1,12 @@
 package com.example.projectse104.data.repository
 
+import com.example.projectse104.core.Response
 import com.example.projectse104.domain.model.Message
 import com.example.projectse104.domain.repository.MessageListResponse
 import com.example.projectse104.domain.repository.MessageRepository
 import com.example.projectse104.domain.repository.SendMessageResponse
+import io.github.jan.supabase.postgrest.query.Order
 import io.github.jan.supabase.postgrest.query.PostgrestQueryBuilder
-import kotlinx.coroutines.flow.Flow
 
 class MessageRepositoryImpl(
     private val messagesRef: PostgrestQueryBuilder
@@ -35,11 +36,48 @@ class MessageRepositoryImpl(
 //    } catch (e: Exception) {
 //        Response.Failure(e)
 //    }
-    override fun getMessageList(conversationId: String): Flow<MessageListResponse> {
-        TODO("Not yet implemented")
+
+    override suspend fun getLastMessage(conversationId: String): Response<Message> = try {
+        val messageResponse = messagesRef
+            .select {
+                filter {
+                    eq("conversationId", conversationId)
+                }
+                order(column = "timeSent", order = Order.DESCENDING)
+                limit(1)
+            }.decodeSingleOrNull<Message>()
+
+        Response.Success(messageResponse)
+    } catch (e: Exception) {
+        println("Error getting last message: ${e.message}")
+        Response.Failure(e)
     }
 
-    override suspend fun sendMessage(message: Message): SendMessageResponse {
-        TODO("Not yet implemented")
+    override suspend fun getMessageList(conversationId: String): MessageListResponse = try {
+        val messages = messagesRef.select {
+            filter {
+                eq("conversationId", conversationId)
+            }
+            order(column = "timeSent", order = Order.DESCENDING)
+        }.decodeList<Message>()
+        Response.Success(messages)
+    } catch (e: Exception) {
+        println("Error getting message list: ${e.message}")
+        Response.Failure(e)
+    }
+
+    override suspend fun sendMessage(message: Message): SendMessageResponse = try {
+        println("Sending message: $message")
+        messagesRef.insert(
+            mapOf(
+                "conversationId" to message.conversationId,
+                "senderId" to message.senderId,
+                "content" to message.content,
+            )
+        )
+        Response.Success(Unit)
+    } catch (e: Exception) {
+        println("Error sending message: ${e.message}")
+        Response.Failure(e)
     }
 }
