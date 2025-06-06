@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -28,65 +29,88 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import com.example.projectse104.R
 import com.example.projectse104.*
 import com.example.projectse104.Component.*
 import com.valentinilk.shimmer.shimmer
 import com.valentinilk.shimmer.rememberShimmer
 @Composable
-fun ViewUserDetails(avatarID:Int,
-                    userFullName:String,
-                    rating:String,
-                    position:String){
+fun ViewUserDetails(
+    profilePicUrl: String?,
+    userFullName: String,
+    rating: String,
+    position: String
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp), // Thêm padding để căn chỉnh
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically// Căn trái để mũi tên ở góc trái
+            .padding(horizontal = 16.dp, vertical = 12.dp), // Thêm padding dọc để thoáng hơn
+        horizontalArrangement = Arrangement.Start, // Đặt căn trái để các phần tử gọn gàng
+        verticalAlignment = Alignment.CenterVertically // Căn giữa theo chiều dọc
     ) {
-        Image(
-            painter = painterResource(id = avatarID), // Ensure this is a valid drawable resource
-            contentDescription = "Profile Avatar",
+        // Hình ảnh avatar
+        AsyncImage(
+            model = profilePicUrl,
+            contentDescription = "Avatar",
             modifier = Modifier
-                .size(150.dp)
+                .size(100.dp)
+                .clip(CircleShape)
+                .border(2.dp, Color(0xFFE0E0E0), CircleShape) // Thêm viền nhẹ cho avatar
+                .clickable { /* Có thể thêm logic để mở image picker nếu cần */ },
+            contentScale = ContentScale.Crop
         )
-        Column {
+
+        // Khoảng cách giữa avatar và thông tin
+        Spacer(modifier = Modifier.width(40.dp))
+
+        // Cột chứa thông tin người dùng
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 4.dp), // Thêm padding dọc cho cột
+            verticalArrangement = Arrangement.spacedBy(8.dp) // Khoảng cách đều giữa các Text
+        ) {
+            // Tên người dùng
             Text(
                 text = userFullName,
                 fontSize = 22.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.Black
+                color = Color.Black,
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Start
             )
-            Spacer(modifier = Modifier.height(10.dp))
 
+            // Trạng thái thành viên
             Text(
                 text = "Active member",
-                fontSize = 18.sp,
-                color = Color(0xFF7CCFA7)
+                fontSize = 16.sp, // Giảm nhẹ font để cân đối
+                color = Color(0xFF7CCFA7),
+                fontWeight = FontWeight.Medium
             )
-            Spacer(modifier = Modifier.height(10.dp))
 
+            // Điểm đánh giá
             Text(
                 text = "Rating: $rating/5",
-                fontSize = 18.sp,
+                fontSize = 16.sp,
                 color = Color(0xFFBEB204),
                 fontWeight = FontWeight.SemiBold
             )
-            Spacer(modifier = Modifier.height(10.dp))
 
-            Row(){
+            // Vị trí
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.profile_view_location), // Icon for navigation
-                    contentDescription = "Arrow Icon",
-                    modifier = Modifier.size(20.dp),
-                    tint=Color(0xFF544C44)
+                    painter = painterResource(id = R.drawable.profile_view_location),
+                    contentDescription = "Location Icon",
+                    modifier = Modifier.size(18.dp), // Giảm kích thước icon cho cân đối
+                    tint = Color(0xFF544C44)
                 )
-                Spacer(modifier = Modifier.width(5.dp))
-
+                Spacer(modifier = Modifier.width(6.dp))
                 Text(
                     text = position,
-                    fontSize = 18.sp,
+                    fontSize = 16.sp,
                     color = Color(0xFF544C44)
                 )
             }

@@ -13,6 +13,7 @@ import com.example.projectse104.domain.use_case.conversation.SendMessageUseCase
 import com.example.projectse104.domain.use_case.conversation.StartConversationUseCase
 import com.example.projectse104.domain.use_case.conversation.SubscribeToMessagesUseCase
 import com.example.projectse104.domain.use_case.user.GetUserUseCase
+import com.example.projectse104.domain.use_case.user.LoadUserAva
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -29,6 +30,7 @@ class ChatDetailsViewModel @Inject constructor(
     private val sendMessageUseCase: SendMessageUseCase,
     private val getMessageListUseCase: GetMessageListUseCase,
     private val getUserUseCase: GetUserUseCase,
+    private val loadUserAva: LoadUserAva,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     private val _currentUserId = MutableStateFlow("")
@@ -46,6 +48,9 @@ class ChatDetailsViewModel @Inject constructor(
     private val _isLoading = MutableStateFlow(true)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
+    private val _avatarUrl = MutableStateFlow<Response<String>?>(null)
+    val avatarUrl = _avatarUrl.asStateFlow()
+
     init {
         savedStateHandle.get<String>(USER_ID_FIELD)?.let { userId ->
             _currentUserId.value = userId
@@ -53,6 +58,7 @@ class ChatDetailsViewModel @Inject constructor(
         savedStateHandle.get<String>("otherId")?.let { otherId ->
             startConversation(otherId)
             getOtherUser(otherId)
+            loadAvatar(otherId)
         }
     }
 
@@ -122,6 +128,15 @@ class ChatDetailsViewModel @Inject constructor(
 
         viewModelScope.launch {
             sendMessageUseCase(conversation.id, senderId, message)
+        }
+    }
+
+    private fun loadAvatar(userId: String) {
+        println("Loading avatar...")
+        viewModelScope.launch {
+            val result = loadUserAva(userId)
+            println("Avatar result: $result")
+            _avatarUrl.value = result
         }
     }
 }

@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -14,6 +15,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.projectse104.R
+import com.example.projectse104.core.Response
 import com.example.projectse104.core.toCustomString
 import com.example.projectse104.ui.screens.chat.Component.ChatHeader
 import com.example.projectse104.ui.screens.chat.Component.ChatInputField
@@ -31,7 +33,19 @@ fun ChatDetailsScreen(
     val messages by viewModel.messages.collectAsStateWithLifecycle()
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
     val otherUser by viewModel.otherUser.collectAsStateWithLifecycle()
-
+    val avatarUrl = viewModel.avatarUrl.collectAsState().value
+    val profilePicUrl: String?
+    when (avatarUrl) {
+        is Response.Success<String> -> {
+            profilePicUrl = avatarUrl.data
+        }
+        is Response.Failure -> {
+            profilePicUrl = null
+        }
+        else -> {
+            profilePicUrl = null
+        }
+    }
     if (isLoading) {
         println("Loading chat details screen...")
         ShimmerChatDetailsScreen(navController)
@@ -44,7 +58,9 @@ fun ChatDetailsScreen(
                     friendId = otherUser?.id.toString(),
                     name = otherUser?.fullName.toString(),
                     avatarID = R.drawable.avatar_1,
-                    isActive = "yes"
+                    isActive = "yes",
+                    profilePicUrl = profilePicUrl
+
                 )
             },
             bottomBar = {
@@ -73,7 +89,8 @@ fun ChatDetailsScreen(
                         MessageItem(
                             message = content,
                             time = time,
-                            isSent = isSent
+                            isSent = isSent,
+                            profilePicUrl = profilePicUrl
                         )
                     }
                 }

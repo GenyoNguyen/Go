@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -29,6 +30,7 @@ import com.example.projectse104.ui.screens.profile.Component.ProfileOption
 import com.example.projectse104.ui.screens.profile.Component.ShimmerProfileScreen
 import com.example.projectse104.utils.DataStoreSessionManager
 import kotlinx.coroutines.launch
+import androidx.compose.runtime.LaunchedEffect
 
 @Composable
 fun ProfileScreen(
@@ -41,11 +43,16 @@ fun ProfileScreen(
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
+    LaunchedEffect(Unit) {
+        viewModel.fetchUserData(userId)
+    }
 
     var userFullName = "Unknown"
     var userGmail = "Unknown"
     var userCode = "Unknown"
     val userAvatarId: Int = R.drawable.avatar
+    val avatarUrl = viewModel.avatarUrl.collectAsState().value
+    var profilePicUrl: String? = null
 
     when (val state = userState) {
         is Response.Success<User> -> {
@@ -63,6 +70,17 @@ fun ProfileScreen(
             )
         }
         else -> {}
+    }
+    when (avatarUrl) {
+        is Response.Success<String> -> {
+            profilePicUrl = avatarUrl.data
+        }
+        is Response.Failure -> {
+            profilePicUrl = null
+        }
+        else -> {
+            profilePicUrl = null
+        }
     }
 
     if (isLoading) {
@@ -96,7 +114,8 @@ fun ProfileScreen(
                             userFullName,
                             userGmail,
                             userCode,
-                            userId
+                            userId,
+                            profilePicUrl
                         )
                     }
                     Spacer(modifier = Modifier.height(10.dp))

@@ -2,6 +2,8 @@ package com.example.projectse104.ui.screens.chat.Component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,13 +22,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.example.projectse104.R
 
 @Composable
-fun MessageItem(message: String, time: String, isSent: Boolean) {
+fun MessageItem(message: String, time: String, isSent: Boolean, profilePicUrl: String?) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = if (isSent) Arrangement.Start else Arrangement.End,
@@ -34,12 +38,15 @@ fun MessageItem(message: String, time: String, isSent: Boolean) {
     ) {
         if (isSent) {
             // Avatar của người gửi
-            Image(
-                painter = painterResource(id = R.drawable.avatar),
-                contentDescription = "Profile",
+            AsyncImage(
+                model = profilePicUrl,
+                contentDescription = "Avatar",
                 modifier = Modifier
                     .size(30.dp)
                     .clip(CircleShape)
+                    .border(2.dp, Color(0xFFE0E0E0), CircleShape) // Thêm viền nhẹ cho avatar
+                    .clickable { /* Có thể thêm logic để mở image picker nếu cần */ },
+                contentScale = ContentScale.Crop
             )
             Spacer(modifier = Modifier.width(10.dp))
         }

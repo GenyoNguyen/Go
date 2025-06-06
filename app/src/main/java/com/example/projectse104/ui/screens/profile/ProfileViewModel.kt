@@ -34,9 +34,15 @@ class ProfileViewModel @Inject constructor(
 
     init {
         savedStateHandle.get<String>(USER_ID_FIELD)?.let { userId ->
+            fetchUserData(userId)
+        }
+    }
+
+    fun fetchUserData(userId: String) {
+
             getUser(userId)
             loadAvatar(userId)
-        }
+
     }
 
     private fun getUser(userId: String) {
@@ -44,9 +50,8 @@ class ProfileViewModel @Inject constructor(
         getUserUseCase(userId)
             .onEach { result ->
                 _userState.value = result
-                if (result !is Response.Loading) {
-                    _isLoading.value = false
-                }
+                // Update isLoading based on both user and avatar states
+                updateLoadingState()
             }
             .launchIn(viewModelScope)
     }
@@ -54,10 +59,17 @@ class ProfileViewModel @Inject constructor(
     private fun loadAvatar(userId: String) {
         println("Loading avatar...")
         viewModelScope.launch {
-            val result = loadUserAvatar(userId) // Call suspend function in coroutine
+            val result = loadUserAvatar(userId)
             println("Avatar result: $result")
             _avatarUrl.value = result
+            // Update isLoading based on both user and avatar states
+            updateLoadingState()
         }
+    }
+
+    private fun updateLoadingState() {
+        // Loading is false only when both user and avatar are not loading
+        _isLoading.value = _userState.value is Response.Loading || _avatarUrl.value is Response.Loading
     }
 
     fun disableLoading() {
