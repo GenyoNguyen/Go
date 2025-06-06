@@ -3,7 +3,6 @@ package com.example.projectse104.ui.screens.auth
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -16,7 +15,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.projectse104.R
-import com.example.projectse104.ui.navigation.Screen
 import com.example.projectse104.*
 import com.example.projectse104.Component.*
 import com.example.projectse104.ui.screens.auth.Component.*

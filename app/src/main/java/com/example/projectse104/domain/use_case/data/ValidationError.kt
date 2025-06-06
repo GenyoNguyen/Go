@@ -9,4 +9,5 @@ enum class ValidationError {
     TOO_SHORT,
     NOT_MATCH,
     CANT_GET_PIC,
+    PASSWORD_MISMATCH
 }

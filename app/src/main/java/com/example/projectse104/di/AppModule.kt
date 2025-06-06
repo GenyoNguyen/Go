@@ -19,6 +19,8 @@ import com.example.projectse104.domain.repository.UserFavouriteRiderRepository
 import com.example.projectse104.domain.repository.UserLocationRepository
 import com.example.projectse104.domain.repository.UserLogin
 import com.example.projectse104.domain.repository.UserRepository
+import com.example.projectse104.domain.use_case.user.ChangePasswordUseCase
+import com.example.projectse104.domain.use_case.user.VerifyCurrentPasswordUseCase
 import com.example.projectse104.domain.use_case.validation.ValidateEmail
 import com.example.projectse104.domain.use_case.validation.ValidateFullName
 import com.example.projectse104.domain.use_case.validation.ValidateLocation
@@ -184,4 +186,16 @@ object AppModule {
     fun provideDataStoreSessionManager(@ApplicationContext context: Context): DataStoreSessionManager {
         return DataStoreSessionManager(context)
     }
+
+    @Provides
+    fun provideChangePasswordUseCase(userLogin: UserLogin): ChangePasswordUseCase {
+        return ChangePasswordUseCase(userLogin)
+    }
+
+    @Provides
+    fun provideVerifyCurrentPasswordUseCase(userLogin: UserLogin): VerifyCurrentPasswordUseCase {
+        return VerifyCurrentPasswordUseCase(userLogin)
+    }
+
+
 }

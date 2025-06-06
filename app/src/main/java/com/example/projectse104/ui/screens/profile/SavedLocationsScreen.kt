@@ -90,7 +90,8 @@ fun SavedLocationScreen(
                 BigButton(
                     navController = navController,
                     text = "ADD NEW ADDRESS",
-                    onClick = {navController.navigate("add_new_address/{userId}")})
+                    onClick = {navController.navigate("add_new_address/{userId}")}
+                )
             }
 
             Spacer(modifier = Modifier.weight(1f)) // Ensuring the content is aligned above the navbar

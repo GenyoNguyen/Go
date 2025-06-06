@@ -103,7 +103,7 @@ fun LoginScreen(
         BigButton(
             navController = navController,
             text = "SIGN IN",
-            onClick = { viewModel.onEvent(LoginFormEvent.Submit) }
+            onClick = { viewModel.onEvent(LoginFormEvent.Submit) },
         )
 
         Spacer(modifier = Modifier.height(16.dp))

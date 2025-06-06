@@ -7,4 +7,6 @@ typealias LoginResponse = Response<User>
 
 interface UserLogin {
     suspend fun login(email: String, password: String): LoginResponse
+    suspend fun updatePassword(userId: String, newPassword: String): Response<Unit>
+    suspend fun verifyPassword(userId: String, currentPassword: String): Response<Unit>
 }

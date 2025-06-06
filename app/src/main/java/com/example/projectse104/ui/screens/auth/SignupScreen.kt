@@ -101,10 +101,11 @@ fun SignupScreen(
 
         Spacer(modifier = Modifier.height(36.dp))
 
+
         BigButton(
             navController = navController,
             text = "SIGN UP",
-            onClick = { viewModel.onEvent(SignupFormEvent.Submit) }
+            onClick = { viewModel.onEvent(SignupFormEvent.Submit) },
         )
 
         Spacer(modifier = Modifier.height(16.dp))

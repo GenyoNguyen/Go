@@ -154,7 +154,7 @@ fun ProfileScreen(
                         navController = navController,
                         title = "Change Password",
                         avatarID = R.drawable.icon9,
-                        route = "help_support/$userId"
+                        route = "change_password/$userId"
                     )
                     ProfileOption(
                         navController = navController,
