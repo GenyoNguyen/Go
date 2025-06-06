@@ -1,7 +1,5 @@
 package com.example.projectse104.ui.screens.history
 
-
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,9 +7,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -19,12 +21,12 @@ import androidx.navigation.NavController
 import com.example.projectse104.Component.BackArrowWithText
 import com.example.projectse104.Component.ShimmerRideDetailsScreen
 import com.example.projectse104.Component.ToastMessage
-import com.example.projectse104.R
 import com.example.projectse104.core.Response
 import com.example.projectse104.core.toCustomString
 import com.example.projectse104.domain.model.RideWithUserWithLocation
 import com.example.projectse104.ui.screens.history.Component.OverviewRating
 import com.example.projectse104.ui.screens.history.Component.RideContent
+import com.example.projectse104.ui.screens.home.Component.OsmMapView
 
 @Composable
 fun RideDetailsHistoryScreen(
@@ -34,10 +36,10 @@ fun RideDetailsHistoryScreen(
     viewModel: RideDetailsHistoryViewModel = hiltViewModel()
 ) {
     val rideState = viewModel.rideState.collectAsStateWithLifecycle()
-
-    val mapImageId: Int = R.drawable.map_image
     var isLoading = true
     var ride: RideWithUserWithLocation? = null
+    var distance by remember { mutableStateOf("Đang tính khoảng cách...") }
+
     when (val state = rideState.value) {
         is Response.Success -> {
             state.data?.let {
@@ -45,11 +47,9 @@ fun RideDetailsHistoryScreen(
                 ride = it
             }
         }
-
         is Response.Loading -> {
             isLoading = true
         }
-
         else -> {
             ToastMessage(
                 message = "Không thể tải dữ liệu. Vui lòng thử lại!",
@@ -68,7 +68,6 @@ fun RideDetailsHistoryScreen(
         ) {
             BackArrowWithText(navController, "Details of Ride No. ${ride?.rideOffer?.rideCode}")
 
-
             Spacer(modifier = Modifier.height(20.dp))
 
             // Header with tabs (Overview, Rating)
@@ -80,13 +79,21 @@ fun RideDetailsHistoryScreen(
             )
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Map image (Use the uploaded map image here)
-            Image(
-                painter = painterResource(id = mapImageId), // Thay thế bằng hình ảnh bản đồ thực tế
-                contentDescription = "Map Image",
-                modifier = Modifier.fillMaxWidth(), // Ảnh sẽ chiếm toàn bộ chiều rộng của container
-                contentScale = ContentScale.Crop // Cắt bớt ảnh nếu cần thiết
-            )
+            // Map view
+            ride?.let {
+                OsmMapView(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(400.dp)
+                        .clipToBounds(),
+                    fromLocation = ride.startLocation.toString(),
+                    toLocation = ride.endLocation.toString(),
+                    context = LocalContext.current,
+                    onDistanceCalculated = { distanceText ->
+                        distance = distanceText // Cập nhật khoảng cách
+                    }
+                )
+            }
 
             Spacer(modifier = Modifier.height(24.dp))
 
@@ -100,9 +107,9 @@ fun RideDetailsHistoryScreen(
                 ride?.passenger?.fullName.toString(),
                 ride?.passenger?.userCode.toString(),
                 ride?.rideOffer?.coinCost.toString(),
-                ride?.ride?.status.toString()
+                status = ride?.ride?.status.toString(),
+                distance = distance
             )
         }
     }
 }
-
