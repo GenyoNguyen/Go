@@ -2,6 +2,7 @@ package com.example.projectse104.ui.screens.chat.Component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -26,15 +27,17 @@ import androidx.navigation.NavController
 import com.example.projectse104.R
 import androidx.compose.material3.Text // For material3 Text
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import coil.compose.AsyncImage
 import com.example.projectse104.*
 import com.example.projectse104.Component.*
 import com.valentinilk.shimmer.shimmer
 import com.valentinilk.shimmer.rememberShimmer
 @Composable
-fun ChatHeader(navController: NavController,friendId:String,name:String,avatarID:Int,isActive:String){
+fun ChatHeader(navController: NavController,friendId:String,name:String,avatarID:Int,isActive:String, profilePicUrl: String?){
     Column {
         Row(
             modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
@@ -53,12 +56,15 @@ fun ChatHeader(navController: NavController,friendId:String,name:String,avatarID
             Spacer(modifier = Modifier.width(8.dp))
 
             // Avatar
-            Image(
-                painter = painterResource(id = avatarID), // Replace with actual avatar image resource
-                contentDescription = "User Avatar",
+            AsyncImage(
+                model = profilePicUrl,
+                contentDescription = "Avatar",
                 modifier = Modifier
                     .size(50.dp)
                     .clip(CircleShape)
+                    .border(2.dp, Color(0xFFE0E0E0), CircleShape) // Thêm viền nhẹ cho avatar
+                    .clickable { /* Có thể thêm logic để mở image picker nếu cần */ },
+                contentScale = ContentScale.Crop
             )
             Spacer(modifier = Modifier.width(8.dp))
 

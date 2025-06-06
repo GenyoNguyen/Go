@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import com.example.projectse104.R
 import com.example.projectse104.Component.*
@@ -36,6 +37,7 @@ import com.example.projectse104.core.showToastMessage
 import com.example.projectse104.domain.model.User
 import com.example.projectse104.ui.screens.profile.Component.*
 import com.example.projectse104.utils.UriUtils
+import java.util.UUID
 
 @Composable
 fun EditProfileScreen(
@@ -50,6 +52,7 @@ fun EditProfileScreen(
     val isLoading by profileViewModel.isLoading.collectAsState()
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
+    val id = UUID.randomUUID()
 
     // Image picker launcher
     val imagePickerLauncher = rememberLauncherForActivityResult(
@@ -80,6 +83,7 @@ fun EditProfileScreen(
         when (avatarUrl) {
             is Response.Success -> {
                 val url = (avatarUrl as Response.Success<String>).data
+                profileViewModel.fetchUserData(userId)
                 Log.d("EditProfileScreen", "Avatar URL loaded: $url")
                 // Chỉ set nếu chưa có ảnh được chọn
                 if (formState.profilePicUri.isNullOrBlank()) {
@@ -90,6 +94,7 @@ fun EditProfileScreen(
                 Log.e("EditProfileScreen", "Failed to load avatar: ${(avatarUrl as Response.Failure).e?.message}")
                 if (formState.profilePicUri.isNullOrBlank()) {
                     formViewModel.setProfilePicUri(null)
+
                 }
                 showToastMessage(context, "Không thể tải ảnh đại diện")
             }
@@ -103,6 +108,10 @@ fun EditProfileScreen(
     LaunchedEffect(profileState) {
         when (val state = profileState) {
             is Response.Success -> {
+                state.data?.profilePic?.let {
+                    formViewModel.setProfilePicUri(it)
+                    Log.d("EditProfileScreen", "ProfilePic set: $it")
+                }
                 state.data?.fullName?.let {
                     formViewModel.onEvent(UserDataFormEvent.FullNameChanged(it))
                     Log.d("EditProfileScreen", "FullName set: $it")
@@ -140,6 +149,7 @@ fun EditProfileScreen(
             when (event) {
                 is UserDataViewModel.ValidationEvent.Success -> {
                     showToastMessage(context, "Cập nhật hồ sơ thành công")
+                    profileViewModel.fetchUserData(userId)
                 }
                 is UserDataViewModel.ValidationEvent.Error -> {
                     showToastMessage(context, "Lỗi: ${event.e?.message ?: "Không xác định"}")
@@ -175,25 +185,15 @@ fun EditProfileScreen(
                 if (avatarUrl is Response.Loading && formState.profilePicUri.isNullOrBlank()) {
                     CircularProgressIndicator(modifier = Modifier.size(150.dp))
                 } else {
-                    Image(
-                        painter = if (formState.profilePicUri != null && formState.profilePicUri.isNotBlank()) {
-                            rememberAsyncImagePainter(
-                                model = formState.profilePicUri,
-                                placeholder = painterResource(R.drawable.avatar_1),
-                                error = painterResource(R.drawable.avatar_1),
-
-                            )
-                        } else {
-                            painterResource(id = defaultAvatarID)
-                        },
-                        contentDescription = "Ảnh đại diện",
+                    AsyncImage(
+                        model = formState.profilePicUri,
+                        contentDescription = "Avatar",
                         modifier = Modifier
                             .size(150.dp)
                             .clip(CircleShape)
                             .clickable { imagePickerLauncher.launch("image/*") },
-                        contentScale = ContentScale.Crop
+                        contentScale = ContentScale.Crop,
                     )
-
                     // Hiển thị loading indicator khi đang upload
                     if (formState.isUploadingProfilePic) {
                         CircularProgressIndicator(
@@ -246,7 +246,4 @@ fun EditProfileScreen(
         }
     }
 
-    if (isLoading) {
-        ShimmerEditProfileScreen(navController)
-    }
 }
