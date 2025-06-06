@@ -15,7 +15,7 @@ interface RideRepository {
     fun getRideListFlowGivenPassenger(passengerId: String): Flow<RideListResponse>
 
     suspend fun getRideListGivenPassenger(passengerId: String): RideListResponse
-
+    suspend fun getRideListGivenPassengerPaginated(userId: String, from: Long, to: Long): RideListResponse
     suspend fun getRideListGivenDriver(driverId: String): RideListResponse
 
     suspend fun getRide(rideId: String): RideResponse
@@ -24,6 +24,6 @@ interface RideRepository {
 
     suspend fun updateRide(rideId: String, rideUpdate: Map<String, String>): UpdateRideResponse
 
-    suspend fun getRideListByRideOfferIds(rideOfferIds: List<String>): RideListResponse
+    suspend fun getRideListByRideOfferIds(rideOfferIds: List<String>,from: Long, to: Long): RideListResponse
 
 }

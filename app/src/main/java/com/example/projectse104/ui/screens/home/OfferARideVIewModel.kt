@@ -5,17 +5,16 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.projectse104.core.Response
 import com.example.projectse104.core.USER_ID_FIELD
-import com.example.projectse104.domain.model.*
+import com.example.projectse104.domain.model.RideOfferWithLocation
 import com.example.projectse104.domain.repository.UserResponse
-import com.example.projectse104.domain.use_case.ride.GetRidesHomeUseCase
+import com.example.projectse104.domain.use_case.ride_offer.GetUserPendingOfferUseCase
+import com.example.projectse104.domain.use_case.user.GetUserUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
-import com.example.projectse104.domain.use_case.user.*
-import com.example.projectse104.domain.use_case.ride_offer.*
 
 @HiltViewModel
 class OfferARideVIewModel @Inject constructor(
@@ -23,35 +22,81 @@ class OfferARideVIewModel @Inject constructor(
     private val getUserUseCase: GetUserUseCase,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
-    private val _rideOfferListState =
-        MutableStateFlow<Response<List<RideOfferWithLocation>>>(Response.Loading)
-    private val _user =
-        MutableStateFlow<UserResponse>(Response.Loading)
+    private val _rideOfferListState = MutableStateFlow<Response<List<RideOfferWithLocation>>>(Response.Idle)
+    private val _isLoadingMore = MutableStateFlow(false)
+    private val _user = MutableStateFlow<UserResponse>(Response.Loading)
     val rideOfferListState = _rideOfferListState.asStateFlow()
-    val user=_user.asStateFlow()
+    val isLoadingMore = _isLoadingMore.asStateFlow()
+    val user = _user.asStateFlow()
+
+    private var currentPage = 0
+    private val pageSize = 4
+    private var hasMoreData = true
+    private val allRideOffers = mutableListOf<RideOfferWithLocation>()
+
     init {
-        if (_rideOfferListState.value !is Response.Success) {
-            savedStateHandle.get<String>(USER_ID_FIELD)?.let { userId ->
-                getRideOfferList(userId)
+        savedStateHandle.get<String>(USER_ID_FIELD)?.let { userId ->
+            if (_rideOfferListState.value !is Response.Success) {
+                getRideOfferList(userId, currentPage)
             }
-        }
-        if (_user.value !is Response.Success) {
-            savedStateHandle.get<String>(USER_ID_FIELD)?.let { userId ->
+            if (_user.value !is Response.Success) {
                 getUser(userId)
             }
         }
     }
 
-    fun getRideOfferList(userId: String) {
-        println("Loading view model...")
-        getUserPendingOfferUseCase(userId)
+    fun getRideOfferList(userId: String, page: Int) {
+        println("Loading view model... Page: $page")
+        _isLoadingMore.value = true
+        getUserPendingOfferUseCase(userId, page, pageSize)
             .onEach { result ->
-                _rideOfferListState.value = result
+                when (result) {
+                    is Response.Success -> {
+                        val newRideOffers = result.data ?: emptyList()
+                        println("New ride offers: ${newRideOffers.size}, Total allRideOffers before: ${allRideOffers.size}")
+                        if (newRideOffers.size < pageSize) {
+                            hasMoreData = false
+                        }
+                        allRideOffers.addAll(newRideOffers.filter { newOffer ->
+                            !allRideOffers.any { it.rideOffer.id == newOffer.rideOffer.id }
+                        })
+                        println("Total allRideOffers after: ${allRideOffers.size}")
+                        _rideOfferListState.value = Response.Success(allRideOffers.toList())
+                        _isLoadingMore.value = false
+                    }
+                    is Response.Failure -> {
+                        println("Error: ${result.e?.message}")
+                        _rideOfferListState.value = result
+                        _isLoadingMore.value = false
+                    }
+                    is Response.Loading -> {
+                        println("State: Loading")
+                        // Không cập nhật _rideOfferListState thành Loading
+                    }
+                    is Response.Idle -> {
+                        println("State: Idle")
+                        _rideOfferListState.value = Response.Idle
+                        _isLoadingMore.value = false
+                    }
+                }
+                println("State changed to: ${_rideOfferListState.value}")
             }
             .launchIn(viewModelScope)
     }
+
+    fun loadMoreRideOffers(userId: String) {
+        if (hasMoreData && !_isLoadingMore.value) {
+            currentPage++
+            getRideOfferList(userId, currentPage)
+        }
+    }
+
+    fun hasMoreData(): Boolean {
+        return hasMoreData
+    }
+
     fun getUser(userId: String) {
-        println("Loading view model...")
+        println("Loading user...")
         getUserUseCase(userId)
             .onEach { result ->
                 _user.value = result

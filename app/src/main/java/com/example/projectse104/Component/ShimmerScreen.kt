@@ -34,38 +34,61 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import com.example.projectse104.core.Response
 import com.example.projectse104.Component.*
+import com.example.projectse104.ui.screens.home.Component.HomeHeader
+import com.example.projectse104.ui.screens.home.Component.TopNavBar
 
 @Composable
-fun ShimmerScreen(navController: NavController, userId: String, active:Int) {
-    Scaffold(
-        bottomBar = {
-            BottomNavigationBar(navController, userId, active)
-        }
-    ) { innerPadding ->
-        Column(
+fun ShimmerScreen(navController: NavController, userId: String, active:Int,content:String, iconId:Int) {
+    Box(
+        modifier = Modifier.fillMaxSize()
+
+    ) {
+        // Background Image
+        Image(
+            painter = painterResource(id = R.drawable.background), // Thay bằng ID của hình nền trong res/drawable
+            contentDescription = "Background Image",
             modifier = Modifier
-                .fillMaxSize()
-                .background(Color.White)
-                .padding(innerPadding)
-        ) {
-            ShimmerHeader()
+                .fillMaxSize(),
+            contentScale = ContentScale.FillWidth,
+            alpha = 0.2f
 
-            Spacer(modifier = Modifier.height(16.dp))
 
+            // Hình nền sẽ được scale để phủ toàn màn hình
+        )
+        Scaffold(
+            bottomBar = {
+                BottomNavigationBar(navController, userId, active)
+            }
+            ,
+            contentColor = Color.Red,
+            containerColor = Color.Transparent, // Đặt containerColor trong suốt để thấy hình nền
+            modifier = Modifier.fillMaxSize()
+        ) { innerPadding ->
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-                    .verticalScroll(rememberScrollState())
-                    .padding(horizontal = 16.dp)
-                    .shimmer(), // 💫 shimmer ở đây
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .fillMaxSize()
+                    .padding(innerPadding)
             ) {
-                repeat(6) { // giả lập 6 dòng shimmer
-                    ShimmerRideItem()
+                Header(content,iconId)
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                        .verticalScroll(rememberScrollState())
+                        .padding(horizontal = 16.dp)
+                        .shimmer(), // 💫 shimmer ở đây
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    repeat(6) { // giả lập 6 dòng shimmer
+                        ShimmerRideItem()
+                    }
                 }
             }
         }

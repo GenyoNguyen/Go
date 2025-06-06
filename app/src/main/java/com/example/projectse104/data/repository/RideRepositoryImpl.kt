@@ -55,8 +55,24 @@ class RideRepositoryImpl(
             print("Exception: $e")
             Response.Failure(e)
         }
-//
-override suspend fun getRideListByRideOfferIds(rideOfferIds: List<String>): RideListResponse =
+    override suspend fun getRideListGivenPassengerPaginated(userId: String, from: Long, to: Long): Response<List<Ride>> =
+        try {
+            println("Fetching rides for passengerId: $userId, from: $from, to: $to")
+            val rideList = ridesRef.select {
+                filter {
+                    eq("passengerId", userId)
+                }
+                order(column = "departTime", order = Order.DESCENDING)
+                range(from, to)
+            }.decodeList<Ride>()
+            println("Fetched ${rideList.size} rides")
+            Response.Success(rideList)
+        } catch (e: Exception) {
+            println("Exception: $e")
+            Response.Failure(e)
+        }
+
+override suspend fun getRideListByRideOfferIds(rideOfferIds: List<String>,from: Long, to: Long): RideListResponse =
     try {
         val ridelist = ridesRef.select {
             filter {
@@ -72,6 +88,7 @@ override suspend fun getRideListByRideOfferIds(rideOfferIds: List<String>): Ride
                     isIn("id",rideIds)
                 }
                 order(column = "departTime", order = Order.DESCENDING)
+                range(from, to)
             }.decodeList<Ride>()
         } else {
             emptyList()

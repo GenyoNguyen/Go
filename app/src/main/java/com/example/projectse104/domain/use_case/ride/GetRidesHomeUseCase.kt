@@ -16,38 +16,39 @@ class GetRidesHomeUseCase @Inject constructor(
     private val rideOfferRepository: RideOfferRepository,
     private val locationRepository: LocationRepository
 ) {
-    operator fun invoke(userId: String): Flow<Response<List<RideWithRideOfferWithLocation>>> =
+    operator fun invoke(userId: String, page: Int, limit: Int): Flow<Response<List<RideWithRideOfferWithLocation>>> =
         flow {
             emit(Response.Loading)
 
+            // Tính toán phạm vi phân trang
+            val from = (page * limit).toLong()
+            val to = (from + limit + 1).toLong()
+
             // Lấy danh sách chuyến đi với hành khách có chung userId
-            val passengerRideResponse = rideRepository.getRideListGivenPassenger(userId)
+            val passengerRideResponse = rideRepository.getRideListGivenPassengerPaginated(userId, from, to)
             // Lấy danh sách chuyến đi với tài xế có chung userId
-            val rideOfferList=rideOfferRepository.getRideOfferListByUserId(userId,"ACCEPTED")
+            val rideOfferList = rideOfferRepository.getRideOfferListByUserIdPaginated(userId, "ACCEPTED", from, to)
             val rideIds = when (rideOfferList) {
-                is Response.Success -> rideOfferList.data?.map { it.id }?: emptyList()
+                is Response.Success -> rideOfferList.data?.map { it.id } ?: emptyList()
                 else -> emptyList()
             }
-            print("THIS IS THE RIDE IDS: $rideIds")
-            val driverRideResponse = rideRepository.getRideListByRideOfferIds(rideIds)
+            println("THIS IS THE RIDE IDS: $rideIds")
+            val driverRideResponse = rideRepository.getRideListByRideOfferIds(rideIds, from, to)
+
             // Kiểm tra và hợp nhất danh sách chuyến đi
             val combinedRideList = when {
                 passengerRideResponse is Response.Success && driverRideResponse is Response.Success -> {
-                    // Hợp nhất hai danh sách và loại bỏ trùng lặp dựa trên ride.id
                     val passengerRides = passengerRideResponse.data ?: emptyList()
                     val driverRides = driverRideResponse.data ?: emptyList()
                     (passengerRides + driverRides).distinctBy { it.id }
                 }
                 passengerRideResponse is Response.Success -> {
-                    // Chỉ dùng danh sách hành khách nếu tài xế thất bại
                     passengerRideResponse.data ?: emptyList()
                 }
                 driverRideResponse is Response.Success -> {
-                    // Chỉ dùng danh sách tài xế nếu hành khách thất bại
                     driverRideResponse.data ?: emptyList()
                 }
                 else -> {
-                    // Cả hai đều thất bại
                     emit(Response.Failure(Exception("Failed to get ride history from both passenger and driver")))
                     return@flow
                 }
@@ -64,12 +65,13 @@ class GetRidesHomeUseCase @Inject constructor(
             // Xử lý từng chuyến đi
             filteredRideList.forEach { ride ->
                 val rideOffer = ride.rideOfferId?.let { id ->
-                    when (val rideOfferResponse = rideOfferRepository.getRideOffer(rideOfferId = id)) {
+                    when (val rideOfferResponse = rideOfferRepository.getRideOffer(id)) {
                         is Response.Success -> rideOfferResponse.data
                             ?: throw Exception("RideOffer data is null")
-                        else -> throw Exception("Cannot find RideOffer for this ride.")
+                        is Response.Failure -> throw Exception("Cannot find RideOffer for this ride: ${rideOfferResponse.e?.message}")
+                        else -> throw Exception("Cannot find RideOffer for this ride")
                     }
-                } ?: throw Exception("Cannot find RideOffer for this ride")
+                } ?: throw Exception("Không tìm thấy RideOffer cho chuyến đi này")
 
                 val startLocation = rideOffer.startLocationId?.let { locationId ->
                     when (val locationResponse = locationRepository.getLocation(locationId)) {
@@ -90,7 +92,7 @@ class GetRidesHomeUseCase @Inject constructor(
                         ride = ride,
                         rideOffer = rideOffer,
                         startLocation = startLocation,
-                        endLocation = endLocation,
+                        endLocation = endLocation
                     )
                 )
             }

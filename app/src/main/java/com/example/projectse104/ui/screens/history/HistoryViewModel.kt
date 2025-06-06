@@ -19,25 +19,71 @@ class HistoryViewModel @Inject constructor(
     private val getRideHistoryUseCase: GetRideHistoryUseCase,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
-
-    private val _rideListState =
-        MutableStateFlow<Response<List<RideWithRideOfferWithLocation>>>(Response.Loading)
+    private val _rideListState = MutableStateFlow<Response<List<RideWithRideOfferWithLocation>>>(Response.Idle)
+    private val _isLoadingMore = MutableStateFlow(false)
     val rideListState = _rideListState.asStateFlow()
+    val isLoadingMore = _isLoadingMore.asStateFlow()
+
+    private var currentPage = 0
+    private val pageSize = 3
+    private var hasMoreData = true
+    private val allRides = mutableListOf<RideWithRideOfferWithLocation>()
 
     init {
-        if (_rideListState.value !is Response.Success) {
-            savedStateHandle.get<String>(USER_ID_FIELD)?.let { userId ->
-                getRideHistoryList(userId)
+        savedStateHandle.get<String>(USER_ID_FIELD)?.let { userId ->
+            if (_rideListState.value !is Response.Success) {
+                getRideHistoryList(userId, currentPage)
             }
         }
     }
 
-    fun getRideHistoryList(userId: String) {
-        println("Loading view model...")
-        getRideHistoryUseCase(userId)
+    fun getRideHistoryList(userId: String, page: Int) {
+        println("Loading view model... Page: $page")
+        _isLoadingMore.value = true
+        getRideHistoryUseCase(userId, page, pageSize)
             .onEach { result ->
-                _rideListState.value = result
+                when (result) {
+                    is Response.Success -> {
+                        val newRides = result.data ?: emptyList()
+                        println("New rides: ${newRides.size}, Total allRides before: ${allRides.size}")
+                        if (newRides.size < pageSize) {
+                            hasMoreData = false
+                        }
+                        allRides.addAll(newRides.filter { newRide ->
+                            !allRides.any { it.ride.id == newRide.ride.id }
+                        })
+                        println("Total allRides after: ${allRides.size}")
+                        _rideListState.value = Response.Success(allRides.toList())
+                        _isLoadingMore.value = false
+                    }
+                    is Response.Failure -> {
+                        println("Error: ${result.e?.message}")
+                        _rideListState.value = result
+                        _isLoadingMore.value = false
+                    }
+                    is Response.Loading -> {
+                        println("State: Loading")
+                        // Không cập nhật _rideListState thành Loading
+                    }
+                    is Response.Idle -> {
+                        println("State: Idle")
+                        _rideListState.value = Response.Idle
+                        _isLoadingMore.value = false
+                    }
+                }
+                println("State changed to: ${_rideListState.value}")
             }
             .launchIn(viewModelScope)
+    }
+
+    fun loadMoreRides(userId: String) {
+        if (hasMoreData && !_isLoadingMore.value) {
+            currentPage++
+            getRideHistoryList(userId, currentPage)
+        }
+    }
+
+    fun hasMoreData(): Boolean {
+        return hasMoreData
     }
 }

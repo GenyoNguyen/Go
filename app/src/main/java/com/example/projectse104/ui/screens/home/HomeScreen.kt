@@ -1,7 +1,6 @@
 package com.example.projectse104.ui.screens.home
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -9,56 +8,69 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.projectse104.Component.BottomNavigationBar
 import com.example.projectse104.Component.RideItem
 import com.example.projectse104.Component.ToastMessage
 import com.example.projectse104.R
+import com.example.projectse104.core.Response
 import com.example.projectse104.domain.model.User
 import com.example.projectse104.ui.screens.home.Component.HomeHeader
 import com.example.projectse104.ui.screens.home.Component.ShimmerHomeScreen
 import com.example.projectse104.ui.screens.home.Component.TopNavBar
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.projectse104.core.Response
 import com.example.projectse104.core.toCustomString
 import com.example.projectse104.domain.model.RideWithRideOfferWithLocation
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.snapshotFlow
 
 @Composable
 fun HomeScreen(
     navController: NavController,
     userId: String,
+    userName: String = "",
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val rideListState by viewModel.rideListState.collectAsStateWithLifecycle()
+    val isLoadingMore by viewModel.isLoadingMore.collectAsStateWithLifecycle()
     val userState by viewModel.user.collectAsStateWithLifecycle()
     var rides = emptyList<RideWithRideOfferWithLocation>()
-    var userName = ""
-    var isLoading = true
+    var finalUserName = userName.split(" ").last()
     var showErrorToast = false
     var errorMessage = ""
+    var isLoading = true
 
     // Handle userState
-    when (val state = userState) {
-        is Response.Success<User> -> {
-            userName = state.data?.fullName.toString().split(" ").last()
+    if (finalUserName.isEmpty()) {
+        when (val state = userState) {
+            is Response.Success<User> -> {
+                finalUserName = state.data?.fullName.toString().split(" ").last()
+            }
+            is Response.Failure -> {
+                errorMessage = "Không thể tải thông tin người dùng. Vui lòng thử lại!"
+                showErrorToast = true
+            }
+            else -> {}
         }
-        is Response.Failure -> {
-            errorMessage = "Không thể tải thông tin người dùng. Vui lòng thử lại!"
-            showErrorToast = true
-        }
-        else -> {} // Loading or initial state
     }
 
     // Handle rideListState
@@ -70,7 +82,9 @@ fun HomeScreen(
             errorMessage = "Không thể tải danh sách chuyến đi. Vui lòng thử lại!"
             showErrorToast = true
         }
-        else -> {} // Loading or initial state
+        is Response.Loading, is Response.Idle -> {
+            // Không làm gì, dựa vào isLoadingMore
+        }
     }
 
     // Determine loading state
@@ -82,57 +96,49 @@ fun HomeScreen(
     }
 
     if (isLoading) {
-        ShimmerHomeScreen(navController, userId, 1, 1, userName)
+        ShimmerHomeScreen(navController, userId, 1, 1, finalUserName)
     } else {
-        Box(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            // Background Image
+        Box(modifier = Modifier.fillMaxSize()) {
             Image(
-                painter = painterResource(id = R.drawable.background), // Thay bằng ID của hình nền trong res/drawable
+                painter = painterResource(id = R.drawable.background),
                 contentDescription = "Background Image",
-                modifier = Modifier
-                    .fillMaxSize(),
+                modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.FillWidth,
                 alpha = 0.2f
-
-            // Hình nền sẽ được scale để phủ toàn màn hình
             )
-
-            // Scaffold và nội dung chính
             Scaffold(
                 bottomBar = {
                     BottomNavigationBar(navController, userId, 1)
                 },
-                contentColor = Color.Red,
-                containerColor = Color.Transparent, // Đặt containerColor trong suốt để thấy hình nền
+                containerColor = Color.Transparent,
                 modifier = Modifier.fillMaxSize()
             ) { innerPadding ->
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(Color.Transparent)// Nền trắng mờ để nội dung dễ đọc
                         .padding(innerPadding)
                 ) {
-                    HomeHeader(userName)
+                    HomeHeader(finalUserName,"Home",R.drawable.header_home_real)
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 16.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        TopNavBar(navController, userId, 1)
+                        TopNavBar(navController, userId, 1, finalUserName)
+                        Spacer(modifier = Modifier.height(16.dp))
                     }
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Column(
+                    val listState = rememberLazyListState()
+                    println("Rendering LazyColumn with ${rides.size} items")
+                    LazyColumn(
+                        state = listState,
                         modifier = Modifier
                             .fillMaxWidth()
                             .weight(1f)
-                            .verticalScroll(rememberScrollState())
                             .padding(horizontal = 16.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        for (ride in rides) {
+                        items(rides, key = { it.ride.id }) { ride ->
                             val rideNo = ride.rideOffer.rideCode
                             val estimatedDeparture = ride.ride.departTime.toCustomString()
                             val fromLocation = ride.startLocation
@@ -151,6 +157,62 @@ fun HomeScreen(
                                 addGoButton = "no"
                             )
                         }
+                        if (rides.isEmpty() && !isLoadingMore) {
+                            item {
+                                Column(
+                                    modifier = Modifier.padding(16.dp),
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    Text(
+                                        text = "Không có chuyến đi nào đang chờ xử lý",
+                                        color = Color.Gray,
+                                        style = TextStyle(fontSize = 16.sp)
+                                    )
+                                    if (viewModel.hasMoreData()) {
+                                        Button(
+                                            onClick = { viewModel.loadMoreRides(userId) },
+                                            modifier = Modifier.padding(top = 8.dp)
+                                        ) {
+                                            Text("Tải thêm")
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        if (isLoadingMore) {
+                            item {
+                                CircularProgressIndicator(modifier = Modifier.padding(16.dp))
+                            }
+                        }
+                        if (rideListState is Response.Failure) {
+                            item {
+                                Column(
+                                    modifier = Modifier.padding(16.dp),
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    Text(
+                                        text = "Lỗi tải dữ liệu: ${(rideListState as Response.Failure).e?.message ?: "Không xác định"}",
+                                        color = Color.Red
+                                    )
+                                    Button(
+                                        onClick = { viewModel.loadMoreRides(userId) },
+                                        modifier = Modifier.padding(top = 8.dp)
+                                    ) {
+                                        Text("Thử lại")
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    LaunchedEffect(listState) {
+                        snapshotFlow { listState.layoutInfo }
+                            .collect { layoutInfo ->
+                                val totalItems = layoutInfo.totalItemsCount
+                                val lastVisibleItem = layoutInfo.visibleItemsInfo.lastOrNull()?.index
+                                if (lastVisibleItem != null && lastVisibleItem >= totalItems - 1 && viewModel.hasMoreData() && !isLoadingMore) {
+                                    viewModel.loadMoreRides(userId)
+                                }
+                            }
                     }
                 }
             }

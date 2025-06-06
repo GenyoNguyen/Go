@@ -3,7 +3,6 @@ package com.example.projectse104.domain.use_case.ride_offer
 import com.example.projectse104.core.Response
 import com.example.projectse104.domain.model.RideOffer
 import com.example.projectse104.domain.model.RideOfferWithLocation
-import com.example.projectse104.domain.model.RideWithRideOfferWithLocation
 import com.example.projectse104.domain.repository.LocationRepository
 import com.example.projectse104.domain.repository.RideOfferRepository
 import kotlinx.coroutines.flow.Flow
@@ -14,12 +13,14 @@ class GetOtherUserPendingOfferUseCase @Inject constructor(
     private val rideOfferRepository: RideOfferRepository,
     private val locationRepository: LocationRepository
 ) {
-    operator fun invoke(userId: String): Flow<Response<List<RideOfferWithLocation>>> =
+    operator fun invoke(userId: String, page: Int, limit: Int): Flow<Response<List<RideOfferWithLocation>>> =
         flow {
             emit(Response.Loading)
-            when (val rideOfferListResponse = rideOfferRepository.getRideOfferListByOtherUser(userId,"PENDING")) {
+            when (val rideOfferListResponse = rideOfferRepository.getRideOfferListByOtherUser(
+                userId, "PENDING", page, limit
+            )) {
                 is Response.Success<List<RideOffer>> -> {
-                    print("response is success")
+                    println("Response is success for page $page")
                     val rideOfferList = rideOfferListResponse.data
                     val rideOfferWithLocationList = mutableListOf<RideOfferWithLocation>()
                     rideOfferList?.forEach { ride ->
@@ -29,14 +30,12 @@ class GetOtherUserPendingOfferUseCase @Inject constructor(
                                 else -> ""
                             }
                         } ?: ""
-
                         val endLocation = ride.endLocationId?.let { locationId ->
                             when (val locationResponse = locationRepository.getLocation(locationId)) {
                                 is Response.Success -> locationResponse.data?.name ?: ""
                                 else -> ""
                             }
                         } ?: ""
-
                         rideOfferWithLocationList.add(
                             RideOfferWithLocation(
                                 rideOffer = ride,
@@ -46,9 +45,16 @@ class GetOtherUserPendingOfferUseCase @Inject constructor(
                         )
                     }
                     emit(Response.Success(rideOfferWithLocationList))
-
                 }
-                else -> emit(Response.Failure(Exception("Failed to get ride history")))
+                is Response.Failure -> {
+                    emit(Response.Failure(Exception("Failed to get ride history")))
+                }
+                is Response.Loading -> {
+                    emit(Response.Loading)
+                }
+                is Response.Idle -> {
+                    emit(Response.Idle)
+                }
             }
         }
 }

@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.sp
 import com.example.projectse104.R
 
 @Composable
-fun HomeHeader(userName: String) {
+fun HomeHeader(userName: String,content:String,iconId:Int) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -66,14 +66,14 @@ fun HomeHeader(userName: String) {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Home",
+                        text = content,
                         fontSize = 30.sp,
                         color = Color.White,
                         fontWeight = FontWeight.Bold
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Image(
-                        painter = painterResource(id = R.drawable.header_home_real), // Ensure 'header_home' exists
+                        painter = painterResource(id = iconId), // Ensure 'header_home' exists
                         contentDescription = "Home Icon",
                         modifier = Modifier.size(30.dp)
                     )

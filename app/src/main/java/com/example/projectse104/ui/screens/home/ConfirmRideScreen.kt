@@ -32,7 +32,8 @@ fun ConfirmRideScreen(
     navController: NavController,
     riderName: String,
     rideID: String,
-    userId: String
+    userId: String,
+    rideNo:String
 ) {
     val viewModel: ConfirmRideScreenViewModel = hiltViewModel() // Giả sử dùng ConfirmRideScreenViewModel
     var isUpdating by remember { mutableStateOf(false) }
@@ -65,7 +66,7 @@ fun ConfirmRideScreen(
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        BackArrowWithText(navController, "Details of Ride No. $rideID")
+        BackArrowWithText(navController, "Details of Ride No. $rideNo")
 
         Spacer(modifier = Modifier.height(100.dp))
 
@@ -86,7 +87,7 @@ fun ConfirmRideScreen(
             }
             append(" will join you on the upcoming Ride No. ")
             withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                append(rideID)
+                append(rideNo)
             }
             append(". After clicking YES, please contact the driver to discuss further details about the trip. 😄")
         }

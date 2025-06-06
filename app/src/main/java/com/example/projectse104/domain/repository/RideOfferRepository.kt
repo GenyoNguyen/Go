@@ -17,10 +17,10 @@ interface RideOfferRepository {
 
     suspend fun getRideOfferListByUserId(userId: String,state:String): RideOfferListResponse
 
-    suspend fun getRideOfferListByOtherUser(userId: String,state: String): RideOfferListResponse
+    suspend fun getRideOfferListByOtherUser(userId: String,state: String, page:Int,limit:Int): RideOfferListResponse
 
     suspend fun getAcceptedRideOfferList(userId: String): RideOfferListResponse
-
+    suspend fun getRideOfferListByUserIdPaginated(userId: String, state: String, from: Long, to: Long): RideOfferListResponse
     suspend fun updateRideOfferStatus(rideOfferId: String, status: String): Response<Unit>
 
     suspend fun addRideOffer(rideOffer: RideOffer): AddRideOfferResponse
