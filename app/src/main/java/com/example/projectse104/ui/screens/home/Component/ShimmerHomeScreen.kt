@@ -70,7 +70,7 @@ fun ShimmerHomeScreen(navController: NavController, userId: String, index:Int,ac
                     .fillMaxSize()
                     .padding(innerPadding)
             ) {
-                HomeHeader(userName)
+                HomeHeader(userName,"Home",R.drawable.header_home_real)
 
                 Column(
                     modifier = Modifier
@@ -78,7 +78,7 @@ fun ShimmerHomeScreen(navController: NavController, userId: String, index:Int,ac
                         .padding(horizontal = 16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    TopNavBar(navController, userId, index)
+                    TopNavBar(navController, userId, index,userName)
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))

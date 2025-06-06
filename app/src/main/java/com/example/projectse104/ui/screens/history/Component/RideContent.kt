@@ -48,11 +48,19 @@ fun RideContent(estimatedDeparture:String,
             text = "Time: $estimatedDeparture", // Sử dụng tham số estimatedDeparture
             fontSize = 16.sp,
         )
-
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = "Route: From $fromLocation to $toLocation", // Sử dụng tham số fromLocation và toLocation
+            text = buildAnnotatedString {
+                append("From: ")
+                pushStyle(SpanStyle(fontWeight = FontWeight.Bold))
+                append(fromLocation)
+                pop()
+                append(" to ")
+                pushStyle(SpanStyle(fontWeight = FontWeight.Bold))
+                append(toLocation)
+                pop()
+            },// Sử dụng tham số fromLocation và toLocation
             fontSize = 15.sp
         )
 
@@ -83,7 +91,7 @@ fun RideContent(estimatedDeparture:String,
             Text(
                 text = status, // Trạng thái cố định, bạn có thể thay đổi nếu cần
                 fontSize = 15.sp,
-                color = Color(0xFF35B82A)
+                color = Color.Green
             )
         }
         Spacer(modifier = Modifier.height(8.dp))

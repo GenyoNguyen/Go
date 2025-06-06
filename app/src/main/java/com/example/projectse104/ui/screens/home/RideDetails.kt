@@ -10,7 +10,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
@@ -95,6 +97,8 @@ fun RideDetailsScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(16.dp)
+                    .verticalScroll(rememberScrollState()) // Thêm cuộn dọc
+
             ) {
                 BackArrowWithText(navController, "Details of Ride No. ${ride?.rideOffer?.rideCode}")
 
@@ -129,8 +133,8 @@ fun RideDetailsScreen(
                     ride?.passenger?.fullName.toString(),
                     ride?.passenger?.userCode.toString(),
                     ride?.rideOffer?.coinCost.toString(),
-                    ride?.ride?.status.toString(),
-                    distance
+                    status=ride?.ride?.status.toString(),
+                    distance=distance
                 )
                 val riderName = ride?.rider?.fullName.toString()
 
@@ -186,6 +190,8 @@ fun RideDetailsScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(16.dp)
+                    .verticalScroll(rememberScrollState()) // Thêm cuộn dọc
+
             ) {
                 BackArrowWithText(navController, "Details of Ride No. ${rideOffer?.rideOffer?.rideCode}")
 
@@ -219,14 +225,14 @@ fun RideDetailsScreen(
                     user?.fullName.toString(),
                     user?.userCode.toString(),
                     rideOffer?.rideOffer?.coinCost.toString(),
-                    rideOffer?.rideOffer?.status.toString(),
-                    distance
+                    status=rideOffer?.rideOffer?.status.toString(),
+                    distance = distance
                 )
                 val riderName = rideOffer?.rider?.fullName.toString()
                 Spacer(modifier = Modifier.height(16.dp))
                     Button(
 
-                        onClick = { navController.navigate("confirm_ride/$riderName/$rideNo/$userId") },
+                        onClick = { navController.navigate("confirm_ride/$riderName/$rideNo/$userId/${rideOffer?.rideOffer?.rideCode}") },
                         modifier = Modifier
                             .width(100.dp)
                             .height(30.dp)

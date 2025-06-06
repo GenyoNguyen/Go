@@ -40,10 +40,6 @@ fun OfferDetailsScreen(
 ) {
     val offerState = viewModel.offerState.collectAsStateWithLifecycle()
     val userState by viewModel.user.collectAsStateWithLifecycle()
-    var requests: List<List<Any>> = listOf(
-        listOf(R.drawable.avatar_1, "Nguyễn Hữu Dũng"),
-        listOf(R.drawable.avatar_2, "Độ PC")
-    )
     var user: User? = null
     var isLoading = true
     var showErrorToast = false
@@ -124,18 +120,6 @@ fun OfferDetailsScreen(
                 distance = distance // Thêm khoảng cách vào OfferDetails
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
-            for (request in requests) {
-                var avatarResId: Int = when (val value = request[0]) {
-                    is Int -> value
-                    is String -> value.toIntOrNull() ?: 0
-                    else -> 0
-                }
-                var passengerName: String = request[1].toString()
-                PassengerItem(navController, avatarResId, passengerName, {
-                    navController.navigate("confirm_request/$passengerName/$rideNo/$userId")
-                })
-            }
             Spacer(modifier = Modifier.height(16.dp))
         }
     }

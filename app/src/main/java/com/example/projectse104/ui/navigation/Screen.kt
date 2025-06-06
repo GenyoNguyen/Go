@@ -7,7 +7,7 @@ sealed class Screen(val route: String) {
     object OnBoarding3 : Screen("onboarding3")
     object SignIn : Screen("sign_in")
     object SignUp : Screen("sign_up")
-    object Home : Screen("home/{userId}")
+    object Home : Screen("home/{userId}?userName={userName}")
     object SignUpAndSignIn : Screen("sign_up_and_sign_in")
     object ForgotPassword : Screen("forgot_password")
     object VerifyEmail : Screen("verify_email")
@@ -17,10 +17,10 @@ sealed class Screen(val route: String) {
     object Chat : Screen("chat/{userId}")
     object History : Screen("history/{userId}")
     object Profile : Screen("profile/{userId}")
-    object FindARide : Screen("find_a_ride/{userId}") // ✅ Thêm route mới
-    object ConfirmRide : Screen("confirm_ride/{riderName}/{rideID}/{userId}") // Thêm tham số userId và rideID
+    object FindARide : Screen("find_a_ride/{userId}?userName={userName}") // ✅ Thêm route mới
+    object ConfirmRide : Screen("confirm_ride/{riderName}/{rideID}/{userId}/{rideNo}") // Thêm tham số userId và rideID
     object BookingSuccessful : Screen("booking_successful/{userId}") // ✅ Thêm màn hình RideDetails
-    object OfferARide : Screen("offer_a_ride/{userId}") // ✅ Thêm màn hình RideDetails
+    object OfferARide : Screen("offer_a_ride/{userId}?userName={userName}") // ✅ Thêm màn hình RideDetails
     object OfferDetails : Screen("offer_details/{userId}/{rideNo}") // ✅ Thêm màn hình RideDetails
     object ConfirmRequest : Screen("confirm_request/{passengerName}/{rideID}/{riderName}") // ✅ Thêm màn hình RideDetails
     object RideDetails : Screen("ride_details/{userId}/{rideNo}/{addGoButton}")

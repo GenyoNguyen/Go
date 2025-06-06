@@ -97,14 +97,20 @@ fun AppNavigation(navController: NavHostController) {
             ) { backStackEntry ->
                 val userId = backStackEntry.arguments?.getString("userId") ?: ""
                 LoginSuccessfulScreen(navController = navController, userId = userId)
-            }
-            composable(
-                Screen.Home.route, // "home/{userId}"
-                arguments = listOf(navArgument("userId") { type = NavType.StringType })
-            ) { backStackEntry ->
-                val userId = backStackEntry.arguments?.getString("userId") ?: ""
-                HomeScreen(navController = navController, userId = userId)
-            }
+                }
+                composable(
+                    Screen.Home.route, // "home/{userId}"
+                    arguments = listOf(navArgument("userId") { type = NavType.StringType },
+                        navArgument("userName") {
+                            type = NavType.StringType
+                            defaultValue = "" // Giá trị mặc định nếu userName không được cung cấp
+                        })
+                ) { backStackEntry ->
+                    val userId = backStackEntry.arguments?.getString("userId") ?: ""
+                    val userName = backStackEntry.arguments?.getString("userName") ?: ""
+
+                    HomeScreen(navController = navController, userId = userId,userName=userName)
+                }
             composable(Screen.ForgotPassword.route) { ForgotPasswordScreen(navController) }
             composable(Screen.SignUpAndSignIn.route) { SignUpAndSignInScreen(navController) }
             composable(Screen.VerifyEmail.route) { VerifyEmailScreen(navController) }
@@ -139,10 +145,16 @@ fun AppNavigation(navController: NavHostController) {
             }
             composable(
                 Screen.FindARide.route,
-                arguments = listOf(navArgument("userId") { type = NavType.StringType })
+                arguments = listOf(navArgument("userId") { type = NavType.StringType },
+                    navArgument("userName") {
+                        type = NavType.StringType
+                        defaultValue = "" // Giá trị mặc định nếu userName không được cung cấp
+                    })
             ) { backStackEntry ->
                 val userId = backStackEntry.arguments?.getString("userId") ?: ""
-                FindARideScreen(navController = navController, userId = userId)
+                val userName = backStackEntry.arguments?.getString("userName") ?: ""
+
+                FindARideScreen(navController = navController, userId = userId,userName=userName)
             }
             composable(
                 Screen.RideDetails.route,
@@ -182,17 +194,22 @@ fun AppNavigation(navController: NavHostController) {
                 arguments = listOf(
                     navArgument("riderName") { type = NavType.StringType },
                     navArgument("rideID") { type = NavType.StringType },
-                    navArgument("userId") { type = NavType.StringType }
-                )
+                    navArgument("userId") { type = NavType.StringType },
+                    navArgument("rideNo") { type = NavType.StringType },
+
+                    )
             ) { backStackEntry ->
                 val riderName = backStackEntry.arguments?.getString("riderName") ?: ""
                 val rideID = backStackEntry.arguments?.getString("rideID") ?: ""
                 val userId = backStackEntry.arguments?.getString("userId") ?: ""
+                val rideNo = backStackEntry.arguments?.getString("rideNo") ?: ""
+
                 ConfirmRideScreen(
                     navController = navController,
                     riderName = riderName,
                     rideID = rideID,
-                    userId = userId
+                    userId = userId,
+                    rideNo=rideNo
                 )
             }
             composable(
@@ -204,10 +221,16 @@ fun AppNavigation(navController: NavHostController) {
             }
             composable(
                 Screen.OfferARide.route,
-                arguments = listOf(navArgument("userId") { type = NavType.StringType })
+                arguments = listOf(navArgument("userId") { type = NavType.StringType },
+                    navArgument("userName") {
+                        type = NavType.StringType
+                        defaultValue = "" // Giá trị mặc định nếu userName không được cung cấp
+                    })
             ) { backStackEntry ->
                 val userId = backStackEntry.arguments?.getString("userId") ?: ""
-                OfferARideScreen(navController = navController, userId = userId)
+                val userName = backStackEntry.arguments?.getString("userName") ?: ""
+
+                OfferARideScreen(navController = navController, userId = userId,userName=userName)
             }
             composable(
                 Screen.OfferDetails.route,

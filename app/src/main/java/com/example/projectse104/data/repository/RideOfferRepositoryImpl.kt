@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.Flow
 import android.util.Log
 import com.example.projectse104.domain.model.Ride
 import com.example.projectse104.domain.repository.AddRideOfferResponse
+import io.github.jan.supabase.postgrest.query.Order // Nhập Order từ Supabase
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.TimeZone
@@ -38,7 +39,28 @@ class RideOfferRepositoryImpl @Inject constructor(
         } catch (e: Exception) {
             Response.Failure(e)
         }
-
+    override suspend fun getRideOfferListByUserIdPaginated(
+        userId: String,
+        state: String,
+        from: Long,
+        to: Long
+    ): Response<List<RideOffer>> =
+        try {
+            println("Fetching ride offers for userId: $userId, state: $state, from: $from, to: $to")
+            val rideOffers = rideOffersRef.select {
+                filter {
+                    eq("userId", userId)
+                    eq("status", state)
+                }
+                order(column = "requestTime", order = Order.ASCENDING)
+                range(from, to)
+            }.decodeList<RideOffer>()
+            println("Fetched ${rideOffers.size} ride offers")
+            Response.Success(rideOffers)
+        } catch (e: Exception) {
+            println("Exception: $e")
+            Response.Failure(e)
+        }
     override suspend fun getRideOfferListByUserId(
         userId: String,
         state: String
@@ -57,15 +79,22 @@ class RideOfferRepositoryImpl @Inject constructor(
 
     override suspend fun getRideOfferListByOtherUser(
         userId: String,
-        state: String
-    ): RideOfferListResponse =
+        state: String,
+        page: Int,
+        limit: Int
+    ): Response<List<RideOffer>> =
         try {
+            val from = (page * limit).toLong()
+            val to = (from + limit - 1).toLong()
             val rideOffers = rideOffersRef.select {
                 filter {
                     neq("userId", userId)
                     eq("status", state)
                 }
+                order("estimatedDepartTime", order = Order.ASCENDING)
+                range(from, to)
             }.decodeList<RideOffer>()
+            println("Loaded ${rideOffers.size} ride offers for page $page")
             Response.Success(rideOffers)
         } catch (e: Exception) {
             Response.Failure(e)

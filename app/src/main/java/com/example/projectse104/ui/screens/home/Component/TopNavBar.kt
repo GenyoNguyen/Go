@@ -36,12 +36,12 @@ import com.example.projectse104.Component.*
 import com.valentinilk.shimmer.shimmer
 import java.util.Calendar
 @Composable
-fun TopNavBar(navController: NavController,userId:String,index:Int){
+fun TopNavBar(navController: NavController,userId:String,index:Int,userName:String){
     Row(
         horizontalArrangement = Arrangement.Center,
     ) {
         Button(
-            onClick = {if (index==1) {} else {navController.navigate("home/$userId")}},
+            onClick = {if (index==1) {} else {navController.navigate("home/$userId?userName=$userName")}},
             modifier = Modifier,
             shape = RoundedCornerShape(16.dp),
             colors = ButtonDefaults.buttonColors(containerColor = if(index==1) Color(0xFFF3F8FE) else Color.White)
@@ -50,7 +50,7 @@ fun TopNavBar(navController: NavController,userId:String,index:Int){
         }
         Spacer(modifier = Modifier.width(12.dp))
         Button(
-            onClick = {if (index==2) {} else{navController.navigate("find_a_ride/$userId")} },
+            onClick = {if (index==2) {} else{navController.navigate("find_a_ride/$userId?userName=$userName")} },
             modifier = Modifier,
             shape = RoundedCornerShape(16.dp),
             colors = ButtonDefaults.buttonColors(containerColor = if(index==2) Color(0xFFF3F8FE) else Color.White)
@@ -59,7 +59,7 @@ fun TopNavBar(navController: NavController,userId:String,index:Int){
         }
         Spacer(modifier = Modifier.width(12.dp))
         Button(
-            onClick = { if (index==3) {} else {navController.navigate("offer_a_ride/$userId")} },
+            onClick = { if (index==3) {} else {navController.navigate("offer_a_ride/$userId?userName=$userName")} },
             modifier = Modifier,
             shape = RoundedCornerShape(16.dp),
             colors = ButtonDefaults.buttonColors(containerColor = if(index==3) Color(0xFFF3F8FE) else Color.White)

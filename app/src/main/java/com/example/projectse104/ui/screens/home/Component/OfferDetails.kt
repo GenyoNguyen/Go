@@ -29,7 +29,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.TextFieldValue
 import com.example.projectse104.*
 import com.example.projectse104.Component.*
@@ -52,11 +54,19 @@ fun OfferDetails(estimatedDeparture: String,
             text = "$estimatedDeparture",
             fontSize = 16.sp,
         )
-
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = "Route: From $fromLocation to $toLocation",
+            text = buildAnnotatedString {
+                append("From: ")
+                pushStyle(SpanStyle(fontWeight = FontWeight.Bold))
+                append(fromLocation)
+                pop()
+                append(" to ")
+                pushStyle(SpanStyle(fontWeight = FontWeight.Bold))
+                append(toLocation)
+                pop()
+            },
             fontSize = 15.sp
         )
 
@@ -74,7 +84,7 @@ fun OfferDetails(estimatedDeparture: String,
                 fontWeight = FontWeight.Bold
             )
             Text(
-                text = "- (UserID: $riderUserId)",
+                text = " - (UserID: $riderUserId)",
                 fontSize = 15.sp
             )
         }
@@ -122,25 +132,6 @@ fun OfferDetails(estimatedDeparture: String,
         }
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Potential Passengers Section
-        // Potential Passengers Section
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = "Potential Passengers",
-                fontSize = 23.sp,
-                fontWeight = FontWeight.Bold
-            )
-            Spacer(modifier = Modifier.width(8.dp)) // Khoảng cách giữa chữ và đường kẻ
-            Divider(
-                color = Color.Black,
-                thickness = 1.dp,
-                modifier = Modifier
-                    .weight(1f) // Chiếm toàn bộ không gian còn lại của Row để kéo dài đường kẻ
-            )
-        }
 
     }
 }

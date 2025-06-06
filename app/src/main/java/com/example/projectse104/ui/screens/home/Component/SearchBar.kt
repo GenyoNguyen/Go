@@ -36,25 +36,35 @@ import com.example.projectse104.Component.*
 import com.valentinilk.shimmer.shimmer
 import java.util.Calendar
 import com.example.projectse104.ui.screens.home.Component.*
-@Composable
-fun SearchBar() {
-    var searchText by remember { mutableStateOf(TextFieldValue("")) } // Quản lý trạng thái nhập văn bản
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+
+@Composable
+fun SearchBar(
+    searchText: TextFieldValue,
+    onSearchTextChange: (TextFieldValue) -> Unit
+) {
     TextField(
         value = searchText,
-        onValueChange = { searchText = it },
+        onValueChange = onSearchTextChange,
         placeholder = {
             Text(
-                "Where do you want to go today?",
+                text = "Where do you want to go today?",
                 fontSize = 16.sp,
                 color = Color.Gray,
-                lineHeight = 20.sp // Giúp văn bản không bị cắt
+                lineHeight = 20.sp
             )
         },
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
-            .height(50.dp) // Tăng nhẹ chiều cao để có thêm không gian hiển thị
+            .height(50.dp)
             .clip(RoundedCornerShape(25.dp))
             .background(Color(0xFFEFF8F2)),
         leadingIcon = {
@@ -67,7 +77,7 @@ fun SearchBar() {
         },
         textStyle = TextStyle(
             fontSize = 16.sp,
-            lineHeight = 20.sp // Đảm bảo dòng chữ không bị cắt
+            lineHeight = 20.sp
         ),
         colors = TextFieldDefaults.colors(
             focusedContainerColor = Color(0xFFEFF8F2),
@@ -76,6 +86,6 @@ fun SearchBar() {
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent
         ),
-        singleLine = true // Giữ văn bản trên một dòng duy nhất
+        singleLine = true
     )
 }

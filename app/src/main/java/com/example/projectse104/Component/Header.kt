@@ -1,81 +1,85 @@
 package com.example.projectse104.Component
 
+
+import android.app.TimePickerDialog
+import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.zIndex
-import androidx.navigation.NavController
 import com.example.projectse104.R
-import com.example.projectse104.ui.navigation.Screen
-import com.valentinilk.shimmer.shimmer
-import android.widget.Toast
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.platform.LocalContext
-import com.example.projectse104.core.Response
-import com.example.projectse104.Component.*
+
 @Composable
-fun Header(text:String,iconID:Int){
-    Column(
+fun Header(content:String,iconId:Int) {
+    Box(
         modifier = Modifier
             .fillMaxWidth()
+            .height(100.dp)
             .padding(bottom = 16.dp)
-            .background(Color(0xFF8FC79A)), // Thêm background sau khi clip
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
     ) {
-        Spacer(modifier = Modifier.height(30.dp))
+        // Background Image
+        Image(
+            painter = painterResource(id = R.drawable.mask_group), // Ensure 'background' exists in res/drawable
+            contentDescription = "Background Image",
+            modifier = Modifier
+                .fillMaxSize(),
+            contentScale = ContentScale.Crop, // Scales image to fill the area, cropping excess
+            alpha = 0.7f // Slight transparency for better text readability
+        )
 
-        // Row cho Home và Hi, {userId}
-        Row(
+        // Overlay to enhance content visibility
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color(0xFFECB692).copy(alpha = 0.8f)) // Green tinted overlay
+        )
+
+        // Main content
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.Start, // Tạo khoảng cách giữa "Home" và "Hi, {userId}"
-            verticalAlignment = Alignment.CenterVertically
+                .padding(vertical = 24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
-            // Thêm icon ngôi nhà cạnh chữ Home
+            // Row for Home and Greeting
             Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.Start,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = text,
-                    fontSize = 30.sp,
-                    color = Color.White,
-                    fontWeight = FontWeight.Bold
-                )
-                Spacer(modifier = Modifier.width(8.dp)) // Khoảng cách giữa icon và chữ "Home"
-                Image(
-                    painter = painterResource(id = iconID), // Đổi lại với icon của bạn
-                    contentDescription = "Home Icon",
-                    modifier = Modifier.size(30.dp)
-                )
+                // Home Title with Icon
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = content,
+                        fontSize = 30.sp,
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Image(
+                        painter = painterResource(id = iconId), // Ensure 'header_home' exists
+                        contentDescription = "Home Icon",
+                        modifier = Modifier.size(30.dp)
+                    )
+                }
             }
         }
-
-        Spacer(modifier = Modifier.height(30.dp))
     }
 }
