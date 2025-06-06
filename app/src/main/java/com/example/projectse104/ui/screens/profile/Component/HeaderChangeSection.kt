@@ -1,20 +1,25 @@
 package com.example.projectse104.ui.screens.profile.Component
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import com.example.projectse104.R
 
 @Composable
@@ -24,12 +29,18 @@ fun HeaderChangeSection(
     userFullName: String,
     userGmail: String,
     userCode: String,
-    userId: String
+    userId: String,
+    profilePicUrl: String?
 ) {
-    Image(
-        painter = painterResource(id = userAvatarId), // Đổi lại với icon của bạn
-        contentDescription = "Home Icon",
-        modifier = Modifier.size(56.dp)
+    AsyncImage(
+        model = profilePicUrl,
+        contentDescription = "Avatar",
+        modifier = Modifier
+            .size(90.dp)
+            .clip(CircleShape)
+            .border(2.dp, Color(0xFFE0E0E0), CircleShape) // Thêm viền nhẹ cho avatar
+            .clickable { /* Có thể thêm logic để mở image picker nếu cần */ },
+        contentScale = ContentScale.Crop
     )
     Column() {
         Text(

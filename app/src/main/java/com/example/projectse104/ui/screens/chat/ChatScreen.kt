@@ -1,14 +1,17 @@
 package com.example.projectse104.ui.screens.chat
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -32,21 +35,19 @@ fun ChatScreen(
     userId: String,
     viewModel: ChatViewModel = hiltViewModel()
 ) {
-
     val conversationListState by viewModel.conversationListState.collectAsStateWithLifecycle()
-
+    val avatarUrls by viewModel.avatarUrls.collectAsStateWithLifecycle()
     var isLoading = true
     var conversationWithLastMessageList = listOf<ConversationWithLastMessage>()
+
     when (val state = conversationListState) {
         is Response.Success -> {
             conversationWithLastMessageList = state.data.orEmpty()
             isLoading = false
         }
-
         is Response.Loading -> {
             isLoading = true
         }
-
         else -> {
             ToastMessage(
                 message = "Không thể tải dữ liệu. Vui lòng thử lại!",
@@ -71,22 +72,36 @@ fun ChatScreen(
             ) {
                 Header("Chat", R.drawable.chat_icon_header)
 
-                Column(
+                LazyColumn(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .weight(1f) // Cuộn trong phần nội dung
-                        .verticalScroll(rememberScrollState())
-                        .padding(horizontal = 16.dp)
+                        .weight(1f)
+                        .padding(horizontal = 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    for (conversation in conversationWithLastMessageList) {
-                        val otherId =
-                            if (conversation.conversation!!.firstUserId == userId) conversation.conversation.secondUserId else conversation.conversation.firstUserId
+                    items(conversationWithLastMessageList.size, key = { conversationWithLastMessageList[it].conversation!!.id }) { index ->
+                        val conversation = conversationWithLastMessageList[index]
+                        val otherId = if (conversation.conversation!!.firstUserId == userId) {
+                            conversation.conversation.secondUserId
+                        } else {
+                            conversation.conversation.firstUserId
+                        }
                         val name = conversation.otherName
                         val message = conversation.lastMessage?.content.toString()
                         val time = conversation.lastMessage?.timeSent.toCustomString()
-                        val imageRes: Int = R.drawable.avatar_1
+                        val imageRes = R.drawable.avatar_1
                         val haveSeen = conversation.lastMessage?.isRead ?: false
-                        val isOnline = true /*TODO: Implement online function*/
+                        val isOnline = true // TODO: Implement online function
+
+                        // Lấy avatar cho otherId
+                        val profilePicUrl = avatarUrls[otherId]?.let { response ->
+                            when (response) {
+                                is Response.Success -> response.data
+                                is Response.Loading -> null // Có thể hiển thị placeholder
+                                is Response.Failure -> null
+                                Response.Idle -> TODO()
+                            }
+                        }
 
                         ChatItem(
                             navController = navController,
@@ -97,7 +112,8 @@ fun ChatScreen(
                             time = time,
                             imageRes = imageRes,
                             haveSeen = haveSeen,
-                            isOnline = isOnline
+                            isOnline = isOnline,
+                            profilePicUrl = profilePicUrl
                         )
                     }
                 }
