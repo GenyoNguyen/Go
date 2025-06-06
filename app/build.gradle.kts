@@ -130,7 +130,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
 
     //Map
-    implementation("org.osmdroid:osmdroid-android:6.1.10")
+        implementation("org.osmdroid:osmdroid-android:6.1.10")
     implementation("org.slf4j:slf4j-android:1.7.30")
     implementation("com.github.MKergall:osmbonuspack:6.9.0")
 

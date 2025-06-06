@@ -210,7 +210,7 @@ fun EditProfileScreen(
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
             Button(
                 onClick = { imagePickerLauncher.launch("image/*") },
-                enabled = !formState.isUploadingProfilePic
+                enabled = !formState.isUploadingProfilePic,
             ) {
                 Text(if (formState.isUploadingProfilePic) "Đang tải lên..." else "Chọn ảnh đại diện")
             }

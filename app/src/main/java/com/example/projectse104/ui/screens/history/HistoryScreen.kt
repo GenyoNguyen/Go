@@ -78,7 +78,7 @@ fun HistoryScreen(
             alpha = 0.2f
         )
         if (isLoading) {
-            ShimmerScreen(navController, userId, 3, "History", R.drawable.history_header_icon)
+            ShimmerScreen(navController, userId, 3, "History", R.drawable.history_svgrepo_com)
         } else {
             Scaffold(
                 bottomBar = {

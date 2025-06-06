@@ -64,7 +64,7 @@ fun HeaderChangeSection(
         )
     }
     Image(
-        painter = painterResource(id = R.drawable.change_icon), // Đổi lại với icon của bạn
+        painter = painterResource(id = R.drawable.group), // Đổi lại với icon của bạn
         contentDescription = "Home Icon",
         modifier = Modifier
             .size(24.dp)
