@@ -17,7 +17,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -41,6 +40,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.projectse104.core.toCustomString
 import com.example.projectse104.domain.model.RideWithRideOfferWithLocation
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.snapshotFlow
 
 @Composable
@@ -53,6 +53,8 @@ fun HomeScreen(
     val rideListState by viewModel.rideListState.collectAsStateWithLifecycle()
     val isLoadingMore by viewModel.isLoadingMore.collectAsStateWithLifecycle()
     val userState by viewModel.user.collectAsStateWithLifecycle()
+    val avatarUrls by viewModel.avatarUrls.collectAsStateWithLifecycle()
+
     var rides = emptyList<RideWithRideOfferWithLocation>()
     var finalUserName = userName.split(" ").last()
     var showErrorToast = false
@@ -82,9 +84,7 @@ fun HomeScreen(
             errorMessage = "Không thể tải danh sách chuyến đi. Vui lòng thử lại!"
             showErrorToast = true
         }
-        is Response.Loading, is Response.Idle -> {
-            // Không làm gì, dựa vào isLoadingMore
-        }
+        is Response.Loading, is Response.Idle -> {}
     }
 
     // Determine loading state
@@ -118,7 +118,7 @@ fun HomeScreen(
                         .fillMaxSize()
                         .padding(innerPadding)
                 ) {
-                    HomeHeader(finalUserName,"Home",R.drawable.header_home_real)
+                    HomeHeader(finalUserName, "Home", R.drawable.header_home_real)
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -143,7 +143,11 @@ fun HomeScreen(
                             val estimatedDeparture = ride.ride.departTime.toCustomString()
                             val fromLocation = ride.startLocation
                             val toLocation = ride.endLocation
-                            val avatarResId = R.drawable.avatar_1
+                            val avatarUrl = avatarUrls[ride.rideOffer.userId]
+                            val profilePicUrl: String? = when (avatarUrl) {
+                                is Response.Success<String> -> avatarUrl.data
+                                else -> null
+                            }
                             RideItem(
                                 navController = navController,
                                 rideNo = rideNo,
@@ -151,7 +155,7 @@ fun HomeScreen(
                                 estimatedDeparture = estimatedDeparture,
                                 fromLocation = fromLocation,
                                 toLocation = toLocation,
-                                avatarResId = avatarResId,
+                                avatarResId = profilePicUrl, // Avatar của người lái xe
                                 route = "ride_details",
                                 userId = userId,
                                 addGoButton = "no"

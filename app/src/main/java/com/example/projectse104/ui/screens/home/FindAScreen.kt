@@ -44,6 +44,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.projectse104.core.toCustomString
 import com.example.projectse104.domain.model.RideOfferWithLocation
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.snapshotFlow
 
 @Composable
@@ -57,6 +58,7 @@ fun FindARideScreen(
     val rideOfferListState by viewModel.rideOfferListState.collectAsStateWithLifecycle()
     val isLoadingMore by viewModel.isLoadingMore.collectAsStateWithLifecycle()
     val userState by viewModel.user.collectAsStateWithLifecycle()
+    val avatarUrls by viewModel.avatarUrls.collectAsStateWithLifecycle()
     var rides = emptyList<RideOfferWithLocation>()
     var finalUserName = userName.split(" ").last()
     var showErrorToast = false
@@ -85,12 +87,9 @@ fun FindARideScreen(
             errorMessage = "Không thể tải danh sách chuyến đi. Vui lòng thử lại!"
             showErrorToast = true
         }
-        is Response.Loading, is Response.Idle -> {
-            // Không làm gì, dựa vào isLoadingMore
-        }
+        is Response.Loading, is Response.Idle -> {}
     }
 
-    // Show toast for errors
     if (showErrorToast) {
         ToastMessage(message = errorMessage, show = true)
     }
@@ -115,7 +114,7 @@ fun FindARideScreen(
                     .fillMaxSize()
                     .padding(innerPadding)
             ) {
-                HomeHeader(finalUserName,"Home",R.drawable.header_home_real)
+                HomeHeader(finalUserName, "Home", R.drawable.header_home_real)
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -152,7 +151,11 @@ fun FindARideScreen(
                         val estimatedDeparture = ride.rideOffer.estimatedDepartTime.toCustomString()
                         val fromLocation = ride.startLocation
                         val toLocation = ride.endLocation
-                        val avatarResId: Int = R.drawable.avatar_1
+                        val avatarUrl = avatarUrls[ride.rideOffer.userId]
+                        val profilePicUrl: String? = when (avatarUrl) {
+                            is Response.Success<String> -> avatarUrl.data
+                            else -> null
+                        }
                         RideItem(
                             navController = navController,
                             rideNo = rideNo,
@@ -160,7 +163,7 @@ fun FindARideScreen(
                             estimatedDeparture = estimatedDeparture,
                             fromLocation = fromLocation,
                             toLocation = toLocation,
-                            avatarResId = avatarResId,
+                            avatarResId = profilePicUrl, // Avatar của người lái xe
                             route = "ride_details",
                             userId = userId,
                             addGoButton = "yes"

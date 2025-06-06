@@ -2,19 +2,24 @@ package com.example.projectse104.Component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import com.example.projectse104.R
 
 @Composable
@@ -25,7 +30,7 @@ fun RideItem(
     estimatedDeparture: String = "",
     fromLocation: String = "",
     toLocation: String = "",
-    avatarResId: Int,
+    avatarResId: String?,
     route: String = "",
     userId: String = "",
     addGoButton: String = ""
@@ -87,7 +92,7 @@ fun RideItem(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Image(
-                        painter = painterResource(id = R.drawable.path),
+                        painter = painterResource(id = R.drawable.vector),
                         contentDescription = "Path Icon",
                         modifier = Modifier.size(20.dp)
                     )
@@ -103,12 +108,15 @@ fun RideItem(
 
             Spacer(modifier = Modifier.width(12.dp))
 
-            Image(
-                painter = painterResource(id = avatarResId),
+            AsyncImage(
+                model = avatarResId,
                 contentDescription = "Avatar",
                 modifier = Modifier
-                    .size(56.dp) // Giảm kích thước để tránh lấn chiếm
-                    .aspectRatio(1f)
+                    .size(56.dp)
+                    .clip(CircleShape)
+                    .border(2.dp, Color(0xFFE0E0E0), CircleShape) // Thêm viền nhẹ cho avatar
+                    .clickable { /* Có thể thêm logic để mở image picker nếu cần */ },
+                contentScale = ContentScale.Crop
             )
         }
 

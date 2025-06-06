@@ -18,6 +18,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -51,6 +52,13 @@ fun HistoryScreen(
     var isLoading = true
     var rides = emptyList<RideWithRideOfferWithLocation>()
     var showErrorToast = false
+    val avatarUrl = viewModel.avatarUrl.collectAsState().value
+
+    val profilePicUrl: String? = when (avatarUrl) {
+        is Response.Success<String> -> avatarUrl.data
+        is Response.Failure -> null
+        else -> null
+    }
 
     when (val state = rideListState) {
         is Response.Success<List<RideWithRideOfferWithLocation>> -> {
@@ -116,7 +124,7 @@ fun HistoryScreen(
                                 estimatedDeparture = estimatedDeparture,
                                 fromLocation = fromLocation,
                                 toLocation = toLocation,
-                                avatarResId = avatarResId,
+                                avatarResId = profilePicUrl,
                                 route = "ride_details_history",
                                 userId = userId
                             )

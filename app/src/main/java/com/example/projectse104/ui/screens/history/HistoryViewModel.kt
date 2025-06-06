@@ -7,20 +7,25 @@ import com.example.projectse104.core.Response
 import com.example.projectse104.core.USER_ID_FIELD
 import com.example.projectse104.domain.model.RideWithRideOfferWithLocation
 import com.example.projectse104.domain.use_case.ride.GetRideHistoryUseCase
+import com.example.projectse104.domain.use_case.user.LoadUserAva
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class HistoryViewModel @Inject constructor(
+    private val loadUserAva: LoadUserAva,
     private val getRideHistoryUseCase: GetRideHistoryUseCase,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     private val _rideListState = MutableStateFlow<Response<List<RideWithRideOfferWithLocation>>>(Response.Idle)
     private val _isLoadingMore = MutableStateFlow(false)
+    private val _avatarUrl = MutableStateFlow<Response<String>>(Response.Idle)
+    val avatarUrl = _avatarUrl.asStateFlow()
     val rideListState = _rideListState.asStateFlow()
     val isLoadingMore = _isLoadingMore.asStateFlow()
 
@@ -33,6 +38,7 @@ class HistoryViewModel @Inject constructor(
         savedStateHandle.get<String>(USER_ID_FIELD)?.let { userId ->
             if (_rideListState.value !is Response.Success) {
                 getRideHistoryList(userId, currentPage)
+                loadAvatar(userId)
             }
         }
     }
@@ -85,5 +91,14 @@ class HistoryViewModel @Inject constructor(
 
     fun hasMoreData(): Boolean {
         return hasMoreData
+    }
+
+    private fun loadAvatar(userId: String) {
+        println("Loading avatar...")
+        viewModelScope.launch {
+            val result = loadUserAva(userId)
+            println("Avatar result: $result")
+            _avatarUrl.value = result
+        }
     }
 }

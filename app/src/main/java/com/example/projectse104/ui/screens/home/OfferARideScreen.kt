@@ -41,6 +41,7 @@ import com.example.projectse104.ui.screens.home.Component.HomeHeader
 import com.example.projectse104.ui.screens.home.Component.ShimmerHomeScreen
 import com.example.projectse104.ui.screens.home.Component.TopNavBar
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.snapshotFlow
 
 @Composable
@@ -53,6 +54,8 @@ fun OfferARideScreen(
     val rideOfferListState by viewModel.rideOfferListState.collectAsStateWithLifecycle()
     val isLoadingMore by viewModel.isLoadingMore.collectAsStateWithLifecycle()
     val userState by viewModel.user.collectAsStateWithLifecycle()
+    val avatarUrl by viewModel.avatarUrl.collectAsStateWithLifecycle()
+
     var rides = emptyList<RideOfferWithLocation>()
     var finalUserName = userName.split(" ").last()
     var showErrorToast = false
@@ -73,6 +76,14 @@ fun OfferARideScreen(
         }
     }
 
+    // Handle avatarUrl
+    val avatarResponse = avatarUrl // Lưu giá trị vào biến cục bộ
+    val profilePicUrl: String? = when (avatarResponse) {
+        is Response.Success -> avatarResponse.data
+        is Response.Failure -> null
+        else -> null
+    }
+
     // Handle rideOfferListState
     when (val state = rideOfferListState) {
         is Response.Success<List<RideOfferWithLocation>> -> {
@@ -82,9 +93,7 @@ fun OfferARideScreen(
             errorMessage = "Không thể tải danh sách chuyến đi. Vui lòng thử lại!"
             showErrorToast = true
         }
-        is Response.Loading, is Response.Idle -> {
-            // Không làm gì, dựa vào isLoadingMore
-        }
+        is Response.Loading, is Response.Idle -> {}
     }
 
     // Determine loading state
@@ -118,7 +127,7 @@ fun OfferARideScreen(
                         .fillMaxSize()
                         .padding(innerPadding)
                 ) {
-                    HomeHeader(finalUserName,"Home",R.drawable.header_home_real)
+                    HomeHeader(finalUserName, "Home", R.drawable.header_home_real)
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -143,7 +152,6 @@ fun OfferARideScreen(
                             val estimatedDeparture = ride.rideOffer.estimatedDepartTime.toCustomString()
                             val fromLocation = ride.startLocation
                             val toLocation = ride.endLocation
-                            val avatarResId = R.drawable.avatar_1
                             RideItem(
                                 navController = navController,
                                 rideNo = rideNo,
@@ -151,9 +159,10 @@ fun OfferARideScreen(
                                 estimatedDeparture = estimatedDeparture,
                                 fromLocation = fromLocation,
                                 toLocation = toLocation,
-                                avatarResId = avatarResId,
+                                avatarResId = profilePicUrl, // Ảnh của người dùng hiện tại
                                 route = "offer_details",
-                                userId = userId
+                                userId = userId,
+                                addGoButton = "no" // Thêm tham số nếu RideItem yêu cầu
                             )
                         }
                         if (rides.isEmpty() && !isLoadingMore) {
