@@ -1,5 +1,6 @@
 package com.example.projectse104.Component
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -33,6 +34,7 @@ fun RideItem(
     avatarResId: String?,
     route: String = "",
     userId: String = "",
+    riderId: String?,
     addGoButton: String = ""
 ) {
     val path: String = when (route) {
@@ -122,24 +124,52 @@ fun RideItem(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        Button(
-            onClick = { navController.navigate(path) },
+        Row(
             modifier = Modifier
-                .width(80.dp)
-                .height(28.dp)
-                .align(Alignment.End),
-            shape = RoundedCornerShape(25.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8FC79A)),
-            contentPadding = PaddingValues(horizontal = 8.dp)
+                .fillMaxWidth()
+                .wrapContentWidth(Alignment.End),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Text(
-                text = "Details",
-                fontSize = 13.sp,
-                color = Color.White,
-                fontWeight = FontWeight.Bold
-            )
+            Button(
+                onClick = { navController.navigate(path) },
+                modifier = Modifier
+                    .width(80.dp)
+                    .height(28.dp),
+                shape = RoundedCornerShape(25.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8FC79A)),
+                contentPadding = PaddingValues(horizontal = 8.dp)
+            ) {
+                Text(
+                    text = "Details",
+                    fontSize = 13.sp,
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+
+            riderId?.let {
+                Button(
+                    onClick = { navController.navigate("chat_details/$userId/$riderId") },
+                    modifier = Modifier
+                        .width(80.dp)
+                        .height(28.dp),
+                    shape = RoundedCornerShape(25.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.White),
+                    border = BorderStroke(1.dp, Color(0xFF35B82A)),
+                    contentPadding = PaddingValues(horizontal = 8.dp)
+                ) {
+                    Text(
+                        text = "Contact",
+                        fontSize = 13.sp,
+                        color = Color(0xFF35B82A),
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            } ?: run {
+                ToastMessage(message = "Không thể liên hệ tài xế!", show = true)
+            }
         }
 
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(8.dp))
     }
 }

@@ -24,21 +24,21 @@ class HistoryViewModel @Inject constructor(
 ) : ViewModel() {
     private val _rideListState = MutableStateFlow<Response<List<RideWithRideOfferWithLocation>>>(Response.Idle)
     private val _isLoadingMore = MutableStateFlow(false)
-    private val _avatarUrl = MutableStateFlow<Response<String>>(Response.Idle)
-    val avatarUrl = _avatarUrl.asStateFlow()
+    private val _avatarUrls = MutableStateFlow<Map<String, Response<String>>>(emptyMap()) // Lưu avatar theo userId của tài xế
     val rideListState = _rideListState.asStateFlow()
     val isLoadingMore = _isLoadingMore.asStateFlow()
+    val avatarUrls = _avatarUrls.asStateFlow()
 
     private var currentPage = 0
     private val pageSize = 3
     private var hasMoreData = true
     private val allRides = mutableListOf<RideWithRideOfferWithLocation>()
+    private val loadingAvatarIds = mutableSetOf<String>() // Ngăn tải trùng lặp
 
     init {
         savedStateHandle.get<String>(USER_ID_FIELD)?.let { userId ->
             if (_rideListState.value !is Response.Success) {
                 getRideHistoryList(userId, currentPage)
-                loadAvatar(userId)
             }
         }
     }
@@ -58,6 +58,13 @@ class HistoryViewModel @Inject constructor(
                         allRides.addAll(newRides.filter { newRide ->
                             !allRides.any { it.ride.id == newRide.ride.id }
                         })
+                        // Tải avatar cho các tài xế mới
+                        newRides.forEach { ride ->
+                            val driverId = ride.rideOffer.userId
+                            if (!_avatarUrls.value.containsKey(driverId)) {
+                                loadAvatarForDriver(driverId)
+                            }
+                        }
                         println("Total allRides after: ${allRides.size}")
                         _rideListState.value = Response.Success(allRides.toList())
                         _isLoadingMore.value = false
@@ -69,7 +76,6 @@ class HistoryViewModel @Inject constructor(
                     }
                     is Response.Loading -> {
                         println("State: Loading")
-                        // Không cập nhật _rideListState thành Loading
                     }
                     is Response.Idle -> {
                         println("State: Idle")
@@ -82,6 +88,20 @@ class HistoryViewModel @Inject constructor(
             .launchIn(viewModelScope)
     }
 
+    private fun loadAvatarForDriver(driverId: String) {
+        if (loadingAvatarIds.contains(driverId)) return
+        loadingAvatarIds.add(driverId)
+        println("Loading avatar for driver: $driverId")
+        viewModelScope.launch {
+            val result = loadUserAva(driverId)
+            println("Avatar result for $driverId: $result")
+            _avatarUrls.value = _avatarUrls.value.toMutableMap().apply {
+                put(driverId, result)
+            }
+            loadingAvatarIds.remove(driverId)
+        }
+    }
+
     fun loadMoreRides(userId: String) {
         if (hasMoreData && !_isLoadingMore.value) {
             currentPage++
@@ -89,16 +109,5 @@ class HistoryViewModel @Inject constructor(
         }
     }
 
-    fun hasMoreData(): Boolean {
-        return hasMoreData
-    }
-
-    private fun loadAvatar(userId: String) {
-        println("Loading avatar...")
-        viewModelScope.launch {
-            val result = loadUserAva(userId)
-            println("Avatar result: $result")
-            _avatarUrl.value = result
-        }
-    }
+    fun hasMoreData(): Boolean = hasMoreData
 }

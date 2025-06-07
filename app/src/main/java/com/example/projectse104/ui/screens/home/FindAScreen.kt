@@ -166,6 +166,7 @@ fun FindARideScreen(
                             avatarResId = profilePicUrl, // Avatar của người lái xe
                             route = "ride_details",
                             userId = userId,
+                            riderId = ride.rideOffer.userId, // Pass riderId for contact feature
                             addGoButton = "yes"
                         )
                     }

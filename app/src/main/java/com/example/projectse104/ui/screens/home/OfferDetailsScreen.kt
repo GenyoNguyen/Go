@@ -1,6 +1,7 @@
 package com.example.projectse104.ui.screens.home
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,7 +17,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.clickable
+import androidx.compose.material.Text
+import androidx.compose.ui.graphics.Color
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
@@ -109,18 +117,47 @@ fun OfferDetailsScreen(
             Spacer(modifier = Modifier.height(24.dp))
 
             // Details Section
-            OfferDetails(
-                estimatedDeparture = rideOffer?.rideOffer?.estimatedDepartTime.toString(),
-                fromLocation = rideOffer?.startLocation.toString(),
-                toLocation = rideOffer?.endLocation.toString(),
-                riderName = user?.fullName.toString().split(" ").last(),
-                riderUserId = user?.userCode.toString(),
-                cost = rideOffer?.rideOffer?.coinCost.toString(),
-                status = rideOffer?.rideOffer?.status.toString(),
-                distance = distance // Thêm khoảng cách vào OfferDetails
-            )
+            rideOffer?.let {
+                OfferDetails(
+                    estimatedDeparture = rideOffer.rideOffer?.estimatedDepartTime.toString(),
+                    fromLocation = rideOffer.startLocation.toString(),
+                    toLocation = rideOffer.endLocation.toString(),
+                    riderName = user?.fullName.toString().split(" ").last(),
+                    riderUserId = user?.userCode.toString(),
+                    cost = rideOffer.rideOffer?.coinCost.toString(),
+                    status = rideOffer.rideOffer?.status.toString(),
+                    distance = distance // Thêm khoảng cách vào OfferDetails
+                )
+            }
 
             Spacer(modifier = Modifier.height(16.dp))
+
+            // Contact Rider Section
+            rideOffer?.rider?.id?.let { riderId ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
+                    Text(
+                        text = buildAnnotatedString {
+                            append("Want to contact ")
+                            pushStyle(SpanStyle(fontWeight = FontWeight.Bold))
+                            append(user?.fullName?.split(" ")?.last() ?: "the rider")
+                            pop()
+                            append("? ")
+                            pushStyle(SpanStyle(color = Color(0xFF35B82A)))
+                            append("Click here")
+                            pop()
+                        },
+                        fontSize = 16.sp,
+                        modifier = Modifier.clickable {
+                            navController.navigate("chat_details/$userId/$riderId")
+                        }
+                    )
+                }
+            } ?: run {
+                ToastMessage(message = "Không thể liên hệ tài xế!", show = true)
+            }
         }
     }
 }

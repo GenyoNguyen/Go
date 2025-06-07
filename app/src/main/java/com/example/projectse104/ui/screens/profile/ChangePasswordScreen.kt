@@ -18,6 +18,7 @@ import androidx.navigation.NavController
 import com.example.projectse104.Component.BigButton
 import com.example.projectse104.Component.CustomPasswordTextField
 import com.example.projectse104.core.showToastMessage
+import com.example.projectse104.ui.screens.profile.Component.ProfileCustomTextFieldWithLabel
 
 @Composable
 fun ChangePasswordScreen(
@@ -33,16 +34,16 @@ fun ChangePasswordScreen(
         viewModel.changePasswordEvents.collect { event ->
             when (event) {
                 is ChangePasswordEvent.Success -> {
-                    showToastMessage(context, "Đổi mật khẩu thành công")
+                    showToastMessage(context, "Password changed successfully")
                     isSubmitting = false
                     navController.popBackStack()
                 }
                 is ChangePasswordEvent.Error -> {
-                    showToastMessage(context, "Lỗi: ${event.e?.message ?: "Lỗi không xác định"}")
+                    showToastMessage(context, "Error: ${event.e?.message ?: "Unknown error"}")
                     isSubmitting = false
                 }
                 is ChangePasswordEvent.Loading -> {
-                    showToastMessage(context, "Đang xử lý...")
+                    showToastMessage(context, "Processing...")
                     isSubmitting = true
                 }
             }
@@ -52,56 +53,58 @@ fun ChangePasswordScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .background(Color.White)
+            .padding(horizontal = 24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
-        Spacer(modifier = Modifier.height(40.dp))
-
         Text(
-            text = "Đổi Mật Khẩu",
+            text = "Change Password",
             fontSize = 26.sp,
             fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Start,
+            textAlign = TextAlign.Center,
             modifier = Modifier
-                .align(Alignment.Start)
-                .padding(horizontal = 24.dp)
+                .fillMaxWidth()
+                .padding(top = 16.dp, bottom = 24.dp)
         )
+
+        ProfileCustomTextFieldWithLabel(
+            label = "Current Password",
+            value = state.currentPassword
+        ) {
+            viewModel.onEvent(ChangePasswordFormEvent.CurrentPasswordChanged(it))
+        }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        CustomPasswordTextField(
-            label = "Mật khẩu hiện tại",
-            value = state.currentPassword,
-            onValueChange = { viewModel.onEvent(ChangePasswordFormEvent.CurrentPasswordChanged(it)) },
-            error = state.currentPasswordError
-        )
+        ProfileCustomTextFieldWithLabel(
+            label = "New Password",
+            value = state.newPassword
+        ) {
+            viewModel.onEvent(ChangePasswordFormEvent.NewPasswordChanged(it))
+        }
 
-        CustomPasswordTextField(
-            label = "Mật khẩu mới",
-            value = state.newPassword,
-            onValueChange = { viewModel.onEvent(ChangePasswordFormEvent.NewPasswordChanged(it)) },
-            error = state.newPasswordError
-        )
+        Spacer(modifier = Modifier.height(16.dp))
 
-        CustomPasswordTextField(
-            label = "Xác nhận mật khẩu mới",
-            value = state.confirmPassword,
-            onValueChange = { viewModel.onEvent(ChangePasswordFormEvent.ConfirmPasswordChanged(it)) },
-            error = state.confirmPasswordError
-        )
+        ProfileCustomTextFieldWithLabel(
+            label = "Confirm!",
+            value = state.confirmPassword
+        ) {
+            viewModel.onEvent(ChangePasswordFormEvent.ConfirmPasswordChanged(it))
+        }
 
         Spacer(modifier = Modifier.height(24.dp))
 
         BigButton(
             navController = navController,
-            text = "XÁC NHẬN",
+            text = "SUBMIT",
             onClick = { viewModel.onEvent(ChangePasswordFormEvent.Submit) }
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = "Hủy",
+            text = "Cancel",
             fontSize = 14.sp,
             color = Color(0xFF8FC79A),
             modifier = Modifier

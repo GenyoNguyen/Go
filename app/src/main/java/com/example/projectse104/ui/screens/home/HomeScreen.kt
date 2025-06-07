@@ -158,6 +158,7 @@ fun HomeScreen(
                                 avatarResId = profilePicUrl, // Avatar của người lái xe
                                 route = "ride_details",
                                 userId = userId,
+                                riderId = ride.rideOffer.userId,
                                 addGoButton = "no"
                             )
                         }

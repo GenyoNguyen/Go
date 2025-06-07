@@ -18,7 +18,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,7 +29,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.projectse104.Component.BottomNavigationBar
 import com.example.projectse104.Component.Header
@@ -49,16 +48,12 @@ fun HistoryScreen(
 ) {
     val rideListState by viewModel.rideListState.collectAsStateWithLifecycle()
     val isLoadingMore by viewModel.isLoadingMore.collectAsStateWithLifecycle()
+    val avatarUrls by viewModel.avatarUrls.collectAsStateWithLifecycle()
+
     var isLoading = true
     var rides = emptyList<RideWithRideOfferWithLocation>()
     var showErrorToast = false
-    val avatarUrl = viewModel.avatarUrl.collectAsState().value
-
-    val profilePicUrl: String? = when (avatarUrl) {
-        is Response.Success<String> -> avatarUrl.data
-        is Response.Failure -> null
-        else -> null
-    }
+    var errorMessage = ""
 
     when (val state = rideListState) {
         is Response.Success<List<RideWithRideOfferWithLocation>> -> {
@@ -68,12 +63,20 @@ fun HistoryScreen(
         }
         is Response.Failure -> {
             println("Error: ${state.e?.message}")
+            errorMessage = "Không thể tải danh sách chuyến đi. Vui lòng thử lại!"
             showErrorToast = true
             isLoading = false
         }
         is Response.Loading, is Response.Idle -> {
             println("State: Loading or Idle")
-            // Không làm gì, dựa vào isLoadingMore
+        }
+    }
+
+    // Simplify avatarUrls for rendering
+    val avatarUrlMap = avatarUrls.mapValues { entry ->
+        when (val response = entry.value) {
+            is Response.Success -> response.data
+            else -> null
         }
     }
 
@@ -116,7 +119,6 @@ fun HistoryScreen(
                             val estimatedDeparture = ride.ride.departTime.toCustomString()
                             val fromLocation = ride.startLocation
                             val toLocation = ride.endLocation
-                            val avatarResId = R.drawable.avatar_1
                             RideItem(
                                 navController = navController,
                                 rideNo = rideNo,
@@ -124,9 +126,10 @@ fun HistoryScreen(
                                 estimatedDeparture = estimatedDeparture,
                                 fromLocation = fromLocation,
                                 toLocation = toLocation,
-                                avatarResId = profilePicUrl,
+                                avatarResId = avatarUrlMap[ride.rideOffer.userId] ?: "default_avatar_url",
                                 route = "ride_details_history",
-                                userId = userId
+                                userId = userId,
+                                riderId = ride.rideOffer.userId,
                             )
                         }
                         if (rides.isEmpty() && !isLoadingMore) {
@@ -198,7 +201,7 @@ fun HistoryScreen(
         }
         if (showErrorToast) {
             ToastMessage(
-                message = "Không thể tải dữ liệu. Vui lòng thử lại!",
+                message = errorMessage,
                 show = true
             )
         }

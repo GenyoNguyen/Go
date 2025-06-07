@@ -162,6 +162,7 @@ fun OfferARideScreen(
                                 avatarResId = profilePicUrl, // Ảnh của người dùng hiện tại
                                 route = "offer_details",
                                 userId = userId,
+                                riderId = ride.rideOffer.userId,
                                 addGoButton = "no" // Thêm tham số nếu RideItem yêu cầu
                             )
                         }
