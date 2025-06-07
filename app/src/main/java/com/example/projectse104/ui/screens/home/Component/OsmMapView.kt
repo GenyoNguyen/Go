@@ -138,9 +138,9 @@ fun OsmMapView(
 
                     // Chọn khoảng cách để hiển thị (ưu tiên roadDistance nếu có)
                     val distanceText = if (road.mStatus == Road.STATUS_OK) {
-                        "%.2f km (đường đi)".format(roadDistance)
+                        "%.2f km ".format(roadDistance)
                     } else {
-                        "%.2f km (đường thẳng)".format(straightDistance)
+                        "%.2f km ".format(straightDistance)
                     }
 
                     // Gửi khoảng cách qua callback

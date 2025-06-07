@@ -1,9 +1,6 @@
 package com.example.projectse104.ui.screens.chat.Component
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
@@ -23,74 +21,90 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.example.projectse104.R
 
 @Composable
-fun MessageItem(message: String, time: String, isSent: Boolean, profilePicUrl: String?) {
+fun MessageItem(
+    message: String,
+    time: String,
+    isSent: Boolean,
+    profilePicUrl: String?
+) {
+    val configuration = LocalConfiguration.current
+    val maxWidth = (configuration.screenWidthDp * 0.75).dp
+
     Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = if (isSent) Arrangement.Start else Arrangement.End,
-        verticalAlignment = Alignment.CenterVertically
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(
+                start = if (isSent) 44.dp else 8.dp, // Thụt vào phải khi là tin nhắn gửi
+                end = 8.dp,
+                top = 2.dp,
+                bottom = 2.dp
+            ),
+        horizontalArrangement = if (isSent) Arrangement.End else Arrangement.Start
     ) {
-        if (isSent) {
-            // Avatar của người gửi
+        if (!isSent) {
+            // Avatar cho tin nhắn nhận
             AsyncImage(
                 model = profilePicUrl,
                 contentDescription = "Avatar",
                 modifier = Modifier
-                    .size(30.dp)
-                    .clip(CircleShape)
-                    .border(2.dp, Color(0xFFE0E0E0), CircleShape) // Thêm viền nhẹ cho avatar
-                    .clickable { /* Có thể thêm logic để mở image picker nếu cần */ },
+                    .size(28.dp)
+                    .clip(CircleShape),
                 contentScale = ContentScale.Crop
             )
-            Spacer(modifier = Modifier.width(10.dp))
+            Spacer(modifier = Modifier.width(8.dp))
         }
 
         Column(
-            horizontalAlignment = Alignment.Start
+            horizontalAlignment = if (isSent) Alignment.End else Alignment.Start
         ) {
+            // Bubble tin nhắn
             Box(
                 modifier = Modifier
-                    .padding(8.dp)
+                    .widthIn(max = maxWidth)
                     .background(
-                        if (isSent) Color(0xFFDCE8F8) else Color(0xFFDCF8EA),
-                        RoundedCornerShape(16.dp)
+                        color = if (isSent) {
+                            Color(0xFFB2D9AE) // Messenger blue
+                        } else {
+                            Color(0xFFF0F0F0) // Light gray
+                        },
+                        shape = RoundedCornerShape(
+                            topStart = 18.dp,
+                            topEnd = 18.dp,
+                            bottomStart = if (isSent) 18.dp else 4.dp,
+                            bottomEnd = if (isSent) 4.dp else 18.dp
+                        )
                     )
+                    .padding(horizontal = 14.dp, vertical = 10.dp)
             ) {
                 Text(
                     text = message,
-                    fontSize = 16.sp,
-                    color = Color.Black,
-                    modifier = Modifier.padding(12.dp)
+                    color = if (isSent) Color.White else Color.Black,
+                    fontSize = 15.sp,
+                    lineHeight = 20.sp
                 )
             }
 
-            // 👇 Canh chỉnh thời gian theo type
+            // Thời gian
+            Spacer(modifier = Modifier.height(2.dp))
             Text(
                 text = time,
-                fontSize = 12.sp,
                 color = Color.Gray,
-                modifier = Modifier
-                    .padding(horizontal = 8.dp)
-                    .align(if (isSent) Alignment.Start else Alignment.End)
+                fontSize = 11.sp,
+                modifier = Modifier.padding(horizontal = 4.dp)
             )
         }
 
         if (isSent) {
-            Spacer(modifier = Modifier.width(10.dp))
-            Image(
-                painter = painterResource(id = R.drawable.avatar),
-                contentDescription = "Profile",
-                modifier = Modifier
-                    .size(30.dp)
-                    .clip(CircleShape)
-            )
+            // Không cần spacer cho tin nhắn gửi vì đã thụt lề
+        } else {
+            Spacer(modifier = Modifier.width(36.dp)) // Space cho alignment tin nhắn nhận
         }
     }
-    Spacer(modifier = Modifier.height(10.dp))
 }

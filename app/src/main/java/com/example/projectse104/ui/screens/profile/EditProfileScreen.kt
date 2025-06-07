@@ -4,7 +4,6 @@ import android.net.Uri
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -22,19 +21,16 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import coil.compose.rememberAsyncImagePainter
 import com.example.projectse104.R
 import com.example.projectse104.Component.*
 import com.example.projectse104.core.Response
 import com.example.projectse104.core.showToastMessage
-import com.example.projectse104.domain.model.User
 import com.example.projectse104.ui.screens.profile.Component.*
 import com.example.projectse104.utils.UriUtils
 import java.util.UUID
@@ -210,7 +206,7 @@ fun EditProfileScreen(
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
             Button(
                 onClick = { imagePickerLauncher.launch("image/*") },
-                enabled = !formState.isUploadingProfilePic
+                enabled = !formState.isUploadingProfilePic,
             ) {
                 Text(if (formState.isUploadingProfilePic) "Đang tải lên..." else "Chọn ảnh đại diện")
             }

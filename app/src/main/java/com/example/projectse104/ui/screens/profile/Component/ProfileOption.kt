@@ -38,7 +38,7 @@ fun ProfileOption(
             Icon(
                 painter = painterResource(id = avatarID),
                 contentDescription = "Icon",
-                modifier = Modifier.size(20.dp),
+                modifier = Modifier.size(30.dp),
                 tint = Color.Gray
             )
             Spacer(modifier = Modifier.width(10.dp))
@@ -49,7 +49,7 @@ fun ProfileOption(
                 modifier = Modifier.weight(1f)
             )
             Icon(
-                painter = painterResource(id = R.drawable.ic_arrow_right),
+                painter = painterResource(id = R.drawable.arrow),
                 contentDescription = "Arrow Icon",
                 modifier = Modifier.size(20.dp),
                 tint = Color.Gray

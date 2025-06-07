@@ -1,20 +1,26 @@
 package com.example.projectse104.Component
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import com.example.projectse104.R
 
 @Composable
@@ -25,9 +31,10 @@ fun RideItem(
     estimatedDeparture: String = "",
     fromLocation: String = "",
     toLocation: String = "",
-    avatarResId: Int,
+    avatarResId: String?,
     route: String = "",
     userId: String = "",
+    riderId: String?,
     addGoButton: String = ""
 ) {
     val path: String = when (route) {
@@ -87,7 +94,7 @@ fun RideItem(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Image(
-                        painter = painterResource(id = R.drawable.path),
+                        painter = painterResource(id = R.drawable.vector),
                         contentDescription = "Path Icon",
                         modifier = Modifier.size(20.dp)
                     )
@@ -103,35 +110,66 @@ fun RideItem(
 
             Spacer(modifier = Modifier.width(12.dp))
 
-            Image(
-                painter = painterResource(id = avatarResId),
+            AsyncImage(
+                model = avatarResId,
                 contentDescription = "Avatar",
                 modifier = Modifier
-                    .size(56.dp) // Giảm kích thước để tránh lấn chiếm
-                    .aspectRatio(1f)
+                    .size(56.dp)
+                    .clip(CircleShape)
+                    .border(2.dp, Color(0xFFE0E0E0), CircleShape) // Thêm viền nhẹ cho avatar
+                    .clickable { /* Có thể thêm logic để mở image picker nếu cần */ },
+                contentScale = ContentScale.Crop
             )
         }
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        Button(
-            onClick = { navController.navigate(path) },
+        Row(
             modifier = Modifier
-                .width(80.dp)
-                .height(28.dp)
-                .align(Alignment.End),
-            shape = RoundedCornerShape(25.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8FC79A)),
-            contentPadding = PaddingValues(horizontal = 8.dp)
+                .fillMaxWidth()
+                .wrapContentWidth(Alignment.End),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Text(
-                text = "Details",
-                fontSize = 13.sp,
-                color = Color.White,
-                fontWeight = FontWeight.Bold
-            )
+            Button(
+                onClick = { navController.navigate(path) },
+                modifier = Modifier
+                    .width(80.dp)
+                    .height(28.dp),
+                shape = RoundedCornerShape(25.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8FC79A)),
+                contentPadding = PaddingValues(horizontal = 8.dp)
+            ) {
+                Text(
+                    text = "Details",
+                    fontSize = 13.sp,
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+
+            riderId?.let {
+                Button(
+                    onClick = { navController.navigate("chat_details/$userId/$riderId") },
+                    modifier = Modifier
+                        .width(80.dp)
+                        .height(28.dp),
+                    shape = RoundedCornerShape(25.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.White),
+                    border = BorderStroke(1.dp, Color(0xFF35B82A)),
+                    contentPadding = PaddingValues(horizontal = 8.dp)
+                ) {
+                    Text(
+                        text = "Contact",
+                        fontSize = 13.sp,
+                        color = Color(0xFF35B82A),
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            } ?: run {
+                ToastMessage(message = "Không thể liên hệ tài xế!", show = true)
+            }
         }
 
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(8.dp))
     }
 }

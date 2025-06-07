@@ -43,6 +43,7 @@ import com.example.projectse104.ui.screens.onboarding.OnBoardingScreen1
 import com.example.projectse104.ui.screens.onboarding.OnBoardingScreen2
 import com.example.projectse104.ui.screens.onboarding.OnBoardingScreen3
 import com.example.projectse104.ui.screens.profile.AddNewAddressScreen
+import com.example.projectse104.ui.screens.profile.ChangePasswordScreen
 import com.example.projectse104.ui.screens.profile.ContactUsScreen
 import com.example.projectse104.ui.screens.profile.EditProfileScreen
 import com.example.projectse104.ui.screens.profile.FAQDetailScreen
@@ -142,6 +143,13 @@ fun AppNavigation(navController: NavHostController) {
                     userId = userId,
                     sessionManager = sessionManager
                 )
+            }
+            composable(
+                Screen.ChangePassWord.route, // "change_password/{userId}"
+                arguments = listOf(navArgument("userId") { type = NavType.StringType })
+            ) { backStackEntry ->
+                val userId = backStackEntry.arguments?.getString("userId") ?: ""
+                ChangePasswordScreen(navController = navController, userId = userId)
             }
             composable(
                 Screen.FindARide.route,

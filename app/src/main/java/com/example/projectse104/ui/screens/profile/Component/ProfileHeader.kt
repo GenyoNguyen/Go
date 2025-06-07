@@ -66,7 +66,7 @@ fun ProfileHeader() {
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Image(
-                        painter = painterResource(id = R.drawable.user_icon),
+                        painter = painterResource(id = R.drawable.liuser),
                         contentDescription = "User Icon",
                         modifier = Modifier.size(30.dp)
                     )

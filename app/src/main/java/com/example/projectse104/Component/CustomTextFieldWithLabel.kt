@@ -86,6 +86,7 @@ fun CustomTextFieldWithLabel(
                 ValidationError.NOT_MATCH -> "Input does not match"
                 ValidationError.INVALID_PASSWORD -> "Invalid password format"
                 ValidationError.CANT_GET_PIC -> ""
+                ValidationError.PASSWORD_MISMATCH -> ""
             }
             Text(
                 text = errorMessage,

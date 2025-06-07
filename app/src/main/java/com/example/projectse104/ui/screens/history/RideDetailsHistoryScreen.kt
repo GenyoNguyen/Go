@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -27,6 +28,7 @@ import com.example.projectse104.domain.model.RideWithUserWithLocation
 import com.example.projectse104.ui.screens.history.Component.OverviewRating
 import com.example.projectse104.ui.screens.history.Component.RideContent
 import com.example.projectse104.ui.screens.home.Component.OsmMapView
+import androidx.compose.foundation.rememberScrollState
 
 @Composable
 fun RideDetailsHistoryScreen(
@@ -39,6 +41,7 @@ fun RideDetailsHistoryScreen(
     var isLoading = true
     var ride: RideWithUserWithLocation? = null
     var distance by remember { mutableStateOf("Đang tính khoảng cách...") }
+    val scrollState = rememberScrollState()
 
     when (val state = rideState.value) {
         is Response.Success -> {
@@ -64,6 +67,7 @@ fun RideDetailsHistoryScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .verticalScroll(scrollState)
                 .padding(16.dp)
         ) {
             BackArrowWithText(navController, "Details of Ride No. ${ride?.rideOffer?.rideCode}")

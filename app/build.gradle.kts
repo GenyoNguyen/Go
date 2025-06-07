@@ -142,8 +142,12 @@ dependencies {
     implementation("androidx.compose.runtime:runtime-livedata:1.5.4")
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
-
+    //Image loading
     implementation("io.coil-kt:coil-compose:2.4.0")
+    implementation(platform("com.google.firebase:firebase-bom:33.2.0"))
+    implementation("com.google.firebase:firebase-auth-ktx")
+
+
 }
 
 // Allow references to generated code

@@ -1,15 +1,19 @@
 package com.example.projectse104.ui.screens.chat
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -29,28 +33,30 @@ fun ChatDetailsScreen(
     otherId: String,
     viewModel: ChatDetailsViewModel = hiltViewModel()
 ) {
-
     val messages by viewModel.messages.collectAsStateWithLifecycle()
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
     val otherUser by viewModel.otherUser.collectAsStateWithLifecycle()
     val avatarUrl = viewModel.avatarUrl.collectAsState().value
-    val profilePicUrl: String?
-    when (avatarUrl) {
-        is Response.Success<String> -> {
-            profilePicUrl = avatarUrl.data
-        }
-        is Response.Failure -> {
-            profilePicUrl = null
-        }
-        else -> {
-            profilePicUrl = null
+    val listState = rememberLazyListState()
+
+    val profilePicUrl: String? = when (avatarUrl) {
+        is Response.Success<String> -> avatarUrl.data
+        is Response.Failure -> null
+        else -> null
+    }
+
+    // Auto scroll to bottom when new message arrives
+    LaunchedEffect(messages.size) {
+        if (messages.isNotEmpty()) {
+            listState.animateScrollToItem(0)
         }
     }
+
     if (isLoading) {
         println("Loading chat details screen...")
         ShimmerChatDetailsScreen(navController)
     } else {
-        println("Lmao")
+        println("Chat loaded successfully")
         Scaffold(
             topBar = {
                 ChatHeader(
@@ -60,37 +66,40 @@ fun ChatDetailsScreen(
                     avatarID = R.drawable.avatar_1,
                     isActive = "yes",
                     profilePicUrl = profilePicUrl
-
                 )
             },
             bottomBar = {
-                ChatInputField(sendMessage = { viewModel.sendMessage(it) })
-            }
+                ChatInputField(sendMessage = { message ->
+                    if (message.isNotBlank()) {
+                        viewModel.sendMessage(message)
+                    }
+                })
+            },
+            backgroundColor = Color(0xFFFAFAFA) // Light background like Messenger
         ) { innerPadding ->
             Column(
                 modifier = Modifier
                     .fillMaxSize()
+                    .background(Color(0xFFFAFAFA))
                     .padding(innerPadding)
-                    .padding(horizontal = 16.dp)
             ) {
                 LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize(),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                    reverseLayout = true // Đổi thành true nếu bạn muốn tin nhắn mới ở cuối màn hình
-                    // (chat-style)
+                    state = listState,
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                    reverseLayout = true // Tin nhắn mới nhất ở dưới cùng
                 ) {
                     items(messages.size) { index ->
                         val message = messages[index]
                         val content = message.content.toString()
                         val time = message.timeSent.toCustomString()
-                        val isSent = message.senderId != userId
+                        val isSent = message.senderId == userId // Fixed logic: true if current user sent it
 
                         MessageItem(
                             message = content,
                             time = time,
                             isSent = isSent,
-                            profilePicUrl = profilePicUrl
+                            profilePicUrl = if (!isSent) profilePicUrl else null
                         )
                     }
                 }

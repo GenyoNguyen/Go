@@ -1,10 +1,8 @@
 package com.example.projectse104.ui.screens.auth
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -18,7 +16,6 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.navigation.NavController
 import com.example.projectse104.R
-import com.example.projectse104.ui.navigation.Screen
 import com.example.projectse104.*
 import com.example.projectse104.Component.*
 import com.example.projectse104.ui.screens.auth.Component.*
@@ -105,7 +102,8 @@ fun SignUpAndSignInScreen(navController: NavController) {
                 // Thêm padding dưới
             )
             //Nút SIGN UP
-            BigButton(navController,"SIGN UP",{navController.navigate("sign_up")})
+
+            BigButton(navController, "SIGN UP", {navController.navigate("sign_up")})
 
             // Dòng chuyển qua Sign In (hiển thị trên 1 hàng văn bản liên tục)
             Spacer(modifier = Modifier.height(10.dp)) // Giảm khoảng cách nếu cần

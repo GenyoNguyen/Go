@@ -5,6 +5,7 @@ import com.example.projectse104.domain.model.User
 import com.example.projectse104.domain.repository.AddUserResponse
 import com.example.projectse104.domain.repository.DeleteUserResponse
 import com.example.projectse104.domain.repository.UpdateUserResponse
+import com.example.projectse104.domain.repository.UploadProfilePicResponse
 import com.example.projectse104.domain.repository.UserRepository
 import com.example.projectse104.domain.repository.UserResponse
 
@@ -56,4 +57,11 @@ class FakeUserRepository : UserRepository {
         } else {
             Response.Success(Unit)
         }
+
+    override suspend fun uploadProfilePic(
+        userId: String,
+        imageUri: String
+    ): UploadProfilePicResponse {
+        TODO("Not yet implemented")
+    }
 }

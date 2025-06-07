@@ -129,31 +129,37 @@ fun ProfileScreen(
                     ProfileOption(
                         navController = navController,
                         title = "Saved Locations",
-                        avatarID = R.drawable.profile_icon_1,
+                        avatarID = R.drawable.destination_svgrepo_com,
                         route = "saved_locations/$userId"
                     )
                     ProfileOption(
                         navController = navController,
                         title = "Promotions & Rewards",
-                        avatarID = R.drawable.profile_icon_2,
+                        avatarID = R.drawable.gift_svgrepo_com,
                         route = "promotion_rewards/$userId"
                     )
                     ProfileOption(
                         navController = navController,
                         title = "My Ride Circle",
-                        avatarID = R.drawable.profile_icon_3,
+                        avatarID = R.drawable.heart_angle_svgrepo_com,
                         route = "ride_circle/$userId"
                     )
                     ProfileOption(
                         navController = navController,
                         title = "Help & Support",
-                        avatarID = R.drawable.profile_icon_4,
+                        avatarID = R.drawable.question_circle_svgrepo_com,
                         route = "help_support/$userId"
                     )
                     ProfileOption(
                         navController = navController,
+                        title = "Change Password",
+                        avatarID = R.drawable.icon9,
+                        route = "change_password/$userId"
+                    )
+                    ProfileOption(
+                        navController = navController,
                         title = "Sign out",
-                        avatarID = R.drawable.profile_icon_5,
+                        avatarID = R.drawable.sign_out_svgrepo_com,
                         route = "sign_in",
                         onClick = {
                             coroutineScope.launch {
