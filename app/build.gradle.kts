@@ -130,7 +130,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
 
     //Map
-        implementation("org.osmdroid:osmdroid-android:6.1.10")
+    implementation("org.osmdroid:osmdroid-android:6.1.10")
     implementation("org.slf4j:slf4j-android:1.7.30")
     implementation("com.github.MKergall:osmbonuspack:6.9.0")
 
@@ -142,8 +142,12 @@ dependencies {
     implementation("androidx.compose.runtime:runtime-livedata:1.5.4")
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
-
+    //Image loading
     implementation("io.coil-kt:coil-compose:2.4.0")
+    implementation(platform("com.google.firebase:firebase-bom:33.2.0"))
+    implementation("com.google.firebase:firebase-auth-ktx")
+
+
 }
 
 // Allow references to generated code

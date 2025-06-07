@@ -57,7 +57,7 @@ fun ChatScreen(
     }
 
     if (isLoading) {
-        ShimmerScreen(navController, userId, 2)
+        ShimmerScreen(navController, userId, 2, "Chat", R.drawable.chat_unread_svgrepo_com)
     } else {
         Scaffold(
             bottomBar = {
