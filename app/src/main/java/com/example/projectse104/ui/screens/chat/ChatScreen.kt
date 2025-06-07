@@ -1,9 +1,7 @@
 package com.example.projectse104.ui.screens.chat
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,8 +15,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -59,31 +55,22 @@ fun ChatScreen(
             )
         }
     }
-    Box(modifier = Modifier.fillMaxSize()) {
-        Image(
-            painter = painterResource(id = R.drawable.background),
-            contentDescription = "Background Image",
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.FillWidth,
-            alpha = 0.2f
-        )
+
     if (isLoading) {
-        ShimmerScreen(navController, userId, 2, "Chat", R.drawable.chat_unread_svgrepo_com)
+        ShimmerScreen(navController, userId, 2)
     } else {
         Scaffold(
             bottomBar = {
                 BottomNavigationBar(navController, userId, 2)
-            },
-            containerColor = Color.Transparent,
-            modifier = Modifier.fillMaxSize()
-        ){ innerPadding ->
+            }
+        ) { innerPadding ->
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color.Transparent)
+                    .background(Color.White)
                     .padding(innerPadding)
             ) {
-                Header("Chat", R.drawable.chat_unread_svgrepo_com)
+                Header("Chat", R.drawable.chat_icon_header)
 
                 LazyColumn(
                     modifier = Modifier
@@ -133,5 +120,4 @@ fun ChatScreen(
             }
         }
     }
-}
 }
