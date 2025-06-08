@@ -14,5 +14,7 @@
         val overallRating: Float,
         val coins: Int,
         val userCode: String,
-        val vehicleId: String? = null
+        val vehicleId: String? = null,
+        val is_email_verified: Boolean = false,
+        val firebaseUid: String? = null,
     )

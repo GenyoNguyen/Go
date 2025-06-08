@@ -8,6 +8,7 @@ plugins {
     id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
 
+
     kotlin("plugin.serialization") version "2.0.0"
 }
 
@@ -145,7 +146,8 @@ dependencies {
     //Image loading
     implementation("io.coil-kt:coil-compose:2.4.0")
     implementation(platform("com.google.firebase:firebase-bom:33.2.0"))
-    implementation("com.google.firebase:firebase-auth-ktx")
+    implementation("com.google.android.gms:play-services-auth:21.3.0")
+    implementation("com.google.firebase:firebase-auth")
 
 
 }

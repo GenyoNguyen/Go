@@ -1,14 +1,15 @@
 package com.example.projectse104.ui.screens.auth
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.projectse104.core.Response
-import com.example.projectse104.domain.model.User
 import com.example.projectse104.domain.use_case.auth.LoginUseCase
 import com.example.projectse104.domain.use_case.data.ValidationError
+import com.example.projectse104.domain.use_case.user.FirebaseAuthUseCase
 import com.example.projectse104.domain.use_case.data.ValidationEvent
 import com.example.projectse104.utils.DataStoreSessionManager
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,7 +20,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val loginUseCase: LoginUseCase,
+    private val loginUseCase: LoginUseCase, // Thêm LoginUseCase
     private val sessionManager: DataStoreSessionManager
 ) : ViewModel() {
 
@@ -55,7 +56,7 @@ class LoginViewModel @Inject constructor(
         if (state.email.isBlank()) {
             state = state.copy(emailError = ValidationError.EMPTY_FIELD)
             viewModelScope.launch {
-                validationEventChannel.send(ValidationEvent.Error(Exception("Email cannot be empty")))
+                validationEventChannel.send(ValidationEvent.Error(Exception("Email không được để trống")))
             }
             return
         }
@@ -63,7 +64,7 @@ class LoginViewModel @Inject constructor(
         if (!isValidEmail(state.email)) {
             state = state.copy(emailError = ValidationError.INVALID_EMAIL)
             viewModelScope.launch {
-                validationEventChannel.send(ValidationEvent.Error(Exception("Invalid email format")))
+                validationEventChannel.send(ValidationEvent.Error(Exception("Định dạng email không hợp lệ")))
             }
             return
         }
@@ -71,7 +72,7 @@ class LoginViewModel @Inject constructor(
         if (state.password.isBlank()) {
             state = state.copy(passwordError = ValidationError.EMPTY_FIELD)
             viewModelScope.launch {
-                validationEventChannel.send(ValidationEvent.Error(Exception("Password cannot be empty")))
+                validationEventChannel.send(ValidationEvent.Error(Exception("Mật khẩu không được để trống")))
             }
             return
         }
@@ -79,7 +80,7 @@ class LoginViewModel @Inject constructor(
         if (!isValidPassword(state.password)) {
             state = state.copy(passwordError = ValidationError.INVALID_PASSWORD)
             viewModelScope.launch {
-                validationEventChannel.send(ValidationEvent.Error(Exception("Password must be at least 6 characters")))
+                validationEventChannel.send(ValidationEvent.Error(Exception("Mật khẩu phải có ít nhất 6 ký tự")))
             }
             return
         }
@@ -92,29 +93,36 @@ class LoginViewModel @Inject constructor(
                         validationEventChannel.send(ValidationEvent.Loading)
                     }
                     is Response.Success -> {
-                        val user = response.data as? User
-                        if (user != null) {
+                        response.data?.let { user ->
+                            if (!user.is_email_verified) {
+                                state = state.copy(emailError = ValidationError.EMAIL_NOT_VERIFIED)
+                                validationEventChannel.send(ValidationEvent.Error(Exception("Email chưa được xác minh")))
+                                return@collect
+                            }
+                            Log.d("LoginViewModel", "Đăng nhập thành công cho UID: ${user.firebaseUid}")
                             sessionManager.saveUserSession(
                                 userId = user.id,
                                 email = user.email,
-                                userName = user.fullName
+                                userName = user.fullName ?: ""
                             )
                             validationEventChannel.send(ValidationEvent.Success(user.id))
-                        } else {
-                            validationEventChannel.send(ValidationEvent.Error(Exception("User data is missing")))
+                        } ?: run {
+                            Log.e("LoginViewModel", "Dữ liệu người dùng null trong Response.Success")
+                            validationEventChannel.send(ValidationEvent.Error(Exception("Dữ liệu người dùng bị thiếu")))
                         }
                     }
                     is Response.Failure -> {
-                        val errorMessage = response.e?.message ?: "Unknown error"
+                        Log.e("LoginViewModel", "Đăng nhập thất bại: ${response.e?.message}")
+                        val errorMessage = response.e?.message ?: "Lỗi không xác định"
                         when {
-                            errorMessage.contains("Invalid password") -> {
+                            errorMessage.contains("User with this email does not exist") -> {
+                                state = state.copy(emailError = ValidationError.INVALID_EMAIL)
+                            }
+                            errorMessage.contains("Incorrect password") -> {
                                 state = state.copy(passwordError = ValidationError.INVALID_PASSWORD)
                             }
-                            errorMessage.contains("Email cannot be empty") -> {
-                                state = state.copy(emailError = ValidationError.EMPTY_FIELD)
-                            }
-                            errorMessage.contains("Invalid email") -> {
-                                state = state.copy(emailError = ValidationError.INVALID_EMAIL)
+                            errorMessage.contains("Network error") -> {
+                                validationEventChannel.send(ValidationEvent.Error(Exception("Lỗi mạng")))
                             }
                             else -> {
                                 validationEventChannel.send(ValidationEvent.Error(Exception(errorMessage)))
