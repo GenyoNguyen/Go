@@ -1,59 +1,57 @@
 package com.example.projectse104.Component
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
+import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import com.example.projectse104.R
-import com.example.projectse104.ui.navigation.Screen
-import com.valentinilk.shimmer.shimmer
-import android.widget.Toast
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.platform.LocalContext
-import com.example.projectse104.core.Response
+
 @Composable
-fun BottomNavigationBar(navController: NavController, userId: String, activate: Int) {
+fun BottomNavigationBar(
+    navController: NavController,
+    userId: String,
+    activate: Int,
+    messageCount: Int = 0
+) {
     NavigationBar(
-        modifier = Modifier.fillMaxWidth()
-                           .height(60.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(60.dp),
         containerColor = Color.White // Nền trắng, không nổi bật
 
     ) {
         NavigationBarItem(
             icon = {
-                Icon(
-                    painter = painterResource(
-                        id = if (activate == 1) R.drawable.home_icon_active else R.drawable.home_icon
-                    ),
-                    contentDescription = "Home",
-                    modifier = Modifier.size(80.dp),
-                    tint = Color.Unspecified // Không thay màu icon
-                )
+                BadgedBox(
+                    badge = {
+                        if (messageCount > 0) {
+                            Badge {
+                                Text(text = messageCount.toString())
+                            }
+                        }
+                    }
+                ) {
+                    Icon(
+                        painter = painterResource(
+                            id = if (activate == 1) R.drawable.home_icon_active else R.drawable.home_icon
+                        ),
+                        contentDescription = "Home",
+                        modifier = Modifier.size(80.dp),
+                        tint = Color.Unspecified // Không thay màu icon
+                    )
+                }
             },
             selected = activate == 1,
             alwaysShowLabel = false, // ✅ Không hiển thị label

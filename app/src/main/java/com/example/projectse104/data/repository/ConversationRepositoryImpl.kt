@@ -61,31 +61,88 @@ class ConversationRepositoryImpl(
         Response.Failure(e)
     }
 
-    override suspend fun subscribeToMessages(conversationId: String): Flow<Message> = callbackFlow {
-        val dataFlow =
-            realtimeChannel.postgresChangeFlow<PostgresAction.Insert>(schema = "public") {
-                table = "Message"
-            }
-        println("Data flow: $dataFlow")
-
-        dataFlow.onEach {
-            try {
-                val message = it.decodeRecord<Message>()
-                if (message.conversationId == conversationId) {
-                    trySend(message)
+    override suspend fun subscribeToConversations(userId: String): Flow<Conversation> =
+        callbackFlow {
+            val dataFlow =
+                realtimeChannel.postgresChangeFlow<PostgresAction.Insert>(schema = "public") {
+                    table = "Conversation"
                 }
-            } catch (e: Exception) {
-                println("Error decoding message: ${e.message}")
-            }
-        }.launchIn(this)
+            println("Data flow: $dataFlow")
 
-        println("Subscribing to messages for conversation: $conversationId")
-        realtimeChannel.subscribe()
-        awaitClose {
-            println("Unsubscribing from messages for conversation: $conversationId")
-            runBlocking {
-                realtimeChannel.unsubscribe()
+            dataFlow.onEach {
+                try {
+                    val conversation = it.decodeRecord<Conversation>()
+                    if (conversation.firstUserId == userId || conversation.secondUserId == userId) {
+                        trySend(conversation)
+                    }
+                } catch (e: Exception) {
+                    println("Error decoding conversation: ${e.message}")
+                }
+            }.launchIn(this)
+
+            println("Subscribing to conversations for user: $userId")
+            realtimeChannel.subscribe()
+            awaitClose {
+                println("Unsubscribing from conversations for user: $userId")
+                runBlocking {
+                    realtimeChannel.unsubscribe()
+                }
             }
         }
-    }
+
+    override suspend fun subscribeToMessagesInConversation(conversationId: String): Flow<Message> =
+        callbackFlow {
+            val dataFlow =
+                realtimeChannel.postgresChangeFlow<PostgresAction.Insert>(schema = "public") {
+                    table = "Message"
+                }
+            println("Data flow: $dataFlow")
+
+            dataFlow.onEach {
+                try {
+                    val message = it.decodeRecord<Message>()
+                    if (message.conversationId == conversationId) {
+                        trySend(message)
+                    }
+                } catch (e: Exception) {
+                    println("Error decoding message: ${e.message}")
+                }
+            }.launchIn(this)
+
+            println("Subscribing to messages for conversation: $conversationId")
+            realtimeChannel.subscribe()
+            awaitClose {
+                println("Unsubscribing from messages for conversation: $conversationId")
+                runBlocking {
+                    realtimeChannel.unsubscribe()
+                }
+            }
+        }
+
+    override suspend fun subscribeToMessages(): Flow<Message> =
+        callbackFlow {
+            val dataFlow =
+                realtimeChannel.postgresChangeFlow<PostgresAction.Insert>(schema = "public") {
+                    table = "Message"
+                }
+            println("Data flow: $dataFlow")
+
+            dataFlow.onEach {
+                try {
+                    val message = it.decodeRecord<Message>()
+                    trySend(message)
+                } catch (e: Exception) {
+                    println("Error decoding message: ${e.message}")
+                }
+            }.launchIn(this)
+
+            println("Subscribing to messages")
+            realtimeChannel.subscribe()
+            awaitClose {
+                println("Unsubscribing from messages")
+                runBlocking {
+                    realtimeChannel.unsubscribe()
+                }
+            }
+        }
 }

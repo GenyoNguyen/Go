@@ -12,7 +12,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
+import com.example.projectse104.core.processNewChatMessages
+import com.example.projectse104.ui.navigation.components.sharedViewModel
 import com.example.projectse104.ui.screens.auth.ForgotPasswordScreen
 import com.example.projectse104.ui.screens.auth.LoginScreen
 import com.example.projectse104.ui.screens.auth.LoginSuccessfulScreen
@@ -23,6 +26,7 @@ import com.example.projectse104.ui.screens.auth.SignupScreen
 import com.example.projectse104.ui.screens.auth.VerifyEmailScreen
 import com.example.projectse104.ui.screens.chat.ChatDetailsScreen
 import com.example.projectse104.ui.screens.chat.ChatScreen
+import com.example.projectse104.ui.screens.chat.ChatViewModel
 import com.example.projectse104.ui.screens.history.HistoryScreen
 import com.example.projectse104.ui.screens.history.RideDetailsHistoryScreen
 import com.example.projectse104.ui.screens.history.RideDetailsRatingScreen
@@ -84,7 +88,7 @@ fun AppNavigation(navController: NavHostController) {
     if (isSessionChecked) {
         NavHost(
             navController,
-            startDestination = if (userInfo.isLoggedIn && userInfo.userId != null) "home/${userInfo.userId}" else Screen.Welcome.route
+            startDestination = if (userInfo.isLoggedIn && userInfo.userId != null) "main_graph/${userInfo.userId}" else Screen.Welcome.route
         ) {
             composable(Screen.Welcome.route) { WelcomeScreen(navController) }
             composable(Screen.OnBoarding1.route) { OnBoardingScreen1(navController) }
@@ -98,10 +102,21 @@ fun AppNavigation(navController: NavHostController) {
             ) { backStackEntry ->
                 val userId = backStackEntry.arguments?.getString("userId") ?: ""
                 LoginSuccessfulScreen(navController = navController, userId = userId)
-                }
+            }
+
+            // Screens that use shared viewModel
+            navigation(
+                startDestination = Screen.Home.route,
+                route = "main_graph/{userId}",
+                arguments = listOf(
+                    navArgument("userId") { type = NavType.StringType }
+                )
+            ) {
+
                 composable(
                     Screen.Home.route, // "home/{userId}"
-                    arguments = listOf(navArgument("userId") { type = NavType.StringType },
+                    arguments = listOf(
+                        navArgument("userId") { type = NavType.StringType },
                         navArgument("userName") {
                             type = NavType.StringType
                             defaultValue = "" // Giá trị mặc định nếu userName không được cung cấp
@@ -110,40 +125,111 @@ fun AppNavigation(navController: NavHostController) {
                     val userId = backStackEntry.arguments?.getString("userId") ?: ""
                     val userName = backStackEntry.arguments?.getString("userName") ?: ""
 
-                    HomeScreen(navController = navController, userId = userId,userName=userName)
+                    val viewModel = backStackEntry.sharedViewModel<ChatViewModel>(navController)
+                    val conversationListState by viewModel.conversationListState.collectAsState()
+
+                    LaunchedEffect(userId) {
+                        viewModel.initialize(userId) // Khởi tạo ViewModel với userId
+                    }
+
+                    val messageCount = processNewChatMessages(conversationListState)
+                    println("Loaded Home Screen")
+
+                    HomeScreen(
+                        navController = navController,
+                        userId = userId,
+                        userName = userName,
+                        messageCount = messageCount
+                    )
                 }
-            composable(Screen.ForgotPassword.route) { ForgotPasswordScreen(navController) }
-            composable(Screen.SignUpAndSignIn.route) { SignUpAndSignInScreen(navController) }
-            composable(Screen.VerifyEmail.route) { VerifyEmailScreen(navController) }
-            composable(Screen.NewPassword.route) { NewPasswordScreen(navController) }
-            composable(Screen.ResetPasswordSuccessful.route) {
-                ResetPasswordSuccessfulScreen(navController)
+                composable(
+                    Screen.Chat.route,
+                    arguments = listOf(navArgument("userId") { type = NavType.StringType })
+                ) { backStackEntry ->
+                    val userId = backStackEntry.arguments?.getString("userId") ?: ""
+
+                    val viewModel = backStackEntry.sharedViewModel<ChatViewModel>(navController)
+                    val conversationListState by viewModel.conversationListState.collectAsState()
+                    val messageCount = processNewChatMessages(conversationListState)
+
+                    ChatScreen(
+                        navController = navController,
+                        userId = userId,
+                        messageCount = messageCount,
+                        viewModel = viewModel
+                    )
+                }
+                composable(
+                    Screen.History.route,
+                    arguments = listOf(navArgument("userId") { type = NavType.StringType })
+                ) { backStackEntry ->
+                    val userId = backStackEntry.arguments?.getString("userId") ?: ""
+
+                    val viewModel = backStackEntry.sharedViewModel<ChatViewModel>(navController)
+                    val conversationListState by viewModel.conversationListState.collectAsState()
+                    val messageCount = processNewChatMessages(conversationListState)
+
+                    HistoryScreen(
+                        navController = navController,
+                        userId = userId,
+                        messageCount = messageCount
+                    )
+                }
+                composable(
+                    Screen.Profile.route, // "profile/{userId}"
+                    arguments = listOf(navArgument("userId") { type = NavType.StringType })
+                ) { backStackEntry ->
+                    val userId = backStackEntry.arguments?.getString("userId") ?: ""
+
+                    val viewModel = backStackEntry.sharedViewModel<ChatViewModel>(navController)
+                    val conversationListState by viewModel.conversationListState.collectAsState()
+                    val messageCount = processNewChatMessages(conversationListState)
+
+                    ProfileScreen(
+                        navController = navController,
+                        userId = userId,
+                        sessionManager = sessionManager,
+                        messageCount = messageCount
+                    )
+                }
+                composable(
+                    Screen.FindARide.route,
+                    arguments = listOf(
+                        navArgument("userId") { type = NavType.StringType },
+                        navArgument("userName") {
+                            type = NavType.StringType
+                            defaultValue = "" // Giá trị mặc định nếu userName không được cung cấp
+                        })
+                ) { backStackEntry ->
+                    val userId = backStackEntry.arguments?.getString("userId") ?: ""
+                    val userName = backStackEntry.arguments?.getString("userName") ?: ""
+
+                    FindARideScreen(
+                        navController = navController,
+                        userId = userId,
+                        userName = userName
+                    )
+                }
+                composable(
+                    Screen.OfferARide.route,
+                    arguments = listOf(
+                        navArgument("userId") { type = NavType.StringType },
+                        navArgument("userName") {
+                            type = NavType.StringType
+                            defaultValue = "" // Giá trị mặc định nếu userName không được cung cấp
+                        })
+                ) { backStackEntry ->
+                    val userId = backStackEntry.arguments?.getString("userId") ?: ""
+                    val userName = backStackEntry.arguments?.getString("userName") ?: ""
+
+                    OfferARideScreen(
+                        navController = navController,
+                        userId = userId,
+                        userName = userName
+                    )
+                }
             }
-            composable(
-                Screen.Chat.route,
-                arguments = listOf(navArgument("userId") { type = NavType.StringType })
-            ) { backStackEntry ->
-                val userId = backStackEntry.arguments?.getString("userId") ?: ""
-                ChatScreen(navController = navController, userId = userId)
-            }
-            composable(
-                Screen.History.route,
-                arguments = listOf(navArgument("userId") { type = NavType.StringType })
-            ) { backStackEntry ->
-                val userId = backStackEntry.arguments?.getString("userId") ?: ""
-                HistoryScreen(navController = navController, userId = userId)
-            }
-            composable(
-                Screen.Profile.route, // "profile/{userId}"
-                arguments = listOf(navArgument("userId") { type = NavType.StringType })
-            ) { backStackEntry ->
-                val userId = backStackEntry.arguments?.getString("userId") ?: ""
-                ProfileScreen(
-                    navController = navController,
-                    userId = userId,
-                    sessionManager = sessionManager
-                )
-            }
+
             composable(
                 Screen.ChangePassWord.route, // "change_password/{userId}"
                 arguments = listOf(navArgument("userId") { type = NavType.StringType })
@@ -151,18 +237,14 @@ fun AppNavigation(navController: NavHostController) {
                 val userId = backStackEntry.arguments?.getString("userId") ?: ""
                 ChangePasswordScreen(navController = navController, userId = userId)
             }
-            composable(
-                Screen.FindARide.route,
-                arguments = listOf(navArgument("userId") { type = NavType.StringType },
-                    navArgument("userName") {
-                        type = NavType.StringType
-                        defaultValue = "" // Giá trị mặc định nếu userName không được cung cấp
-                    })
-            ) { backStackEntry ->
-                val userId = backStackEntry.arguments?.getString("userId") ?: ""
-                val userName = backStackEntry.arguments?.getString("userName") ?: ""
 
-                FindARideScreen(navController = navController, userId = userId,userName=userName)
+            // Other screens
+            composable(Screen.ForgotPassword.route) { ForgotPasswordScreen(navController) }
+            composable(Screen.SignUpAndSignIn.route) { SignUpAndSignInScreen(navController) }
+            composable(Screen.VerifyEmail.route) { VerifyEmailScreen(navController) }
+            composable(Screen.NewPassword.route) { NewPasswordScreen(navController) }
+            composable(Screen.ResetPasswordSuccessful.route) {
+                ResetPasswordSuccessfulScreen(navController)
             }
             composable(
                 Screen.RideDetails.route,
@@ -217,7 +299,7 @@ fun AppNavigation(navController: NavHostController) {
                     riderName = riderName,
                     rideID = rideID,
                     userId = userId,
-                    rideNo=rideNo
+                    rideNo = rideNo
                 )
             }
             composable(
@@ -226,19 +308,6 @@ fun AppNavigation(navController: NavHostController) {
             ) { backStackEntry ->
                 val userId = backStackEntry.arguments?.getString("userId") ?: ""
                 BookingSuccessfulScreen(navController = navController, userId = userId)
-            }
-            composable(
-                Screen.OfferARide.route,
-                arguments = listOf(navArgument("userId") { type = NavType.StringType },
-                    navArgument("userName") {
-                        type = NavType.StringType
-                        defaultValue = "" // Giá trị mặc định nếu userName không được cung cấp
-                    })
-            ) { backStackEntry ->
-                val userId = backStackEntry.arguments?.getString("userId") ?: ""
-                val userName = backStackEntry.arguments?.getString("userName") ?: ""
-
-                OfferARideScreen(navController = navController, userId = userId,userName=userName)
             }
             composable(
                 Screen.OfferDetails.route,

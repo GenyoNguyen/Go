@@ -4,53 +4,62 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.projectse104.core.Response
-import com.example.projectse104.core.USER_ID_FIELD
 import com.example.projectse104.domain.repository.ConversationsWithLastMessageResponse
 import com.example.projectse104.domain.use_case.conversation.GetConversationListWithLastMessageUseCase
+import com.example.projectse104.domain.use_case.conversation.SubscribeToConversationsUseCase
 import com.example.projectse104.domain.use_case.user.LoadUserAva
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class ChatViewModel @Inject constructor(
     private val loadUserAva: LoadUserAva,
-    private val getConversationListWithLastMessageUseCase: GetConversationListWithLastMessageUseCase,
+    private val subscribeToConversationsUseCase: SubscribeToConversationsUseCase,
+    private val getConversationListWithLastMessageUseCase:
+    GetConversationListWithLastMessageUseCase,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
-    private val _conversationListState = MutableStateFlow<ConversationsWithLastMessageResponse>(Response.Loading)
+    private val _conversationListState =
+        MutableStateFlow<ConversationsWithLastMessageResponse>(Response.Loading)
     val conversationListState = _conversationListState.asStateFlow()
 
     private val _avatarUrls = MutableStateFlow<Map<String, Response<String>?>>(emptyMap())
     val avatarUrls = _avatarUrls.asStateFlow()
 
-    init {
-        savedStateHandle.get<String>(USER_ID_FIELD)?.let { userId ->
-            getConversationList(userId)
-            loadAvatar(userId) // Tải avatar cho người dùng hiện tại
-        }
+    private var _initialized = false
+
+    fun initialize(userId: String) {
+        if (_initialized) return
+        println("ChatViewModel initialized")
+        println("User ID from saved state: $userId")
+        getConversationList(userId)
+        loadAvatar(userId) // Tải avatar cho người dùng hiện tại
+        _initialized = true
     }
 
     private fun getConversationList(userId: String) {
-        viewModelScope.launch {
-            getConversationListWithLastMessageUseCase(userId)
-                .collect { response ->
-                    _conversationListState.value = response
-                    // Tải avatar cho tất cả otherId khi danh sách cuộc trò chuyện được cập nhật
-                    if (response is Response.Success) {
-                        response.data?.forEach { conversation ->
-                            val otherId = if (conversation.conversation!!.firstUserId == userId) {
-                                conversation.conversation.secondUserId
-                            } else {
-                                conversation.conversation.firstUserId
-                            }
-                            loadAvatar(otherId)
+        getConversationListWithLastMessageUseCase(userId)
+            .onEach { response ->
+                _conversationListState.value = response
+                println("Conversation list updated with response: $response")
+                // Tải avatar cho tất cả otherId khi danh sách cuộc trò chuyện được cập nhật
+                if (response is Response.Success) {
+                    response.data?.forEach { conversation ->
+                        val otherId = if (conversation.conversation!!.firstUserId == userId) {
+                            conversation.conversation.secondUserId
+                        } else {
+                            conversation.conversation.firstUserId
                         }
+                        loadAvatar(otherId)
+                        println("Loaded conversations with length ${response.data.size}")
                     }
                 }
-        }
+            }.launchIn(viewModelScope)
     }
 
     private fun loadAvatar(userId: String) {

@@ -16,7 +16,9 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -25,29 +27,27 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.projectse104.Component.BottomNavigationBar
 import com.example.projectse104.Component.RideItem
 import com.example.projectse104.Component.ToastMessage
 import com.example.projectse104.R
 import com.example.projectse104.core.Response
+import com.example.projectse104.core.toCustomString
+import com.example.projectse104.domain.model.RideWithRideOfferWithLocation
 import com.example.projectse104.domain.model.User
 import com.example.projectse104.ui.screens.home.Component.HomeHeader
 import com.example.projectse104.ui.screens.home.Component.ShimmerHomeScreen
 import com.example.projectse104.ui.screens.home.Component.TopNavBar
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.projectse104.core.toCustomString
-import com.example.projectse104.domain.model.RideWithRideOfferWithLocation
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.snapshotFlow
 
 @Composable
 fun HomeScreen(
     navController: NavController,
     userId: String,
     userName: String = "",
+    messageCount: Int,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val rideListState by viewModel.rideListState.collectAsStateWithLifecycle()
@@ -67,10 +67,12 @@ fun HomeScreen(
             is Response.Success<User> -> {
                 finalUserName = state.data?.fullName.toString().split(" ").last()
             }
+
             is Response.Failure -> {
                 errorMessage = "Không thể tải thông tin người dùng. Vui lòng thử lại!"
                 showErrorToast = true
             }
+
             else -> {}
         }
     }
@@ -80,10 +82,12 @@ fun HomeScreen(
         is Response.Success<List<RideWithRideOfferWithLocation>> -> {
             rides = state.data.orEmpty()
         }
+
         is Response.Failure -> {
             errorMessage = "Không thể tải danh sách chuyến đi. Vui lòng thử lại!"
             showErrorToast = true
         }
+
         is Response.Loading, is Response.Idle -> {}
     }
 
@@ -108,7 +112,7 @@ fun HomeScreen(
             )
             Scaffold(
                 bottomBar = {
-                    BottomNavigationBar(navController, userId, 1)
+                    BottomNavigationBar(navController, userId, 1, messageCount)
                 },
                 containerColor = Color.Transparent,
                 modifier = Modifier.fillMaxSize()
@@ -213,7 +217,8 @@ fun HomeScreen(
                         snapshotFlow { listState.layoutInfo }
                             .collect { layoutInfo ->
                                 val totalItems = layoutInfo.totalItemsCount
-                                val lastVisibleItem = layoutInfo.visibleItemsInfo.lastOrNull()?.index
+                                val lastVisibleItem =
+                                    layoutInfo.visibleItemsInfo.lastOrNull()?.index
                                 if (lastVisibleItem != null && lastVisibleItem >= totalItems - 1 && viewModel.hasMoreData() && !isLoadingMore) {
                                     viewModel.loadMoreRides(userId)
                                 }
