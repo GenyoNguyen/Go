@@ -6,4 +6,5 @@ sealed class SignupFormEvent {
     data class PasswordChanged(val password: String) : SignupFormEvent()
     data class ConfirmPasswordChanged(val confirmPassword: String) : SignupFormEvent()
     data object Submit : SignupFormEvent()
+    data object VerifyEmail : SignupFormEvent()
 }

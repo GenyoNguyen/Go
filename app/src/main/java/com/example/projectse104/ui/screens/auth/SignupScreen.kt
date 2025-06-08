@@ -1,8 +1,11 @@
 package com.example.projectse104.ui.screens.auth
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -29,16 +32,22 @@ fun SignupScreen(
 ) {
     val state = viewModel.state
     val context = LocalContext.current
+    var showVerificationDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(key1 = context) {
         viewModel.validationEvents.collect { event ->
             when (event) {
                 is ValidationEvent.Success -> {
-                    showToastMessage(context, "Sign up successful")
+                    showToastMessage(context, "Email verified successfully")
                     navController.navigate(Screen.SignIn.route)
+                }
+                is ValidationEvent.PendingVerification -> {
+                    Log.d("SignupScreen", "Showing verification dialog")
+                    showVerificationDialog = true
                 }
                 is ValidationEvent.Error -> {
                     showToastMessage(context, "Error: ${event.e?.message ?: "Unknown error"}")
+                    showVerificationDialog = false // Đóng dialog nếu có lỗi
                 }
                 is ValidationEvent.Loading -> {
                     showToastMessage(context, "Loading...")
@@ -125,5 +134,26 @@ fun SignupScreen(
         SocialMedia()
 
         Spacer(modifier = Modifier.height(32.dp))
+
+        if (showVerificationDialog) {
+            AlertDialog(
+                onDismissRequest = { showVerificationDialog = false },
+                title = { Text("Verify Email") },
+                text = { Text("An email has been sent to ${state.email}. Please verify your email to continue.") },
+                confirmButton = {
+                    Button(onClick = {
+                        viewModel.onEvent(SignupFormEvent.VerifyEmail)
+                        showVerificationDialog = false
+                    }) {
+                        Text("Check Verification")
+                    }
+                },
+                dismissButton = {
+                    Button(onClick = { showVerificationDialog = false }) {
+                        Text("Cancel")
+                    }
+                }
+            )
+        }
     }
 }
