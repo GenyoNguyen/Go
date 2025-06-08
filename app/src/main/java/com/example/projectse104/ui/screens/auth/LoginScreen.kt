@@ -3,6 +3,8 @@ package com.example.projectse104.ui.screens.auth
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -30,26 +32,33 @@ fun LoginScreen(
 ) {
     val state = viewModel.state
     val context = LocalContext.current
+    var showVerificationDialog by remember { mutableStateOf(false) } // Thêm trạng thái cho hộp thoại
 
     LaunchedEffect(key1 = context) {
         viewModel.validationEvents.collect { event ->
             when (event) {
                 is ValidationEvent.Success -> {
-                    showToastMessage(context, "Login successful")
+                    showToastMessage(context, "Đăng nhập thành công")
                     navController.navigate("login_successful/${event.userId}") {
                         popUpTo(Screen.SignIn.route) { inclusive = true }
                     }
                 }
                 is ValidationEvent.Error -> {
-                    showToastMessage(context, "Error: ${event.e?.message ?: "Unknown error"}")
+                    if (event.e?.message?.contains("Email chưa được xác minh") == true) {
+                        showVerificationDialog = true // Hiển thị hộp thoại nếu email chưa xác minh
+                    } else {
+                        showToastMessage(context, "Lỗi: ${event.e?.message ?: "Lỗi không xác định"}")
+                    }
                 }
                 is ValidationEvent.Loading -> {
-                    showToastMessage(context, "Loading...")
+                    showToastMessage(context, "Đang tải...")
+                }
+                is ValidationEvent.PendingVerification -> {
+                    // Không dùng trong login, nhưng giữ cho tương thích
                 }
             }
         }
     }
-
 
     Column(
         modifier = Modifier
@@ -60,7 +69,7 @@ fun LoginScreen(
         Spacer(modifier = Modifier.height(40.dp))
 
         Text(
-            text = "Sign In",
+            text = "Đăng nhập",
             fontSize = 26.sp,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Start,
@@ -70,7 +79,6 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(6.dp))
 
-
         CustomTextFieldWithLabel(
             label = "EMAIL",
             value = state.email,
@@ -78,40 +86,37 @@ fun LoginScreen(
             error = state.emailError
         )
 
-
         CustomPasswordTextField(
-            label = "Password",
+            label = "Mật khẩu",
             value = state.password,
             onValueChange = { viewModel.onEvent(LoginFormEvent.PasswordChanged(it)) },
             error = state.passwordError
         )
-
 
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.End
         ) {
             Text(
-                text = "Forgot password?",
+                text = "Quên mật khẩu?",
                 color = Color(0xFF8FC79A),
                 fontSize = 14.sp,
                 modifier = Modifier.clickable { navController.navigate("forgot_password") }.padding(24.dp)
             )
         }
 
-
         BigButton(
             navController = navController,
-            text = "SIGN IN",
+            text = "ĐĂNG NHẬP",
             onClick = { viewModel.onEvent(LoginFormEvent.Submit) },
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
         Row {
-            Text(text = "Don't have an account? ", fontSize = 14.sp, color = Color.Gray)
+            Text(text = "Chưa có tài khoản? ", fontSize = 14.sp, color = Color.Gray)
             Text(
-                text = "Sign up.",
+                text = "Đăng ký.",
                 fontSize = 14.sp,
                 color = Color(0xFF8FC79A),
                 modifier = Modifier.clickable { navController.navigate(Screen.SignUp.route) }
@@ -123,5 +128,21 @@ fun LoginScreen(
         SocialMedia()
 
         Spacer(modifier = Modifier.height(32.dp))
+    }
+
+    if (showVerificationDialog) {
+        AlertDialog(
+            onDismissRequest = { showVerificationDialog = false },
+            title = { Text("Xác minh Email") },
+            text = { Text("Email của bạn chưa được xác minh. Vui lòng kiểm tra email để xác minh tài khoản.") },
+            confirmButton = {
+                Button(onClick = {
+                    showVerificationDialog = false
+                    // Có thể điều hướng đến màn hình xác minh hoặc gửi lại email xác minh qua Firebase nếu cần
+                }) {
+                    Text("Đã hiểu")
+                }
+            }
+        )
     }
 }

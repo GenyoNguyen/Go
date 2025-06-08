@@ -1,5 +1,6 @@
 package com.example.projectse104.data.repository
 
+import android.util.Log
 import com.example.projectse104.core.ID_FIELD
 import com.example.projectse104.core.Response
 import com.example.projectse104.domain.model.User
@@ -85,4 +86,18 @@ class UserRepositoryImpl @Inject constructor(
     } catch (e: Exception) {
         Response.Failure(Exception("Failed to upload profile picture: ${e.message}"))
     }
+    override suspend fun updateEmailVerificationStatus(userId: String, isVerified: Boolean): Response<Unit> = try {
+        Log.d("UserRepository", "Updating is_email_verified for firebase_uid: $userId")
+        usersRef.update({
+            set("is_email_verified", isVerified)
+        }) {
+            filter { eq("firebaseUid", userId) }
+        }
+        Log.d("UserRepository", "Email verification status updated successfully")
+        Response.Success(Unit)
+    } catch (e: Exception) {
+        Log.e("UserRepository", "Failed to update email verification: ${e.message}", e)
+        Response.Failure(Exception(e.message ?: "Failed to update verification status"))
+    }
 }
+

@@ -22,4 +22,6 @@ interface UserRepository {
 
     suspend fun uploadProfilePic(userId: String, imageUri: String): UploadProfilePicResponse
 
+    suspend fun updateEmailVerificationStatus(firebaseUid: String, isVerified: Boolean): Response<Unit>
+
 }

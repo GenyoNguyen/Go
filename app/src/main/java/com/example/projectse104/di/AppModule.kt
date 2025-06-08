@@ -28,6 +28,7 @@ import com.example.projectse104.domain.use_case.validation.ValidatePhoneNumber
 import com.example.projectse104.domain.use_case.validation.ValidateConfirmPassword
 import com.example.projectse104.domain.use_case.validation.ValidatePassword
 import com.example.projectse104.utils.DataStoreSessionManager
+import com.google.firebase.auth.FirebaseAuth
 import io.github.jan.supabase.postgrest.query.PostgrestQueryBuilder
 import io.github.jan.supabase.postgrest.postgrest
 import dagger.Module
@@ -47,6 +48,10 @@ import io.github.jan.supabase.realtime.realtime
 import io.github.jan.supabase.serializer.KotlinXSerializer
 import kotlinx.serialization.json.Json
 import kotlin.time.Duration.Companion.seconds
+import com.example.projectse104.data.repository.FirebaseAuthRepositoryImpl
+import com.example.projectse104.domain.repository.FirebaseAuthRepository
+import com.example.projectse104.domain.use_case.user.FirebaseAuthUseCase
+import com.example.projectse104.domain.use_case.user.UpdateEmailVerificationUseCase
 
 const val USER = "User"
 const val RIDE = "Ride"
@@ -197,5 +202,23 @@ object AppModule {
         return VerifyCurrentPasswordUseCase(userLogin)
     }
 
+    @Provides
+    fun provideFirebaseAuth(): FirebaseAuth {
+        return FirebaseAuth.getInstance()
+    }
+
+    @Provides
+    fun provideFirebaseAuthRepository(firebaseAuth: FirebaseAuth): FirebaseAuthRepository {
+        return FirebaseAuthRepositoryImpl(firebaseAuth)
+    }
+
+    @Provides
+    fun provideFirebaseAuthUseCase(firebaseAuthRepository: FirebaseAuthRepository): FirebaseAuthUseCase {
+        return FirebaseAuthUseCase(firebaseAuthRepository)
+    }
+    @Provides
+    fun provideUpdateEmailVerificationUseCase(userRepository: UserRepository): UpdateEmailVerificationUseCase {
+        return UpdateEmailVerificationUseCase(userRepository)
+    }
 
 }
