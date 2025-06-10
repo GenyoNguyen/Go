@@ -24,6 +24,7 @@ import com.example.projectse104.core.Response
 import com.example.projectse104.domain.model.UserLocationWithLocation
 import com.example.projectse104.ui.screens.profile.Component.SavedLocation
 import com.example.projectse104.ui.screens.profile.Component.ShimmerSavedLocationScreen
+import androidx.compose.runtime.LaunchedEffect
 
 @Composable
 fun SavedLocationScreen(
@@ -58,7 +59,15 @@ fun SavedLocationScreen(
 
         else -> {}
     }
-
+    LaunchedEffect(navController) {
+        navController.currentBackStackEntry?.savedStateHandle?.getLiveData<Boolean>("address_added")
+            ?.observeForever { addressAdded ->
+                if (addressAdded == true) {
+                    viewModel.getSavedLocationList(userId)
+                    navController.currentBackStackEntry?.savedStateHandle?.set("address_added", false)
+                }
+            }
+    }
     if (isLoading) {
         ShimmerSavedLocationScreen(navController)
     } else {
@@ -90,7 +99,7 @@ fun SavedLocationScreen(
                 BigButton(
                     navController = navController,
                     text = "ADD NEW ADDRESS",
-                    onClick = {navController.navigate("add_new_address/{userId}")}
+                    onClick = {navController.navigate("add_new_address/{$userId}")}
                 )
             }
 

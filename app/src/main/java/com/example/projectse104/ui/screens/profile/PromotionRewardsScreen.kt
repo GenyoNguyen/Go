@@ -29,7 +29,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import com.example.projectse104.Component.BackArrowWithText
 import com.example.projectse104.Component.BottomNavigationBar
 import com.example.projectse104.Component.ToastMessage
@@ -41,26 +44,20 @@ import com.example.projectse104.ui.screens.profile.Component.RedeemCodeInputhBar
 import com.example.projectse104.ui.screens.profile.Component.ShimmerPromotionRewardsScreen
 
 @Composable
-fun PromotionRewardsScreen(navController: NavController, userId: String) {
-    var keCoins: String = "2909"
-    var avatarID: Int = R.drawable.avatar_1
+fun PromotionRewardsScreen(navController: NavController,
+                           userId: String,
+                           viewModel: PromotionRewardsViewModel = hiltViewModel()) {
+    val userState by viewModel.userState.collectAsStateWithLifecycle()
+
+    var keCoins: String = "0"
     var redeemCode by remember { mutableStateOf("") } // Quản lý trạng thái nhập văn bản
+    var avatarURL: String = "https://ouanezsrnbseuupwngww.supabase.co/storage/v1/object/public/profile-picture//b05ac6de-ceaf-426d-bd51-226a9c14a3ba1749179372191.jpg"
     var isLoading: Boolean = true
     var loadingFailed: Boolean = false
-    val state: Response<User> = Response.Success(
-        User(
-            id = userId, fullName = "Nguyễn Xuân Phúc",
-            email = "nguyenxuanphuc010205@gmail.com",
-            profilePic = R.drawable.avatar.toString(),
-            overallRating = 5.0f, userCode = "kzdf2",
-            coins = keCoins.toInt(),
-            vehicleId = "Lmao"
-        )
-    )
-    when (state) {
+    when (userState) {
         is Response.Success<User> -> {
-            avatarID = state.data?.profilePic?.toIntOrNull() ?: R.drawable.avatar
-            keCoins = state.data?.coins.toString()
+            avatarURL = (userState as? Response.Success<User>)?.data?.profilePic?.toString() ?: ""
+            keCoins = (userState as? Response.Success<User>)?.data?.coins.toString()
             isLoading = false
             loadingFailed = false
         }
@@ -89,14 +86,16 @@ fun PromotionRewardsScreen(navController: NavController, userId: String) {
             BackArrowWithText(navController, "Promotion & Rewards")
 
             Spacer(modifier = Modifier.height(20.dp))
-
-            Row(modifier = Modifier.fillMaxWidth(), Arrangement.Center) {
-                Image(
-                    painter = painterResource(id = avatarID), // Ensure this is a valid drawable resource
-                    contentDescription = "Profile Avatar",
-                    modifier = Modifier.size(100.dp)
-                )
-            }
+                    Row(modifier = Modifier.fillMaxWidth(), Arrangement.Center) {
+                        AsyncImage(
+                            model = avatarURL,
+                            contentDescription = "Profile Avatar",
+                            modifier = Modifier
+                                .size(100.dp)
+                                .clip(RoundedCornerShape(50.dp)),
+                            // Optionally add contentScale or placeholder/error
+                        )
+                    }
 
             Spacer(modifier = Modifier.height(30.dp))
 

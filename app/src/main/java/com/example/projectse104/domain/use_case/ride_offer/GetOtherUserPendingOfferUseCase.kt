@@ -16,32 +16,25 @@ class GetOtherUserPendingOfferUseCase @Inject constructor(
     operator fun invoke(userId: String, page: Int, limit: Int): Flow<Response<List<RideOfferWithLocation>>> =
         flow {
             emit(Response.Loading)
+            val startTime = System.currentTimeMillis()
             when (val rideOfferListResponse = rideOfferRepository.getRideOfferListByOtherUser(
                 userId, "PENDING", page, limit
             )) {
                 is Response.Success<List<RideOffer>> -> {
-                    println("Response is success for page $page")
-                    val rideOfferList = rideOfferListResponse.data
-                    val rideOfferWithLocationList = mutableListOf<RideOfferWithLocation>()
-                    rideOfferList?.forEach { ride ->
-                        val startLocation = ride.startLocationId?.let { locationId ->
-                            when (val locationResponse = locationRepository.getLocation(locationId)) {
-                                is Response.Success -> locationResponse.data?.name ?: ""
-                                else -> ""
-                            }
-                        } ?: ""
-                        val endLocation = ride.endLocationId?.let { locationId ->
-                            when (val locationResponse = locationRepository.getLocation(locationId)) {
-                                is Response.Success -> locationResponse.data?.name ?: ""
-                                else -> ""
-                            }
-                        } ?: ""
-                        rideOfferWithLocationList.add(
-                            RideOfferWithLocation(
-                                rideOffer = ride,
-                                startLocation = startLocation,
-                                endLocation = endLocation,
-                            )
+                    println("Time to fetch ride offers: ${System.currentTimeMillis() - startTime}ms")
+                    val rideOfferList = rideOfferListResponse.data ?: emptyList()
+                    val locationStartTime = System.currentTimeMillis()
+                    val locationIds = rideOfferList.flatMap { listOfNotNull(it.startLocationId, it.endLocationId) }.distinct()
+                    val locationMap = when (val locationResponse = locationRepository.getLocationListByIds(locationIds)) {
+                        is Response.Success -> locationResponse.data?.associateBy { it.id } ?: emptyMap()
+                        else -> emptyMap()
+                    }
+                    println("Time to fetch locations: ${System.currentTimeMillis() - locationStartTime}ms")
+                    val rideOfferWithLocationList = rideOfferList.map { ride ->
+                        RideOfferWithLocation(
+                            rideOffer = ride,
+                            startLocation = locationMap[ride.startLocationId]?.name ?: "",
+                            endLocation = locationMap[ride.endLocationId]?.name ?: ""
                         )
                     }
                     emit(Response.Success(rideOfferWithLocationList))

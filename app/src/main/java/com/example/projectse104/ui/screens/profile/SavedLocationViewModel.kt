@@ -1,3 +1,4 @@
+
 package com.example.projectse104.ui.screens.profile
 
 import androidx.lifecycle.SavedStateHandle
@@ -17,8 +18,9 @@ import javax.inject.Inject
 @HiltViewModel
 class SavedLocationViewModel @Inject constructor(
     private val getSavedLocationListUseCase: GetSavedLocationListUseCase,
-    savedStateHandle: SavedStateHandle
+    private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
+    private var currentUserId: String? = null
 
     private val _savedLocationListState =
         MutableStateFlow<UserLocationWithLocationListResponse>(Response.Loading)
@@ -29,14 +31,17 @@ class SavedLocationViewModel @Inject constructor(
 
     init {
         savedStateHandle.get<String>(USER_ID_FIELD)?.let { userId ->
+            currentUserId = userId
             getSavedLocationList(userId)
         }
     }
 
-    private fun getSavedLocationList(userId: String) {
-        getSavedLocationListUseCase(userId).onEach { result ->
-            _savedLocationListState.value = result
-        }.launchIn(viewModelScope)
+    fun getSavedLocationList(userId: String? = currentUserId) {
+        userId?.let {
+            getSavedLocationListUseCase(it).onEach { result ->
+                _savedLocationListState.value = result
+            }.launchIn(viewModelScope)
+        }
     }
 
     fun setLoading(isLoading: Boolean) {

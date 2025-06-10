@@ -20,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -34,8 +35,10 @@ import com.example.projectse104.*
 import com.example.projectse104.Component.*
 import com.valentinilk.shimmer.shimmer
 import com.valentinilk.shimmer.rememberShimmer
+import coil.compose.AsyncImage
+
 @Composable
-fun favouriteRider(navController: NavController,userId:String,riderName:String,avatarID:Int,conversationId:String) {
+fun favouriteRider(navController: NavController, userId: String, riderName: String, avatarURL: String, conversationId: String) {
     Column(modifier = Modifier.fillMaxWidth()) {
         Row(
             modifier = Modifier
@@ -44,11 +47,14 @@ fun favouriteRider(navController: NavController,userId:String,riderName:String,a
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Image(
-                painter = painterResource(id = avatarID), // Ensure this is a valid drawable resource
+            AsyncImage(
+                model = avatarURL,
                 contentDescription = "Profile Avatar",
                 modifier = Modifier
                     .size(80.dp)
+                    .clip(CircleShape)
+                    .border(2.dp, Color(0xFFE0E0E0), CircleShape),
+                contentScale = ContentScale.Crop
             )
             Spacer(modifier = Modifier.width(50.dp))
             Text(
@@ -63,7 +69,7 @@ fun favouriteRider(navController: NavController,userId:String,riderName:String,a
                 modifier = Modifier.size(16.dp).clickable { navController.navigate("chat_details/$userId/$conversationId") },
             )
         }
-        Spacer(modifier=Modifier.height(5.dp))
+        Spacer(modifier = Modifier.height(5.dp))
         Divider(color = Color(0XFF35B82A), thickness = 1.dp)
     }
 }
