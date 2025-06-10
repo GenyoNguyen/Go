@@ -34,24 +34,14 @@ fun BottomNavigationBar(
     ) {
         NavigationBarItem(
             icon = {
-                BadgedBox(
-                    badge = {
-                        if (messageCount > 0) {
-                            Badge {
-                                Text(text = messageCount.toString())
-                            }
-                        }
-                    }
-                ) {
-                    Icon(
-                        painter = painterResource(
-                            id = if (activate == 1) R.drawable.home_icon_active else R.drawable.home_icon
-                        ),
-                        contentDescription = "Home",
-                        modifier = Modifier.size(80.dp),
-                        tint = Color.Unspecified // Không thay màu icon
-                    )
-                }
+                Icon(
+                    painter = painterResource(
+                        id = if (activate == 1) R.drawable.home_icon_active else R.drawable.home_icon
+                    ),
+                    contentDescription = "Home",
+                    modifier = Modifier.size(80.dp),
+                    tint = Color.Unspecified // Không thay màu icon
+                )
             },
             selected = activate == 1,
             alwaysShowLabel = false, // ✅ Không hiển thị label
@@ -65,14 +55,24 @@ fun BottomNavigationBar(
 
         NavigationBarItem(
             icon = {
-                Icon(
-                    painter = painterResource(
-                        id = if (activate == 2) R.drawable.chat_icon_active else R.drawable.chat_icon
-                    ),
-                    contentDescription = "Chat",
-                    modifier = Modifier.size(80.dp),
-                    tint = Color.Unspecified
-                )
+                BadgedBox(
+                    badge = {
+                        if (messageCount > 0) {
+                            Badge {
+                                Text(text = messageCount.toString())
+                            }
+                        }
+                    }
+                ) {
+                    Icon(
+                        painter = painterResource(
+                            id = if (activate == 2) R.drawable.chat_icon_active else R.drawable.chat_icon
+                        ),
+                        contentDescription = "Chat",
+                        modifier = Modifier.size(80.dp),
+                        tint = Color.Unspecified
+                    )
+                }
             },
             selected = activate == 2,
             alwaysShowLabel = false,

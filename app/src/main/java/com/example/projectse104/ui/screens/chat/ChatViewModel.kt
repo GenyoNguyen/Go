@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.projectse104.core.Response
 import com.example.projectse104.domain.repository.ConversationsWithLastMessageResponse
-import com.example.projectse104.domain.use_case.conversation.GetConversationListWithLastMessageUseCase
 import com.example.projectse104.domain.use_case.conversation.SubscribeToConversationsUseCase
 import com.example.projectse104.domain.use_case.user.LoadUserAva
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,8 +19,6 @@ import javax.inject.Inject
 class ChatViewModel @Inject constructor(
     private val loadUserAva: LoadUserAva,
     private val subscribeToConversationsUseCase: SubscribeToConversationsUseCase,
-    private val getConversationListWithLastMessageUseCase:
-    GetConversationListWithLastMessageUseCase,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     private val _conversationListState =
@@ -43,7 +40,7 @@ class ChatViewModel @Inject constructor(
     }
 
     private fun getConversationList(userId: String) {
-        getConversationListWithLastMessageUseCase(userId)
+        subscribeToConversationsUseCase(userId)
             .onEach { response ->
                 _conversationListState.value = response
                 println("Conversation list updated with response: $response")
