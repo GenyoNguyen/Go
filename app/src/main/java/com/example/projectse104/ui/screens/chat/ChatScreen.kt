@@ -1,5 +1,6 @@
 package com.example.projectse104.ui.screens.chat
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -7,7 +8,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.TextButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -19,11 +23,9 @@ import androidx.navigation.NavController
 import com.example.projectse104.Component.BottomNavigationBar
 import com.example.projectse104.Component.Header
 import com.example.projectse104.Component.ShimmerScreen
-import com.example.projectse104.Component.ToastMessage
 import com.example.projectse104.R
 import com.example.projectse104.core.Response
 import com.example.projectse104.core.toCustomString
-import com.example.projectse104.domain.model.ConversationWithLastMessage
 import com.example.projectse104.ui.screens.chat.Component.ChatItem
 
 @Composable
@@ -34,28 +36,9 @@ fun ChatScreen(
     viewModel: ChatViewModel = hiltViewModel()
 ) {
     val conversationListState by viewModel.conversationListState.collectAsStateWithLifecycle()
+    Log.d("ChatScreen", "Conversation List State Updated")
     val avatarUrls by viewModel.avatarUrls.collectAsStateWithLifecycle()
-    var isLoading = true
-    var conversationWithLastMessageList = listOf<ConversationWithLastMessage>()
-
-    when (val state = conversationListState) {
-        is Response.Success -> {
-            conversationWithLastMessageList = state.data.orEmpty()
-            println("Length of conversation list: ${conversationWithLastMessageList.size}")
-            isLoading = false
-        }
-
-        is Response.Loading -> {
-            isLoading = true
-        }
-
-        else -> {
-            ToastMessage(
-                message = "Không thể tải dữ liệu. Vui lòng thử lại!",
-                show = true
-            )
-        }
-    }
+    val isLoading = false
 
     if (isLoading) {
         ShimmerScreen(navController, userId, 2, "Chat", R.drawable.chat_unread_svgrepo_com)
@@ -65,6 +48,7 @@ fun ChatScreen(
                 BottomNavigationBar(navController, userId, 2, messageCount)
             }
         ) { innerPadding ->
+
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -72,7 +56,11 @@ fun ChatScreen(
                     .padding(innerPadding)
             ) {
                 Header("Chat", R.drawable.chat_icon_header)
-
+                TextButton(onClick = {
+                    Log.d("ChatScreen", "Current state: $conversationListState")
+                }) {
+                    Text("Log Conversation List State")
+                }
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -81,9 +69,9 @@ fun ChatScreen(
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     items(
-                        conversationWithLastMessageList.size,
-                        key = { conversationWithLastMessageList[it].conversation!!.id }) { index ->
-                        val conversation = conversationWithLastMessageList[index]
+                        conversationListState,
+                        key = { it.conversation?.id ?: it.hashCode() }
+                    ) { conversation ->
                         val otherId = if (conversation.conversation!!.firstUserId == userId) {
                             conversation.conversation.secondUserId
                         } else {
@@ -96,11 +84,10 @@ fun ChatScreen(
                         val haveSeen = conversation.lastMessage?.isRead ?: false
                         val isOnline = true // TODO: Implement online function
 
-                        // Lấy avatar cho otherId
                         val profilePicUrl = avatarUrls[otherId]?.let { response ->
                             when (response) {
                                 is Response.Success -> response.data
-                                is Response.Loading -> null // Có thể hiển thị placeholder
+                                is Response.Loading -> null
                                 is Response.Failure -> null
                                 Response.Idle -> TODO()
                             }

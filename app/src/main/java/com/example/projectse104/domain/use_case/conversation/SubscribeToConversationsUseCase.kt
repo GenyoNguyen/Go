@@ -1,15 +1,19 @@
 package com.example.projectse104.domain.use_case.conversation
 
+import android.util.Log
 import com.example.projectse104.core.Response
 import com.example.projectse104.domain.model.ConversationWithLastMessage
 import com.example.projectse104.domain.repository.ConversationRepository
 import com.example.projectse104.domain.repository.ConversationsWithLastMessageResponse
 import com.example.projectse104.domain.repository.UserRepository
-import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.channelFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.supervisorScope
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import javax.inject.Inject
 
 class SubscribeToConversationsUseCase @Inject constructor(
@@ -17,74 +21,186 @@ class SubscribeToConversationsUseCase @Inject constructor(
     private val userRepository: UserRepository,
     private val getConversationListWithLastMessageUseCase: GetConversationListWithLastMessageUseCase
 ) {
-    operator fun invoke(userId: String): Flow<ConversationsWithLastMessageResponse> = callbackFlow {
-        println("Im Subscribing")
+    operator fun invoke(userId: String): Flow<ConversationsWithLastMessageResponse> = channelFlow {
         var conversationListWithLastMessage = mutableListOf<ConversationWithLastMessage>()
-        trySend(Response.Loading)
-        getConversationListWithLastMessageUseCase(userId).onEach { response ->
-            when (response) {
-                is Response.Success -> {
-                    conversationListWithLastMessage = (response.data ?: emptyList()).toMutableList()
-                    println("Fetched conversation list with ${conversationListWithLastMessage.size} conversations")
-                    trySend(Response.Success(conversationListWithLastMessage))
-                }
+        val mutex = Mutex()
 
-                is Response.Failure -> {
-                    println("Error fetching conversation list: ${response.e}")
-                }
+        send(Response.Success(conversationListWithLastMessage.toList()))
 
-                else -> {}
-            }
-        }.launchIn(this)
-        val newConversations = conversationRepository.subscribeToConversations(userId)
-        val newMessages = conversationRepository.subscribeToMessages()
+        supervisorScope {
+            launch(Dispatchers.IO) {
+                getConversationListWithLastMessageUseCase(userId).collect { response ->
+                    when (response) {
+                        is Response.Success -> {
+                            mutex.withLock {
+                                conversationListWithLastMessage =
+                                    (response.data ?: emptyList()).toMutableList()
+                                Log.d(
+                                    "SubscribeToConversationsUseCase",
+                                    "Fetched conversation list with ${conversationListWithLastMessage.size} conversations"
+                                )
+                                send(Response.Success(conversationListWithLastMessage.toList()))
+                            }
+                        }
 
-        // Collect the flow of new conversations
-        newConversations.onEach { conversation ->
-            try {
-                val otherUserId = if (conversation.firstUserId == userId) {
-                    conversation.secondUserId
-                } else {
-                    conversation.firstUserId
-                }
-                when (val otherUser = userRepository.getUser(otherUserId)) {
-                    is Response.Success -> {
-                        conversationListWithLastMessage.add(
-                            ConversationWithLastMessage(
-                                conversation = conversation,
-                                otherName = otherUser.data?.fullName.toString()
+                        is Response.Failure -> {
+                            Log.d(
+                                "SubscribeToConversationsUseCase",
+                                "Error fetching conversation list: ${response.e}"
                             )
+                        }
+
+                        else -> {}
+                    }
+                }
+            }
+
+            // Collect the flow of new conversations
+            launch(Dispatchers.IO) {
+                Log.d("SubscribeToConversationsUseCase", "Starting to subscribe to conversations")
+                conversationRepository.subscribeToConversations(userId).collect { conversation ->
+                    Log.d(
+                        "SubscribeToConversationsUseCase",
+                        "New conversation received: $conversation"
+                    )
+                    try {
+                        val otherUserId = if (conversation.firstUserId == userId) {
+                            conversation.secondUserId
+                        } else {
+                            conversation.firstUserId
+                        }
+                        when (val otherUser = userRepository.getUser(otherUserId)) {
+                            is Response.Success -> {
+                                mutex.withLock {
+                                    conversationListWithLastMessage.add(
+                                        ConversationWithLastMessage(
+                                            conversation = conversation,
+                                            otherName = otherUser.data?.fullName.toString()
+                                        )
+                                    )
+                                    Log.d(
+                                        "SubscribeToConversationsUseCase",
+                                        "New conversation sent: $conversation"
+                                    )
+                                    send(Response.Success(conversationListWithLastMessage.toList()))
+                                }
+                            }
+
+                            is Response.Failure -> {
+                                Log.e(
+                                    "SubscribeToConversationsUseCase",
+                                    "Error fetching user: $otherUserId"
+                                )
+                                throw Exception("Error fetching user: $otherUserId")
+                            }
+
+                            else -> {}
+                        }
+                    } catch (e: Exception) {
+                        Log.e(
+                            "SubscribeToConversationsUseCase",
+                            "Error fetching user for conversation: ${e.message}"
                         )
-                        trySend(Response.Success(conversationListWithLastMessage))
                     }
+                }
+            }
 
-                    is Response.Failure -> {
-                        throw Exception("Error fetching user: $otherUserId")
+            // Collect the flow of new messages
+            launch(Dispatchers.IO) {
+                Log.d("SubscribeToConversationsUseCase", "Starting to subscribe to messages")
+                conversationRepository.subscribeToMessages().collect { message ->
+                    Log.d("SubscribeToConversationsUseCase", "New message received: $message")
+                    try {
+                        mutex.withLock {
+                            val conversation =
+                                conversationListWithLastMessage.find { it.conversation?.id.toString() == message.conversationId }
+                            if (conversation != null) {
+                                conversation.lastMessage = message
+                                Log.d(
+                                    "SubscribeToConversationsUseCase",
+                                    "New message sent: $message"
+                                )
+                                send(Response.Success(conversationListWithLastMessage.toList()))
+                            }
+                        }
+                    } catch (e: Exception) {
+                        Log.e(
+                            "SubscribeToConversationsUseCase",
+                            "Error updating last message: ${e.message}"
+                        )
                     }
-
-                    else -> {}
                 }
-            } catch (e: Exception) {
-                println("Error fetching user for conversation: ${e.message}")
             }
-        }.launchIn(this)
-
-        // Collect the flow of new messages
-        newMessages.onEach { message ->
-            try {
-                val conversation =
-                    conversationListWithLastMessage.find { it.conversation?.id.toString() == message.conversationId }
-                if (conversation != null) {
-                    conversation.lastMessage = message
-                    trySend(Response.Success(conversationListWithLastMessage))
-                }
-            } catch (e: Exception) {
-                println("Error updating last message: ${e.message}")
-            }
-        }.launchIn(this)
-        awaitClose {
-            println("Unsubscribing from conversations and messages")
-            this.close()
         }
+    }.catch { e ->
+        Log.e("SubscribeToConversationsUseCase", "Error in flow: ${e.message}")
+        throw e
     }
+
+//    operator fun invoke(userId: String): Flow<ConversationsWithLastMessageResponse> = flow {
+//        println("Im Subscribing")
+//        var conversationListWithLastMessage = mutableListOf<ConversationWithLastMessage>()
+//        emit(Response.Loading)
+//        getConversationListWithLastMessageUseCase(userId).collect { response ->
+//            when (response) {
+//                is Response.Success -> {
+//                    conversationListWithLastMessage = (response.data ?: emptyList()).toMutableList()
+//                    println("Fetched conversation list with ${conversationListWithLastMessage.size} conversations")
+//                    emit(Response.Success(conversationListWithLastMessage))
+//                }
+//
+//                is Response.Failure -> {
+//                    println("Error fetching conversation list: ${response.e}")
+//                }
+//
+//                else -> {}
+//            }
+//        }
+//
+//        // Collect the flow of new conversations
+//        conversationRepository.subscribeToConversations(userId).collect { conversation ->
+//            try {
+//                val otherUserId = if (conversation.firstUserId == userId) {
+//                    conversation.secondUserId
+//                } else {
+//                    conversation.firstUserId
+//                }
+//                when (val otherUser = userRepository.getUser(otherUserId)) {
+//                    is Response.Success -> {
+//                        conversationListWithLastMessage.add(
+//                            ConversationWithLastMessage(
+//                                conversation = conversation,
+//                                otherName = otherUser.data?.fullName.toString()
+//                            )
+//                        )
+//                        emit(Response.Success(conversationListWithLastMessage))
+//                    }
+//
+//                    is Response.Failure -> {
+//                        throw Exception("Error fetching user: $otherUserId")
+//                    }
+//
+//                    else -> {}
+//                }
+//            } catch (e: Exception) {
+//                println("Error fetching user for conversation: ${e.message}")
+//            }
+//        }
+//
+//        // Collect the flow of new messages
+//        conversationRepository.subscribeToMessages().collect { message ->
+//            try {
+//                Log.d(this::class.toString(), "New message received: $message")
+//                val conversation =
+//                    conversationListWithLastMessage.find { it.conversation?.id.toString() == message.conversationId }
+//                if (conversation != null) {
+//                    conversation.lastMessage = message
+//                    Log.d(this::class.toString(), "New message sent: $message")
+//                    emit(Response.Success(conversationListWithLastMessage))
+//                }
+//            } catch (e: Exception) {
+//                Log.e(this::class.toString(), "Error updating last message: ${e.message}")
+//            }
+//        }
+//    }
 }

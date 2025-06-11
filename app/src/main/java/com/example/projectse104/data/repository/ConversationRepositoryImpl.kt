@@ -19,7 +19,8 @@ import kotlinx.coroutines.runBlocking
 
 class ConversationRepositoryImpl(
     private val conversationsRef: PostgrestQueryBuilder,
-    private val realtimeChannel: RealtimeChannel
+    private val conversationChannel: RealtimeChannel,
+    private val messageChannel: RealtimeChannel
 ) : ConversationRepository {
 
     override suspend fun getConversationList(userId: String):
@@ -64,12 +65,13 @@ class ConversationRepositoryImpl(
     override suspend fun subscribeToConversations(userId: String): Flow<Conversation> =
         callbackFlow {
             val dataFlow =
-                realtimeChannel.postgresChangeFlow<PostgresAction.Insert>(schema = "public") {
+                conversationChannel.postgresChangeFlow<PostgresAction.Insert>(schema = "public") {
                     table = "Conversation"
                 }
             println("Data flow: $dataFlow")
 
             dataFlow.onEach {
+                println("Received conversation data")
                 try {
                     val conversation = it.decodeRecord<Conversation>()
                     if (conversation.firstUserId == userId || conversation.secondUserId == userId) {
@@ -81,11 +83,11 @@ class ConversationRepositoryImpl(
             }.launchIn(this)
 
             println("Subscribing to conversations for user: $userId")
-            realtimeChannel.subscribe()
+            conversationChannel.subscribe()
             awaitClose {
                 println("Unsubscribing from conversations for user: $userId")
                 runBlocking {
-                    realtimeChannel.unsubscribe()
+                    conversationChannel.unsubscribe()
                 }
             }
         }
@@ -93,12 +95,13 @@ class ConversationRepositoryImpl(
     override suspend fun subscribeToMessagesInConversation(conversationId: String): Flow<Message> =
         callbackFlow {
             val dataFlow =
-                realtimeChannel.postgresChangeFlow<PostgresAction.Insert>(schema = "public") {
+                conversationChannel.postgresChangeFlow<PostgresAction.Insert>(schema = "public") {
                     table = "Message"
                 }
             println("Data flow: $dataFlow")
 
             dataFlow.onEach {
+                println("Received message data in conversation")
                 try {
                     val message = it.decodeRecord<Message>()
                     if (message.conversationId == conversationId) {
@@ -110,11 +113,11 @@ class ConversationRepositoryImpl(
             }.launchIn(this)
 
             println("Subscribing to messages for conversation: $conversationId")
-            realtimeChannel.subscribe()
+            conversationChannel.subscribe()
             awaitClose {
                 println("Unsubscribing from messages for conversation: $conversationId")
                 runBlocking {
-                    realtimeChannel.unsubscribe()
+                    conversationChannel.unsubscribe()
                 }
             }
         }
@@ -122,12 +125,13 @@ class ConversationRepositoryImpl(
     override suspend fun subscribeToMessages(): Flow<Message> =
         callbackFlow {
             val dataFlow =
-                realtimeChannel.postgresChangeFlow<PostgresAction.Insert>(schema = "public") {
+                messageChannel.postgresChangeFlow<PostgresAction.Insert>(schema = "public") {
                     table = "Message"
                 }
             println("Data flow: $dataFlow")
 
             dataFlow.onEach {
+                println("Received message data")
                 try {
                     val message = it.decodeRecord<Message>()
                     trySend(message)
@@ -137,11 +141,11 @@ class ConversationRepositoryImpl(
             }.launchIn(this)
 
             println("Subscribing to messages")
-            realtimeChannel.subscribe()
+            messageChannel.subscribe()
             awaitClose {
                 println("Unsubscribing from messages")
                 runBlocking {
-                    realtimeChannel.unsubscribe()
+                    messageChannel.unsubscribe()
                 }
             }
         }

@@ -1,10 +1,11 @@
 package com.example.projectse104.ui.screens.chat
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.projectse104.core.Response
-import com.example.projectse104.domain.repository.ConversationsWithLastMessageResponse
+import com.example.projectse104.domain.model.ConversationWithLastMessage
 import com.example.projectse104.domain.use_case.conversation.SubscribeToConversationsUseCase
 import com.example.projectse104.domain.use_case.user.LoadUserAva
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -12,6 +13,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -22,7 +24,7 @@ class ChatViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     private val _conversationListState =
-        MutableStateFlow<ConversationsWithLastMessageResponse>(Response.Loading)
+        MutableStateFlow<List<ConversationWithLastMessage>>(emptyList())
     val conversationListState = _conversationListState.asStateFlow()
 
     private val _avatarUrls = MutableStateFlow<Map<String, Response<String>?>>(emptyMap())
@@ -32,8 +34,8 @@ class ChatViewModel @Inject constructor(
 
     fun initialize(userId: String) {
         if (_initialized) return
-        println("ChatViewModel initialized")
-        println("User ID from saved state: $userId")
+        Log.d("ChatViewModel", "ChatViewModel initialized")
+        Log.d("ChatViewModel", "User ID from saved state: $userId")
         getConversationList(userId)
         loadAvatar(userId) // Tải avatar cho người dùng hiện tại
         _initialized = true
@@ -42,10 +44,12 @@ class ChatViewModel @Inject constructor(
     private fun getConversationList(userId: String) {
         subscribeToConversationsUseCase(userId)
             .onEach { response ->
-                _conversationListState.value = response
-                println("Conversation list updated with response: $response")
                 // Tải avatar cho tất cả otherId khi danh sách cuộc trò chuyện được cập nhật
                 if (response is Response.Success) {
+                    Log.d("ChatViewModel", "Conversation list updated with response: $response")
+                    _conversationListState.update {
+                        response.data?.toList() ?: emptyList()
+                    }
                     response.data?.forEach { conversation ->
                         val otherId = if (conversation.conversation!!.firstUserId == userId) {
                             conversation.conversation.secondUserId
