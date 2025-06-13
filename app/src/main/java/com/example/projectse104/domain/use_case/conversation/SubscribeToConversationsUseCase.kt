@@ -112,10 +112,19 @@ class SubscribeToConversationsUseCase @Inject constructor(
                     Log.d("SubscribeToConversationsUseCase", "New message received: $message")
                     try {
                         mutex.withLock {
-                            val conversation =
-                                conversationListWithLastMessage.find { it.conversation?.id.toString() == message.conversationId }
-                            if (conversation != null) {
-                                conversation.lastMessage = message
+                            val idx = conversationListWithLastMessage.indexOfFirst { it.conversation?.id.toString() == message.conversationId }
+                            if (idx != -1) {
+                                val old = conversationListWithLastMessage[idx]
+                                // Create a new ConversationWithLastMessage object
+                                val updated = ConversationWithLastMessage(
+                                    conversation = old.conversation,
+                                    lastMessage = message,
+                                    otherName = old.otherName
+                                )
+                                // Create a new list with the updated conversation
+                                conversationListWithLastMessage = conversationListWithLastMessage.toMutableList().apply {
+                                    set(idx, updated)
+                                }
                                 Log.d(
                                     "SubscribeToConversationsUseCase",
                                     "New message sent: $message"
