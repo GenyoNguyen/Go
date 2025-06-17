@@ -17,7 +17,11 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -54,47 +58,44 @@ fun HomeScreen(
     val isLoadingMore by viewModel.isLoadingMore.collectAsStateWithLifecycle()
     val userState by viewModel.user.collectAsStateWithLifecycle()
     val avatarUrls by viewModel.avatarUrls.collectAsStateWithLifecycle()
-
-    var rides = emptyList<RideWithRideOfferWithLocation>()
-    var finalUserName = userName.split(" ").last()
-    var showErrorToast = false
-    var errorMessage = ""
-    var isLoading = true
+    var rides by remember { mutableStateOf(emptyList<RideWithRideOfferWithLocation>()) }
+    var finalUserName by remember { mutableStateOf(userName.split(" ").last()) }
+    var showErrorToast by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf("") }
+    var isLoading by remember { mutableStateOf(true) }
 
     // Handle userState
-    if (finalUserName.isEmpty()) {
-        when (val state = userState) {
-            is Response.Success<User> -> {
-                finalUserName = state.data?.fullName.toString().split(" ").last()
+    LaunchedEffect(userState) {
+        if (finalUserName.isEmpty()) {
+            when (val state = userState) {
+                is Response.Success<User> -> {
+                    finalUserName = state.data?.fullName.toString().split(" ").last()
+                }
+                is Response.Failure -> {
+                    errorMessage = "Không thể tải thông tin người dùng. Vui lòng thử lại!"
+                    showErrorToast = true
+                }
+                else -> {}
             }
-
-            is Response.Failure -> {
-                errorMessage = "Không thể tải thông tin người dùng. Vui lòng thử lại!"
-                showErrorToast = true
-            }
-
-            else -> {}
         }
+        isLoading = userState is Response.Loading || rideListState is Response.Loading
     }
 
     // Handle rideListState
-    when (val state = rideListState) {
-        is Response.Success<List<RideWithRideOfferWithLocation>> -> {
-            rides = state.data.orEmpty()
+    LaunchedEffect(rideListState) {
+        when (val state = rideListState) {
+            is Response.Success -> {
+                rides = state.data.orEmpty()
+            }
+            is Response.Failure -> {
+                errorMessage = "Không thể tải danh sách chuyến đi. Vui lòng thử lại!"
+                showErrorToast = true
+            }
+            else -> {}
         }
-
-        is Response.Failure -> {
-            errorMessage = "Không thể tải danh sách chuyến đi. Vui lòng thử lại!"
-            showErrorToast = true
-        }
-
-        is Response.Loading, is Response.Idle -> {}
+        isLoading = userState is Response.Loading || rideListState is Response.Loading
     }
 
-    // Determine loading state
-    isLoading = userState is Response.Loading || rideListState is Response.Loading
-
-    // Show toast for errors
     if (showErrorToast) {
         ToastMessage(message = errorMessage, show = true)
     }
@@ -159,7 +160,7 @@ fun HomeScreen(
                                 estimatedDeparture = estimatedDeparture,
                                 fromLocation = fromLocation,
                                 toLocation = toLocation,
-                                avatarResId = profilePicUrl, // Avatar của người lái xe
+                                avatarResId = profilePicUrl,
                                 route = "ride_details",
                                 userId = userId,
                                 riderId = ride.rideOffer.userId,
@@ -177,14 +178,6 @@ fun HomeScreen(
                                         color = Color.Gray,
                                         style = TextStyle(fontSize = 16.sp)
                                     )
-                                    if (viewModel.hasMoreData()) {
-                                        Button(
-                                            onClick = { viewModel.loadMoreRides(userId) },
-                                            modifier = Modifier.padding(top = 8.dp)
-                                        ) {
-                                            Text("Tải thêm")
-                                        }
-                                    }
                                 }
                             }
                         }

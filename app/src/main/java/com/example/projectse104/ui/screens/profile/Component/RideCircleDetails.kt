@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -28,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import com.example.projectse104.R
 import com.example.projectse104.*
 import com.example.projectse104.Component.*
@@ -36,13 +38,15 @@ import com.valentinilk.shimmer.rememberShimmer
 
 
 @Composable
-fun RideCircleDetails(avatarID: Int,
-                      trustScore: String,
-                      ridesTaken: String,
-                      ridesGiven: String){
-    Row(modifier=Modifier
+fun RideCircleDetails(
+    avatarURL: String?,
+    trustScore: String,
+    ridesTaken: String,
+    ridesGiven: String
+) {
+    Row(modifier = Modifier
         .fillMaxWidth()
-        .padding(horizontal = 10.dp)){
+        .padding(horizontal = 10.dp)) {
         Text(
             text = "Your trust score",
             fontSize = 18.sp,
@@ -54,28 +58,31 @@ fun RideCircleDetails(avatarID: Int,
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp), // Thêm padding để căn chỉnh
+            .padding(horizontal = 16.dp),
         horizontalArrangement = Arrangement.Start,
-        verticalAlignment = Alignment.CenterVertically// Căn trái để mũi tên ở góc trái
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Image(
-            painter = painterResource(id = avatarID), // Ensure this is a valid drawable resource
+        AsyncImage(
+            model = avatarURL,
             contentDescription = "Profile Avatar",
             modifier = Modifier
                 .size(80.dp)
+                .clip(CircleShape)
+                .border(2.dp, Color(0xFFE0E0E0), CircleShape),
+            contentScale = ContentScale.Crop
         )
-        Spacer(modifier=Modifier.width(20.dp))
-        Column(modifier = Modifier
-            .clip(RoundedCornerShape(8.dp))
-            .background(Color(0xFFDCF8EA))
-            .border(
-                1.dp,
-                Color(0XFF7CCFA7),
-                RoundedCornerShape(8.dp)
-
-            )
-            .padding(16.dp)
-        ){
+        Spacer(modifier = Modifier.width(20.dp))
+        Column(
+            modifier = Modifier
+                .clip(RoundedCornerShape(8.dp))
+                .background(Color(0xFFDCF8EA))
+                .border(
+                    1.dp,
+                    Color(0XFF7CCFA7),
+                    RoundedCornerShape(8.dp)
+                )
+                .padding(16.dp)
+        ) {
             Text(
                 text = "Trust score: $trustScore",
                 fontSize = 18.sp,
@@ -83,16 +90,13 @@ fun RideCircleDetails(avatarID: Int,
                 color = Color(0XFF7CCFA7)
             )
             Spacer(modifier = Modifier.height(10.dp))
-
             Text(
                 text = "Total Rides Taken: $ridesTaken",
                 fontSize = 18.sp,
                 color = Color(0xFF094DE0),
                 fontWeight = FontWeight.Bold,
-
-                )
+            )
             Spacer(modifier = Modifier.height(10.dp))
-
             Text(
                 text = "Total Rides Given: $ridesGiven",
                 fontSize = 18.sp,
