@@ -52,13 +52,16 @@ class GetRideStatisticsUseCase @Inject constructor(
                 val rideOffer = rideOffers.find { it.id == ride.rideOfferId }
                 rideOffer?.let { RideRideOffer(ride, it) }
             }
-            val rideTaken = rideRideOffers.count { it.ride.passengerId == userId }
             val rideGivenList = rideRideOffers.filter { it.rideOffer.userId == userId }
+            val rideTakenList = rideRideOffers.filter { it.ride.passengerId == userId }
             val rideGiven = rideGivenList.size
-
+            val rideTaken = rideTakenList.size
+            // Sort userRides by ride.departTime descending
+            val userRides = (rideGivenList + rideTakenList)
+                .sortedByDescending { it.ride.departTime }
             // Tính độ tin tưởng
             val passengerIdCount = mutableMapOf<String, Int>()
-            for (r in rideGivenList) {
+            for (r in userRides) {
                 val pid = r.ride.passengerId
                 if (pid != null) {
                     passengerIdCount[pid] = passengerIdCount.getOrDefault(pid, 0) + 1
@@ -68,7 +71,7 @@ class GetRideStatisticsUseCase @Inject constructor(
                 return 1 + 5.5 * (n - 1)
             }
             val trustScore = passengerIdCount.values.sumOf { trustFunc(it) }
-            val last2rides = rideRideOffers.take(2)
+            val last2rides = userRides.take(2)
             val last2ridesUserId = last2rides.mapNotNull { rideRideOffer ->
                 if (rideRideOffer.ride.passengerId == userId) {
                     rideRideOffer.rideOffer.userId

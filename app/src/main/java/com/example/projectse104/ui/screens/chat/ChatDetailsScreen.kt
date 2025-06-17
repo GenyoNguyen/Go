@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.example.projectse104.Component.ToastMessage
 import com.example.projectse104.R
 import com.example.projectse104.core.Response
 import com.example.projectse104.core.toCustomString
@@ -50,6 +51,14 @@ fun ChatDetailsScreen(
         if (messages.isNotEmpty()) {
             listState.animateScrollToItem(0)
         }
+    }
+
+    // Show toast notification if fetching failed
+    if (avatarUrl is Response.Failure) {
+        ToastMessage(
+            message = "Không thể tải dữ liệu. Vui lòng thử lại!",
+            show = true
+        )
     }
 
     if (isLoading) {

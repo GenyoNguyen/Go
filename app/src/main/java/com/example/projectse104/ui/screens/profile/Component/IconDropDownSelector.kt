@@ -91,7 +91,8 @@ fun IconDropdownSelectorWithLabel(
 
             DropdownMenu(
                 expanded = expanded,
-                onDismissRequest = { expanded = false }
+                onDismissRequest = { expanded = false },
+                modifier = Modifier.background(Color.White) // Set options section color to white
             ) {
                 iconList.forEach { (iconRes, labelText) ->
                     DropdownMenuItem(

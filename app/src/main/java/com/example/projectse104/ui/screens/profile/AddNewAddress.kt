@@ -17,6 +17,7 @@ import com.example.projectse104.R
 import com.example.projectse104.ui.screens.profile.Component.IconDropdownSelectorWithLabel
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.projectse104.Component.ToastMessage
 import com.example.projectse104.core.Response
 import com.example.projectse104.domain.model.Location
 import com.example.projectse104.domain.model.UserLocation
@@ -60,6 +61,14 @@ fun AddNewAddressScreen(
                 ?.set("address_added", true)
             navController.popBackStack()
         }
+    }
+
+    // Show toast if fetching locations failed
+    if (locationListState is Response.Failure) {
+        ToastMessage(
+            message = "Không thể tải dữ liệu. Vui lòng thử lại!",
+            show = true
+        )
     }
 
     Column(

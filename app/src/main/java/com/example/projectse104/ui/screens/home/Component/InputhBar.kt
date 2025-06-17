@@ -31,6 +31,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.unit.times
 import com.example.projectse104.*
 import com.example.projectse104.Component.*
 import com.valentinilk.shimmer.shimmer
@@ -74,7 +75,8 @@ fun InputBar(
 
         ExposedDropdownMenu(
             expanded = expanded,
-            onDismissRequest = { expanded = false }
+            onDismissRequest = { expanded = false },
+            modifier = Modifier.heightIn(max = 5 * 48.dp) // Show max 5 options, scrollable
         ) {
             filteredOptions.forEach { option ->
                 DropdownMenuItem(

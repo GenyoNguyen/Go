@@ -37,6 +37,7 @@ import java.util.*
 import kotlin.random.Random
 import com.example.projectse104.domain.model.Location
 import kotlinx.coroutines.delay
+
 @Composable
 fun AddNewOfferScreen4(
     navController: NavController,
@@ -46,12 +47,12 @@ fun AddNewOfferScreen4(
     toLocationId: String,
     viewModel: AddNewOfferViewModel = hiltViewModel()
 ) {
-    var isRideOfferSent by remember { mutableStateOf(false) }
-    var rideOfferCreated by remember { mutableStateOf(false) }
-    val addRideOfferState by viewModel.addRideOfferState.collectAsStateWithLifecycle()
     var distance by remember { mutableStateOf("Đang tính khoảng cách...") }
     var departureLocationName by remember { mutableStateOf("") }
     var toLocationName by remember { mutableStateOf("") }
+    var rideOfferCreated by remember { mutableStateOf(false) }
+    var isRideOfferSent by remember { mutableStateOf(false) }
+    val addRideOfferState by viewModel.addRideOfferState.collectAsStateWithLifecycle()
 
     // Lấy locationList từ ViewModel
     val locationListState by viewModel.locationListState.collectAsStateWithLifecycle()
@@ -65,6 +66,14 @@ fun AddNewOfferScreen4(
             }
             else -> {}
         }
+    }
+
+    // Show toast if fetching locations failed
+    if (locationListState is Response.Failure) {
+        ToastMessage(
+            message = "Không thể tải dữ liệu. Vui lòng thử lại!",
+            show = true
+        )
     }
 
     // Chuẩn hóa và parse time
@@ -91,28 +100,32 @@ fun AddNewOfferScreen4(
         null
     }
 
-    // Tạo RideOffer
-    LaunchedEffect(parsedDate, requestTimeDate, departureLocationName, toLocationName) {
+    // Add RideOffer only after distance is calculated and valid
+    LaunchedEffect(distance, parsedDate, requestTimeDate, departureLocationName, toLocationName) {
         if (!isRideOfferSent &&
             parsedDate != null &&
             requestTimeDate != null &&
             departureLocationName.isNotBlank() &&
             toLocationName.isNotBlank()
         ) {
-            val rideOffer = RideOffer(
-                id = UUID.randomUUID().toString(),
-                userId = userId,
-                startLocationId = departureLocationId,
-                requestTime = requestTimeDate,
-                endLocationId = toLocationId,
-                estimatedDepartTime = parsedDate,
-                rideCode = UUID.randomUUID().toString().replace("-", "").take(6),
-                status = "PENDING",
-                coinCost = Random.nextInt(10, 101)
-            )
-            Log.d("AddNewOfferScreen4", "Creating RideOffer: $rideOffer")
-            viewModel.addRideOffer(rideOffer)
-            isRideOfferSent = true
+            // Try to parse distance as float, only proceed if it's a valid number
+            val distNum = distance.split(" ").firstOrNull()?.replace(",", ".")?.toFloatOrNull()
+            if (distNum != null && distNum > 0f) {
+                val rideOffer = RideOffer(
+                    id = UUID.randomUUID().toString(),
+                    userId = userId,
+                    startLocationId = departureLocationId,
+                    requestTime = requestTimeDate,
+                    endLocationId = toLocationId,
+                    estimatedDepartTime = parsedDate,
+                    rideCode = UUID.randomUUID().toString().replace("-", "").take(6),
+                    status = "PENDING",
+                    coinCost = 2*distNum.toInt() + 1
+                )
+                Log.d("AddNewOfferScreen4", "Creating RideOffer: $rideOffer")
+                viewModel.addRideOffer(rideOffer)
+                isRideOfferSent = true
+            }
         }
     }
 

@@ -30,7 +30,7 @@ class HistoryViewModel @Inject constructor(
     val avatarUrls = _avatarUrls.asStateFlow()
 
     private var currentPage = 0
-    private val pageSize = 3
+    private val pageSize = 5
     private var hasMoreData = true
     private val allRides = mutableListOf<RideWithRideOfferWithLocation>()
     private val loadingAvatarIds = mutableSetOf<String>() // Ngăn tải trùng lặp

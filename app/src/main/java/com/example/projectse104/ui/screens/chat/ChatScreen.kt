@@ -15,9 +15,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
@@ -43,7 +45,7 @@ fun ChatScreen(
     val conversationListState by viewModel.conversationListState.collectAsStateWithLifecycle()
     Log.d("ChatScreen", "Conversation List State Updated")
     val avatarUrls by viewModel.avatarUrls.collectAsStateWithLifecycle()
-    val isLoading = false
+    val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
 
     if (isLoading) {
         ShimmerScreen(navController, userId, 2, "Chat", R.drawable.chat_unread_svgrepo_com)
@@ -73,43 +75,57 @@ fun ChatScreen(
                         .padding(horizontal = 16.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    items(
-                        conversationListState,
-                        key = { it.conversation?.id ?: it.hashCode() }
-                    ) { conversation ->
-                        val otherId = if (conversation.conversation!!.firstUserId == userId) {
-                            conversation.conversation.secondUserId
-                        } else {
-                            conversation.conversation.firstUserId
+                    if (conversationListState.isEmpty()) {
+                        item {
+                            Text(
+                                text = "Bạn chưa có cuộc trò chuyện nào",
+                                color = Color.Gray,
+                                fontSize = 18.sp,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 32.dp)
+                                    .align(Alignment.CenterHorizontally),
+                            )
                         }
-                        val name = conversation.otherName
-                        val message = conversation.lastMessage?.content.toString()
-                        val time = conversation.lastMessage?.timeSent.toCustomString()
-                        val imageRes = R.drawable.avatar_1
-                        val haveSeen = conversation.lastMessage?.isRead ?: false
-                        val isOnline = true // TODO: Implement online function
-
-                        val profilePicUrl = avatarUrls[otherId]?.let { response ->
-                            when (response) {
-                                is Response.Success -> response.data
-                                is Response.Loading -> null
-                                is Response.Failure -> null
-                                Response.Idle -> TODO()
+                    } else {
+                        items(
+                            conversationListState,
+                            key = { it.conversation?.id ?: it.hashCode() }
+                        ) { conversation ->
+                            val otherId = if (conversation.conversation!!.firstUserId == userId) {
+                                conversation.conversation.secondUserId
+                            } else {
+                                conversation.conversation.firstUserId
                             }
-                        }
+                            val name = conversation.otherName
+                            val message = conversation.lastMessage?.content.toString()
+                            val time = conversation.lastMessage?.timeSent.toCustomString()
+                            val imageRes = R.drawable.avatar_1
+                            val haveSeen = conversation.lastMessage?.isRead ?: false
+                            val isOnline = true // TODO: Implement online function
 
-                        ChatItem(
-                            navController = navController,
-                            userId = userId,
-                            otherId = otherId,
-                            otherName = name,
-                            message = message,
-                            time = time,
-                            imageRes = imageRes,
-                            haveSeen = haveSeen,
-                            isOnline = isOnline,
-                            profilePicUrl = profilePicUrl
-                        )
+                            val profilePicUrl = avatarUrls[otherId]?.let { response ->
+                                when (response) {
+                                    is Response.Success -> response.data
+                                    is Response.Loading -> null
+                                    is Response.Failure -> null
+                                    Response.Idle -> TODO()
+                                }
+                            }
+
+                            ChatItem(
+                                navController = navController,
+                                userId = userId,
+                                otherId = otherId,
+                                otherName = name,
+                                message = message,
+                                time = time,
+                                imageRes = imageRes,
+                                haveSeen = haveSeen,
+                                isOnline = isOnline,
+                                profilePicUrl = profilePicUrl
+                            )
+                        }
                     }
                 }
             }
