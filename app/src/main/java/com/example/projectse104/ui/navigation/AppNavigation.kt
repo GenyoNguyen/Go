@@ -133,7 +133,7 @@ fun AppNavigation(navController: NavHostController) {
                     }
 
 
-                    println("Loaded Home Screen")
+                    Log.d("AppNavigation", "Loaded Home Screen")
 
                     HomeScreen(
                         navController = navController,
