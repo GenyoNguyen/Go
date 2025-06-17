@@ -6,10 +6,9 @@ import androidx.lifecycle.viewModelScope
 import com.example.projectse104.core.RIDE_NUMBER_FIELD
 import com.example.projectse104.core.Response
 import com.example.projectse104.core.USER_ID_FIELD
-import com.example.projectse104.domain.model.RideOfferWithLocation
 import com.example.projectse104.domain.model.RideOfferWithLocationRider
-import com.example.projectse104.domain.model.RideWithUserWithLocation
-import com.example.projectse104.domain.use_case.ride.GetRideDetailsHistoryUseCase
+import com.example.projectse104.domain.repository.UserResponse
+import com.example.projectse104.domain.use_case.ride_offer.DeleteRideOfferUseCase
 import com.example.projectse104.domain.use_case.ride_offer.GetRideOfferUseCase
 import com.example.projectse104.domain.use_case.user.GetUserUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,13 +16,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import javax.inject.Inject
-import com.example.projectse104.domain.repository.UserResponse
 
 @HiltViewModel
 class OfferDetailsViewModel @Inject constructor(
     private val getRideOfferDetails: GetRideOfferUseCase,
     private val getUserUseCase: GetUserUseCase,
+    private val deleteRideOfferUseCase: DeleteRideOfferUseCase,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -32,7 +32,8 @@ class OfferDetailsViewModel @Inject constructor(
     private val _user =
         MutableStateFlow<UserResponse>(Response.Loading)
     val offerState = _offerState.asStateFlow()
-    val user=_user.asStateFlow()
+    val user = _user.asStateFlow()
+
     init {
         if (_offerState.value !is Response.Success) {
             savedStateHandle.get<String>(RIDE_NUMBER_FIELD)?.let { offerId ->
@@ -54,6 +55,7 @@ class OfferDetailsViewModel @Inject constructor(
             }
             .launchIn(viewModelScope)
     }
+
     fun getUser(userId: String) {
         println("Loading view model...")
         getUserUseCase(userId)
@@ -61,5 +63,11 @@ class OfferDetailsViewModel @Inject constructor(
                 _user.value = result
             }
             .launchIn(viewModelScope)
+    }
+
+    fun deleteRideOffer(rideNo: String) {
+        viewModelScope.launch {
+            deleteRideOfferUseCase(rideNo)
+        }
     }
 }
