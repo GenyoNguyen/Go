@@ -1,22 +1,18 @@
 package com.example.projectse104.data.repository
 
+import android.util.Log
 import com.example.projectse104.core.Response
 import com.example.projectse104.domain.model.RideOffer
-import com.example.projectse104.domain.repository.AcceptRideOfferResponse
+import com.example.projectse104.domain.repository.AddRideOfferResponse
 import com.example.projectse104.domain.repository.RideOfferListResponse
 import com.example.projectse104.domain.repository.RideOfferRepository
-import com.example.projectse104.domain.repository.AddRideOfferResponse
-import io.github.jan.supabase.postgrest.query.PostgrestQueryBuilder
-import io.github.jan.supabase.postgrest.query.Order
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
-import javax.inject.Inject
-import android.util.Log
-import com.example.projectse104.domain.model.Ride
 import com.example.projectse104.domain.repository.RideOfferResponse
+import io.github.jan.supabase.postgrest.query.Order
+import io.github.jan.supabase.postgrest.query.PostgrestQueryBuilder
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.TimeZone
+import javax.inject.Inject
 
 
 class RideOfferRepositoryImpl @Inject constructor(
@@ -122,6 +118,7 @@ class RideOfferRepositoryImpl @Inject constructor(
     } catch (e: Exception) {
         Response.Failure(e)
     }
+
     override suspend fun getSuccessRideOfferList(): RideOfferListResponse = try {
         val rideOffers = rideOffersRef.select {
             filter {
@@ -132,6 +129,7 @@ class RideOfferRepositoryImpl @Inject constructor(
     } catch (e: Exception) {
         Response.Failure(e)
     }
+
     override suspend fun updateRideOfferStatus(
         rideOfferId: String,
         status: String
@@ -158,6 +156,21 @@ class RideOfferRepositoryImpl @Inject constructor(
         Response.Success(Unit)
     } catch (e: Exception) {
         Log.e("UpdateRideOffer", "Error: $e")
+        Response.Failure(e)
+    }
+
+    override suspend fun deleteRideOffer(rideOfferId: String): Response<Unit> = try {
+        Log.d("RideOfferRepository", "Deleting ride offer with code: $rideOfferId")
+        val rideOffer = rideOffersRef.delete {
+            select()
+            filter {
+                eq("id", rideOfferId)
+            }
+        }.decodeSingle<RideOffer>()
+        Log.d("RideOfferRepository", "Deleted ride offer: $rideOffer")
+        Response.Success(Unit)
+    } catch (e: Exception) {
+        Log.e("RideOfferRepository", "Error: $e")
         Response.Failure(e)
     }
 }
