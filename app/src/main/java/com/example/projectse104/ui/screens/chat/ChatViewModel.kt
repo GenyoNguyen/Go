@@ -27,6 +27,9 @@ class ChatViewModel @Inject constructor(
         MutableStateFlow<List<ConversationWithLastMessage>>(emptyList())
     val conversationListState = _conversationListState.asStateFlow()
 
+    private val _messageCount = MutableStateFlow(0)
+    val messageCount = _messageCount.asStateFlow()
+
     private val _avatarUrls = MutableStateFlow<Map<String, Response<String>?>>(emptyMap())
     val avatarUrls = _avatarUrls.asStateFlow()
 
@@ -52,8 +55,11 @@ class ChatViewModel @Inject constructor(
                 if (response is Response.Success) {
                     Log.d("ChatViewModel", "Conversation list updated with response: $response")
                     _conversationListState.update {
-                        response.data?.toList() ?: emptyList()
+                        response.data?.toList()?.sortedByDescending {
+                            it.lastMessage?.timeSent
+                        } ?: emptyList()
                     }
+                    processNewChatMessages(userId)
                     response.data?.forEach { conversation ->
                         val otherId = if (conversation.conversation!!.firstUserId == userId) {
                             conversation.conversation.secondUserId
@@ -81,6 +87,16 @@ class ChatViewModel @Inject constructor(
                 _avatarUrls.value = _avatarUrls.value.toMutableMap().apply {
                     this[userId] = result
                 }
+            }
+        }
+    }
+
+    private fun processNewChatMessages(userId: String) {
+        _messageCount.value = 0
+        _conversationListState.value.forEach { conversation ->
+            // Check if the last message is unread
+            if (conversation.lastMessage?.senderId != userId && conversation.lastMessage?.isRead == false) {
+                _messageCount.value += 1
             }
         }
     }

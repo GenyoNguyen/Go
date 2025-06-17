@@ -1,5 +1,6 @@
 package com.example.projectse104.ui.screens.chat
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -8,6 +9,7 @@ import com.example.projectse104.core.USER_ID_FIELD
 import com.example.projectse104.domain.model.Conversation
 import com.example.projectse104.domain.model.Message
 import com.example.projectse104.domain.model.User
+import com.example.projectse104.domain.repository.MessageRepository
 import com.example.projectse104.domain.use_case.conversation.GetMessageListUseCase
 import com.example.projectse104.domain.use_case.conversation.SendMessageUseCase
 import com.example.projectse104.domain.use_case.conversation.StartConversationUseCase
@@ -31,6 +33,7 @@ class ChatDetailsViewModel @Inject constructor(
     private val getMessageListUseCase: GetMessageListUseCase,
     private val getUserUseCase: GetUserUseCase,
     private val loadUserAva: LoadUserAva,
+    private val messageRepository: MessageRepository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     private val _currentUserId = MutableStateFlow("")
@@ -87,7 +90,7 @@ class ChatDetailsViewModel @Inject constructor(
                     // Handle successful conversation start, e.g., navigate to chat screen
                     conversationResponse.data?.let {
                         _currentConversation.value = it
-                        loadMessages(it.id)
+                        loadMessages(it.id, otherUserId)
                         subscribeToMessages(it.id)
                     }
                 }
@@ -108,14 +111,28 @@ class ChatDetailsViewModel @Inject constructor(
         }
     }
 
-    private fun loadMessages(conversationId: String) {
+    private fun loadMessages(conversationId: String, otherId: String) {
         viewModelScope.launch {
             when (val messageResponse = getMessageListUseCase(conversationId)) {
                 is Response.Success -> {
                     _messages.value = messageResponse.data ?: emptyList()
+                    readLastMessage(otherId)
                 }
 
                 else -> {}
+            }
+        }
+    }
+
+    private fun readLastMessage(otherId: String) {
+        viewModelScope.launch {
+            try {
+                val lastMessage = _messages.value.first()
+                if (lastMessage.senderId == otherId && !lastMessage.isRead) {
+                    messageRepository.updateMessageReadStatus(lastMessage.id!!, true)
+                }
+            } catch (e: Exception) {
+                Log.e("ChatDetailsViewModel", "Error reading last message: ${e.message}")
             }
         }
     }

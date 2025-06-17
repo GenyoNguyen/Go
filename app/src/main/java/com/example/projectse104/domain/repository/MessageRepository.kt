@@ -11,4 +11,5 @@ interface MessageRepository {
 
     suspend fun sendMessage(message: Message): SendMessageResponse
     suspend fun getLastMessage(conversationId: String): Response<Message>
+    suspend fun updateMessageReadStatus(messageId: String, isRead: Boolean): Response<Unit>
 }
