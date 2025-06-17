@@ -83,7 +83,8 @@ fun CustomPasswordTextField(
                 focusedContainerColor = Color.White,
                 unfocusedContainerColor = Color.White,
                 errorIndicatorColor = Color.Red,
-                errorCursorColor = Color.Red
+                errorCursorColor = Color.Red,
+                errorContainerColor = Color.White
             ),
             isError = error != null
         )
@@ -91,6 +92,7 @@ fun CustomPasswordTextField(
             "EMAIL" -> 100.dp
             "Password" -> 80.dp
             "New password" -> 100.dp
+            "Mật khẩu" -> 70.dp
             "Confirm password" -> 120.dp
             "Confirm new password" -> 140.dp
             else -> 10.dp

@@ -56,7 +56,8 @@ fun CustomTextFieldWithLabel(
                 focusedContainerColor = Color.White,
                 unfocusedContainerColor = Color.White,
                 errorIndicatorColor = Color.Red,
-                errorCursorColor = Color.Red
+                errorCursorColor = Color.Red,
+                errorContainerColor = Color.White
             ),
             isError = error != null
         )

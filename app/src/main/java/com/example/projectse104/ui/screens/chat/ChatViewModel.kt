@@ -33,12 +33,16 @@ class ChatViewModel @Inject constructor(
     private val _avatarUrls = MutableStateFlow<Map<String, Response<String>?>>(emptyMap())
     val avatarUrls = _avatarUrls.asStateFlow()
 
+    private val _isLoading = MutableStateFlow(true)
+    val isLoading = _isLoading.asStateFlow()
+
     private var _initialized = false
 
     fun initialize(userId: String) {
         if (_initialized) return
         Log.d("ChatViewModel", "ChatViewModel initialized")
         Log.d("ChatViewModel", "User ID from saved state: $userId")
+        _isLoading.value = true
         getConversationList(userId)
         loadAvatar(userId) // Tải avatar cho người dùng hiện tại
         _initialized = true
@@ -65,6 +69,10 @@ class ChatViewModel @Inject constructor(
                         loadAvatar(otherId)
                         println("Loaded conversations with length ${response.data.size}")
                     }
+                    _isLoading.value = false
+                }
+                if (response is Response.Failure) {
+                    _isLoading.value = false
                 }
             }.launchIn(viewModelScope)
     }

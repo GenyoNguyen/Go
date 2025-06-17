@@ -35,6 +35,14 @@ fun AddNewOfferScreen2(
         else -> emptyList()
     }
 
+    // Show toast if fetching locations failed
+    if (locationListState is Response.Failure) {
+        ToastMessage(
+            message = "Không thể tải dữ liệu. Vui lòng thử lại!",
+            show = true
+        )
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
