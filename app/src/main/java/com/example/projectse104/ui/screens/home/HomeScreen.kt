@@ -17,7 +17,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,12 +38,14 @@ import com.example.projectse104.Component.RideItem
 import com.example.projectse104.Component.ToastMessage
 import com.example.projectse104.R
 import com.example.projectse104.core.Response
+import com.example.projectse104.core.RideStatus
 import com.example.projectse104.core.toCustomString
 import com.example.projectse104.domain.model.RideWithRideOfferWithLocation
 import com.example.projectse104.domain.model.User
 import com.example.projectse104.ui.screens.home.Component.HomeHeader
 import com.example.projectse104.ui.screens.home.Component.ShimmerHomeScreen
 import com.example.projectse104.ui.screens.home.Component.TopNavBar
+import java.util.Date
 
 @Composable
 fun HomeScreen(
@@ -71,10 +72,12 @@ fun HomeScreen(
                 is Response.Success<User> -> {
                     finalUserName = state.data?.fullName.toString().split(" ").last()
                 }
+
                 is Response.Failure -> {
                     errorMessage = "Không thể tải thông tin người dùng. Vui lòng thử lại!"
                     showErrorToast = true
                 }
+
                 else -> {}
             }
         }
@@ -87,10 +90,12 @@ fun HomeScreen(
             is Response.Success -> {
                 rides = state.data.orEmpty()
             }
+
             is Response.Failure -> {
                 errorMessage = "Không thể tải danh sách chuyến đi. Vui lòng thử lại!"
                 showErrorToast = true
             }
+
             else -> {}
         }
         isLoading = userState is Response.Loading || rideListState is Response.Loading
@@ -153,6 +158,7 @@ fun HomeScreen(
                                 is Response.Success<String> -> avatarUrl.data
                                 else -> null
                             }
+                            val isRider = ride.rideOffer.userId == userId
                             RideItem(
                                 navController = navController,
                                 rideNo = rideNo,
@@ -164,7 +170,17 @@ fun HomeScreen(
                                 route = "ride_details",
                                 userId = userId,
                                 riderId = ride.rideOffer.userId,
-                                addGoButton = "no"
+                                addGoButton = "no",
+                                canEnd = isRider && ride.ride.status == RideStatus.ONGOING,
+                                canStart = isRider && ride.ride.status == RideStatus.PENDING && ride.rideOffer.estimatedDepartTime <= Date(),
+                                startRide =
+                                    { rideId ->
+                                        viewModel.startRide(rideId)
+                                    },
+                                endRide =
+                                    { rideId ->
+                                        viewModel.endRide(rideId)
+                                    }
                             )
                         }
                         if (rides.isEmpty() && !isLoadingMore) {

@@ -21,7 +21,11 @@ class GetRidesHomeUseCase @Inject constructor(
     private val rideOfferRepository: RideOfferRepository,
     private val locationRepository: LocationRepository
 ) {
-    operator fun invoke(userId: String, page: Int, limit: Int): Flow<Response<List<RideWithRideOfferWithLocation>>> =
+    operator fun invoke(
+        userId: String,
+        page: Int,
+        limit: Int
+    ): Flow<Response<List<RideWithRideOfferWithLocation>>> =
         flow {
             emit(Response.Loading)
             val startTime = System.currentTimeMillis()
@@ -35,7 +39,12 @@ class GetRidesHomeUseCase @Inject constructor(
                         rideRepository.getRideListGivenPassengerPaginated(userId, from, to)
                     }
                     val rideOfferDeferred = async {
-                        rideOfferRepository.getRideOfferListByUserIdPaginated(userId, "ACCEPTED", from, to)
+                        rideOfferRepository.getRideOfferListByUserIdPaginated(
+                            userId,
+                            "ACCEPTED",
+                            from,
+                            to
+                        )
                     }
 
                     val passengerRideResponse = passengerRideDeferred.await()
@@ -45,7 +54,8 @@ class GetRidesHomeUseCase @Inject constructor(
                         else -> emptyList()
                     }
                     println("THIS IS THE RIDE IDS: $rideOfferIds")
-                    val driverRideResponse = rideRepository.getRideListByRideOfferIds(rideOfferIds, from, to)
+                    val driverRideResponse =
+                        rideRepository.getRideListByRideOfferIds(rideOfferIds, from, to)
 
                     val combinedRideList = when {
                         passengerRideResponse is Response.Success && driverRideResponse is Response.Success -> {
@@ -53,14 +63,20 @@ class GetRidesHomeUseCase @Inject constructor(
                             val driverRides = driverRideResponse.data ?: emptyList()
                             (passengerRides + driverRides).distinctBy { it.id }
                         }
-                        passengerRideResponse is Response.Success -> passengerRideResponse.data ?: emptyList()
-                        driverRideResponse is Response.Success -> driverRideResponse.data ?: emptyList()
+
+                        passengerRideResponse is Response.Success -> passengerRideResponse.data
+                            ?: emptyList()
+
+                        driverRideResponse is Response.Success -> driverRideResponse.data
+                            ?: emptyList()
+
                         else -> {
                             return@coroutineScope null
                         }
                     }
 
-                    val filteredRideList = combinedRideList.filter { it.status == RideStatus.PENDING }
+                    val filteredRideList =
+                        combinedRideList.filter { it.status != RideStatus.SUCCESS }
                     val ridesWithLocations = mutableListOf<RideWithRideOfferWithLocation>()
                     val rideOfferCache = mutableMapOf<String, RideOffer>()
                     val locationIds = mutableSetOf<String>()
@@ -69,18 +85,20 @@ class GetRidesHomeUseCase @Inject constructor(
                     val rideOfferJobs = filteredRideList.mapNotNull { ride ->
                         ride.rideOfferId?.let { rideOfferId ->
                             launch {
-                                when (val rideOfferResponse = rideOfferRepository.getRideOffer(rideOfferId)) {
+                                when (val rideOfferResponse =
+                                    rideOfferRepository.getRideOffer(rideOfferId)) {
                                     is Response.Success -> {
                                         rideOfferResponse.data?.let { rideOffer ->
                                             synchronized(rideOfferCache) {
                                                 rideOfferCache[rideOfferId] = rideOffer
                                             }
                                             synchronized(locationIds) {
-                                                rideOffer.startLocationId?.let { locationIds.add(it) }
-                                                rideOffer.endLocationId?.let { locationIds.add(it) }
+                                                rideOffer.startLocationId.let { locationIds.add(it) }
+                                                rideOffer.endLocationId.let { locationIds.add(it) }
                                             }
                                         }
                                     }
+
                                     is Response.Failure -> throw Exception("Cannot find RideOffer: ${rideOfferResponse.e?.message}")
                                     else -> throw Exception("Cannot find RideOffer")
                                 }
@@ -89,7 +107,8 @@ class GetRidesHomeUseCase @Inject constructor(
                     }
                     rideOfferJobs.forEach { it.join() }
 
-                    val locationResponse = locationRepository.getLocationListByIds(locationIds.toList())
+                    val locationResponse =
+                        locationRepository.getLocationListByIds(locationIds.toList())
                     val locations = when (locationResponse) {
                         is Response.Success -> locationResponse.data ?: emptyList()
                         else -> emptyList()
@@ -101,8 +120,10 @@ class GetRidesHomeUseCase @Inject constructor(
                             rideOfferCache[id] ?: throw Exception("RideOffer not found in cache")
                         } ?: throw Exception("Không tìm thấy RideOffer")
 
-                        val startLocation = rideOffer.startLocationId?.let { locationMap[it]?.name } ?: ""
-                        val endLocation = rideOffer.endLocationId?.let { locationMap[it]?.name } ?: ""
+                        val startLocation = rideOffer.startLocationId.let { locationMap[it]?.name }
+                            ?: ""
+                        val endLocation =
+                            rideOffer.endLocationId.let { locationMap[it]?.name } ?: ""
 
                         ridesWithLocations.add(
                             RideWithRideOfferWithLocation(

@@ -16,7 +16,9 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -40,9 +42,6 @@ import com.example.projectse104.ui.screens.home.Component.AddNewOffer
 import com.example.projectse104.ui.screens.home.Component.HomeHeader
 import com.example.projectse104.ui.screens.home.Component.ShimmerHomeScreen
 import com.example.projectse104.ui.screens.home.Component.TopNavBar
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.snapshotFlow
 
 @Composable
 fun OfferARideScreen(
@@ -68,10 +67,12 @@ fun OfferARideScreen(
             is Response.Success<User> -> {
                 finalUserName = state.data?.fullName.toString().split(" ").last()
             }
+
             is Response.Failure -> {
                 errorMessage = "Không thể tải thông tin người dùng. Vui lòng thử lại!"
                 showErrorToast = true
             }
+
             else -> {}
         }
     }
@@ -89,10 +90,12 @@ fun OfferARideScreen(
         is Response.Success<List<RideOfferWithLocation>> -> {
             rides = state.data.orEmpty()
         }
+
         is Response.Failure -> {
             errorMessage = "Không thể tải danh sách chuyến đi. Vui lòng thử lại!"
             showErrorToast = true
         }
+
         is Response.Loading, is Response.Idle -> {}
     }
 
@@ -149,7 +152,8 @@ fun OfferARideScreen(
                     ) {
                         items(rides, key = { it.rideOffer.id }) { ride ->
                             val rideNo = ride.rideOffer.rideCode
-                            val estimatedDeparture = ride.rideOffer.estimatedDepartTime.toCustomString()
+                            val estimatedDeparture =
+                                ride.rideOffer.estimatedDepartTime.toCustomString()
                             val fromLocation = ride.startLocation
                             val toLocation = ride.endLocation
                             RideItem(
@@ -163,7 +167,7 @@ fun OfferARideScreen(
                                 route = "offer_details",
                                 userId = userId,
                                 riderId = ride.rideOffer.userId,
-                                addGoButton = "no" // Thêm tham số nếu RideItem yêu cầu
+                                addGoButton = "no", // Thêm tham số nếu RideItem yêu cầu
                             )
                         }
                         if (rides.isEmpty() && !isLoadingMore) {
@@ -222,7 +226,8 @@ fun OfferARideScreen(
                         snapshotFlow { listState.layoutInfo }
                             .collect { layoutInfo ->
                                 val totalItems = layoutInfo.totalItemsCount
-                                val lastVisibleItem = layoutInfo.visibleItemsInfo.lastOrNull()?.index
+                                val lastVisibleItem =
+                                    layoutInfo.visibleItemsInfo.lastOrNull()?.index
                                 if (lastVisibleItem != null && lastVisibleItem >= totalItems - 2 && viewModel.hasMoreData() && !isLoadingMore) {
                                     viewModel.loadMoreRideOffers(userId)
                                 }

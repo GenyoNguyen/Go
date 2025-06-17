@@ -5,11 +5,28 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -22,6 +39,9 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.projectse104.R
+import com.example.projectse104.core.toCustomString
+import com.example.projectse104.ui.screens.home.Component.AlertDialog
+import java.util.Date
 
 @Composable
 fun RideItem(
@@ -35,13 +55,20 @@ fun RideItem(
     route: String = "",
     userId: String = "",
     riderId: String?,
-    addGoButton: String = ""
+    addGoButton: String = "",
+    canEnd: Boolean = false,
+    canStart: Boolean = false,
+    startRide: (rideId: String) -> Unit = {},
+    endRide: (rideId: String) -> Unit = {}
 ) {
     val path: String = when (route) {
         "ride_details" -> "$route/$userId/$rideId/$addGoButton"
         "ride_details_history" -> "$route/$userId/$rideId"
         else -> "$route/$userId/$rideId"
     }
+
+    val openStartRideDialog = remember { mutableStateOf(false) }
+    val openEndRideDialog = remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -130,6 +157,47 @@ fun RideItem(
                 .wrapContentWidth(Alignment.End),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
+
+            if (canEnd) {
+                Button(
+                    onClick = { openEndRideDialog.value = true },
+                    modifier = Modifier
+                        .width(80.dp)
+                        .height(28.dp),
+                    shape = RoundedCornerShape(25.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8FC79A)),
+                    contentPadding = PaddingValues(horizontal = 8.dp)
+                ) {
+                    Text(
+                        text = "End Ride",
+                        fontSize = 13.sp,
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
+
+            if (canStart) {
+                if (estimatedDeparture <= Date().toCustomString()) {
+                    Button(
+                        onClick = { openStartRideDialog.value = true },
+                        modifier = Modifier
+                            .width(80.dp)
+                            .height(28.dp),
+                        shape = RoundedCornerShape(25.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8FC79A)),
+                        contentPadding = PaddingValues(horizontal = 8.dp)
+                    ) {
+                        Text(
+                            text = "Start Ride",
+                            fontSize = 13.sp,
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+            }
+
             Button(
                 onClick = { navController.navigate(path) },
                 modifier = Modifier
@@ -171,5 +239,38 @@ fun RideItem(
         }
 
         Spacer(modifier = Modifier.height(8.dp))
+
+        when {
+            openStartRideDialog.value -> {
+                AlertDialog(
+                    dialogTitle = "Confirm Action",
+                    dialogText = "Are you sure you want to proceed?",
+                    icon = Icons.Default.Info,
+                    onDismissRequest = {
+                        openStartRideDialog.value = false
+                    },
+                    onConfirmation = {
+                        openStartRideDialog.value = false
+                        startRide(rideId)
+                    }
+                )
+            }
+
+            openEndRideDialog.value -> {
+                AlertDialog(
+                    dialogTitle = "Confirm Action",
+                    dialogText = "Are you sure you want to end the ride?",
+                    icon = Icons.Default.Info,
+                    onDismissRequest = {
+                        openEndRideDialog.value = false
+                    },
+                    onConfirmation = {
+                        openEndRideDialog.value = false
+                        endRide(rideId)
+                    }
+                )
+            }
+        }
+
     }
 }
