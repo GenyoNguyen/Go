@@ -39,13 +39,14 @@ class GetConversationListWithLastMessageUseCase @Inject constructor(
                                     else -> continue
                                 }
 
-                            conversationListWithLastMessage.add(
-                                ConversationWithLastMessage(
-                                    conversation = conversation,
-                                    lastMessage = lastMessage.data,
-                                    otherName = otherName
+                            if (lastMessage.data != null)
+                                conversationListWithLastMessage.add(
+                                    ConversationWithLastMessage(
+                                        conversation = conversation,
+                                        lastMessage = lastMessage.data,
+                                        otherName = otherName
+                                    )
                                 )
-                            )
                         }
 
                         is Response.Failure -> {

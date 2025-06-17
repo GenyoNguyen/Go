@@ -125,7 +125,7 @@ class ConversationRepositoryImpl(
     override suspend fun subscribeToMessages(): Flow<Message> =
         callbackFlow {
             val dataFlow =
-                messageChannel.postgresChangeFlow<PostgresAction.Insert>(schema = "public") {
+                messageChannel.postgresChangeFlow<PostgresAction>(schema = "public") {
                     table = "Message"
                 }
             println("Data flow: $dataFlow")
@@ -133,8 +133,19 @@ class ConversationRepositoryImpl(
             dataFlow.onEach {
                 println("Received message data")
                 try {
-                    val message = it.decodeRecord<Message>()
-                    trySend(message)
+                    when (it) {
+                        is PostgresAction.Insert -> {
+                            val message = it.decodeRecord<Message>()
+                            trySend(message)
+                        }
+
+                        is PostgresAction.Update -> {
+                            val message = it.decodeRecord<Message>()
+                            trySend(message)
+                        }
+
+                        else -> {}
+                    }
                 } catch (e: Exception) {
                     println("Error decoding message: ${e.message}")
                 }

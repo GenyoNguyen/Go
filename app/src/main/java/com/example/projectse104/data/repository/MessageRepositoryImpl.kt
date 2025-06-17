@@ -1,5 +1,6 @@
 package com.example.projectse104.data.repository
 
+import android.util.Log
 import com.example.projectse104.core.Response
 import com.example.projectse104.domain.model.Message
 import com.example.projectse104.domain.repository.MessageListResponse
@@ -53,6 +54,24 @@ class MessageRepositoryImpl(
         Response.Success(Unit)
     } catch (e: Exception) {
         println("Error sending message: ${e.message}")
+        Response.Failure(e)
+    }
+
+    override suspend fun updateMessageReadStatus(
+        messageId: String,
+        isRead: Boolean
+    ): Response<Unit> = try {
+        Log.d("MessageRepository", "Updating message read status for ID: $messageId to $isRead")
+        messagesRef.update(
+            mapOf("isRead" to isRead)
+        ) {
+            filter {
+                eq("id", messageId)
+            }
+        }
+        Response.Success(Unit)
+    } catch (e: Exception) {
+        Log.d("MessageRepository", "Error updating message read status: ${e.message}")
         Response.Failure(e)
     }
 }
