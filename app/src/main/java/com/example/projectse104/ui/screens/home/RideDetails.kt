@@ -1,7 +1,6 @@
 package com.example.projectse104.ui.screens.home
 
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -20,13 +19,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -36,23 +34,14 @@ import androidx.navigation.NavController
 import com.example.projectse104.Component.BackArrowWithText
 import com.example.projectse104.Component.ShimmerRideDetailsScreen
 import com.example.projectse104.Component.ToastMessage
-import com.example.projectse104.Component.rideDetails
 import com.example.projectse104.R
 import com.example.projectse104.core.Response
 import com.example.projectse104.core.toCustomString
-import com.example.projectse104.domain.model.Ride
-import com.example.projectse104.domain.model.RideOfferWithLocation
 import com.example.projectse104.domain.model.RideOfferWithLocationRider
 import com.example.projectse104.domain.model.RideWithUserWithLocation
 import com.example.projectse104.domain.model.User
 import com.example.projectse104.ui.screens.history.Component.RideContent
 import com.example.projectse104.ui.screens.home.Component.OsmMapView
-import com.example.projectse104.ui.screens.home.RideDetailsViewModel
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 
 @Composable
 fun RideDetailsScreen(
@@ -63,7 +52,7 @@ fun RideDetailsScreen(
 ) {
     var distance by remember { mutableStateOf("Đang tính khoảng cách...") }
 
-    if (addGoButton=="no") {
+    if (addGoButton == "no") {
         val viewModel: RideDetailsViewModel = hiltViewModel()
         val rideState = viewModel.rideState.collectAsStateWithLifecycle()
         var mapImageID: Int = R.drawable.map_image
@@ -112,8 +101,8 @@ fun RideDetailsScreen(
                             .fillMaxWidth()
                             .height(400.dp)
                             .clipToBounds(),
-                        fromLocation = ride.startLocation.toString(),
-                        toLocation = ride.endLocation.toString(),
+                        fromLocation = ride!!.startLocation,
+                        toLocation = ride!!.endLocation,
                         context = LocalContext.current,
                         onDistanceCalculated = { distanceText ->
                             distance = distanceText // Cập nhật khoảng cách
@@ -133,16 +122,15 @@ fun RideDetailsScreen(
                     ride?.passenger?.fullName.toString(),
                     ride?.passenger?.userCode.toString(),
                     ride?.rideOffer?.coinCost.toString(),
-                    status=ride?.ride?.status.toString(),
-                    distance=distance
+                    status = ride?.ride?.status.toString(),
+                    distance = distance
                 )
                 val riderName = ride?.rider?.fullName.toString()
 
                 Spacer(modifier = Modifier.height(16.dp))
             }
         }
-    }
-    else if (addGoButton=="yes") {
+    } else if (addGoButton == "yes") {
         val viewModel: OfferDetailsViewModel = hiltViewModel()
         val offerState = viewModel.offerState.collectAsStateWithLifecycle()
         val userState by viewModel.user.collectAsStateWithLifecycle()
@@ -158,10 +146,12 @@ fun RideDetailsScreen(
             is Response.Success<User> -> {
                 user = state.data
             }
+
             is Response.Failure -> {
                 errorMessage = "Không thể tải thông tin người dùng. Vui lòng thử lại!"
                 showErrorToast = true
             }
+
             else -> {} // Loading or initial state
         }
         // Handle rideListState
@@ -169,10 +159,12 @@ fun RideDetailsScreen(
             is Response.Success<RideOfferWithLocationRider> -> {
                 rideOffer = state.data
             }
+
             is Response.Failure -> {
                 errorMessage = "Không thể tải danh sách chuyến đi. Vui lòng thử lại!"
                 showErrorToast = true
             }
+
             else -> {} // Loading or initial state
         }
 
@@ -193,7 +185,10 @@ fun RideDetailsScreen(
                     .verticalScroll(rememberScrollState()) // Thêm cuộn dọc
 
             ) {
-                BackArrowWithText(navController, "Details of Ride No. ${rideOffer?.rideOffer?.rideCode}")
+                BackArrowWithText(
+                    navController,
+                    "Details of Ride No. ${rideOffer?.rideOffer?.rideCode}"
+                )
 
 
                 Spacer(modifier = Modifier.height(24.dp))
@@ -225,30 +220,30 @@ fun RideDetailsScreen(
                     user?.fullName.toString(),
                     user?.userCode.toString(),
                     rideOffer?.rideOffer?.coinCost.toString(),
-                    status=rideOffer?.rideOffer?.status.toString(),
+                    status = rideOffer?.rideOffer?.status.toString(),
                     distance = distance
                 )
                 val riderName = rideOffer?.rider?.fullName.toString()
                 Spacer(modifier = Modifier.height(16.dp))
-                    Button(
+                Button(
 
-                        onClick = { navController.navigate("confirm_ride/$riderName/$rideNo/$userId/${rideOffer?.rideOffer?.rideCode}") },
-                        modifier = Modifier
-                            .width(100.dp)
-                            .height(30.dp)
-                            .align(Alignment.End), // Căn chỉnh button về bên phải
-                        shape = RoundedCornerShape(25.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8FC79A)),
-                        contentPadding = PaddingValues(0.dp) // Loại bỏ padding nội dung để text không bị cắt
-                    ) {
-                        Text(
-                            text = "GO!",
-                            fontSize = 16.sp,
-                            color = Color.White,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.align(Alignment.CenterVertically) // Căn giữa text theo chiều dọc
-                        )
-                    }
+                    onClick = { navController.navigate("confirm_ride/$riderName/$rideNo/$userId/${rideOffer?.rideOffer?.rideCode}") },
+                    modifier = Modifier
+                        .width(100.dp)
+                        .height(30.dp)
+                        .align(Alignment.End), // Căn chỉnh button về bên phải
+                    shape = RoundedCornerShape(25.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8FC79A)),
+                    contentPadding = PaddingValues(0.dp) // Loại bỏ padding nội dung để text không bị cắt
+                ) {
+                    Text(
+                        text = "GO!",
+                        fontSize = 16.sp,
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.align(Alignment.CenterVertically) // Căn giữa text theo chiều dọc
+                    )
+                }
             }
         }
     }

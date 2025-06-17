@@ -336,7 +336,7 @@ fun AppNavigation(navController: NavHostController) {
                 OfferDetailsScreen(
                     navController = navController,
                     userId = userId,
-                    rideNo = rideNo
+                    rideOfferId = rideNo
                 )
             }
             composable(
