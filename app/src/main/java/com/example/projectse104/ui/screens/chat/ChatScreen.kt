@@ -9,9 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.TextButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -61,11 +59,6 @@ fun ChatScreen(
                     .padding(innerPadding)
             ) {
                 Header("Chat", R.drawable.chat_icon_header)
-                TextButton(onClick = {
-                    Log.d("ChatScreen", "Current state: $conversationListState")
-                }) {
-                    Text("Log Conversation List State")
-                }
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -86,15 +79,15 @@ fun ChatScreen(
                         val message = conversation.lastMessage?.content.toString()
                         val time = conversation.lastMessage?.timeSent.toCustomString()
                         val imageRes = R.drawable.avatar_1
-                        val haveSeen = conversation.lastMessage?.isRead ?: false
-                        val isOnline = true // TODO: Implement online function
+                        val haveSeen =
+                            conversation.lastMessage?.senderId == userId || conversation.lastMessage?.isRead == true
+                        val isOnline = false // TODO: Implement online function
+                        val isSent = conversation.lastMessage?.senderId == userId
 
                         val profilePicUrl = avatarUrls[otherId]?.let { response ->
                             when (response) {
                                 is Response.Success -> response.data
-                                is Response.Loading -> null
-                                is Response.Failure -> null
-                                Response.Idle -> TODO()
+                                else -> null
                             }
                         }
 
@@ -108,7 +101,8 @@ fun ChatScreen(
                             imageRes = imageRes,
                             haveSeen = haveSeen,
                             isOnline = isOnline,
-                            profilePicUrl = profilePicUrl
+                            profilePicUrl = profilePicUrl,
+                            isSent = isSent
                         )
                     }
                 }

@@ -8,13 +8,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
-import com.example.projectse104.core.processNewChatMessages
 import com.example.projectse104.ui.navigation.components.sharedViewModel
 import com.example.projectse104.ui.screens.auth.ForgotPasswordScreen
 import com.example.projectse104.ui.screens.auth.LoginScreen
@@ -126,13 +126,13 @@ fun AppNavigation(navController: NavHostController) {
                     val userName = backStackEntry.arguments?.getString("userName") ?: ""
 
                     val viewModel = backStackEntry.sharedViewModel<ChatViewModel>(navController)
-                    val conversationListState by viewModel.conversationListState.collectAsState()
+                    val messageCount by viewModel.messageCount.collectAsStateWithLifecycle()
 
                     LaunchedEffect(userId) {
                         viewModel.initialize(userId) // Khởi tạo ViewModel với userId
                     }
 
-                    val messageCount = processNewChatMessages(conversationListState)
+
                     println("Loaded Home Screen")
 
                     HomeScreen(
@@ -149,8 +149,7 @@ fun AppNavigation(navController: NavHostController) {
                     val userId = backStackEntry.arguments?.getString("userId") ?: ""
 
                     val viewModel = backStackEntry.sharedViewModel<ChatViewModel>(navController)
-                    val conversationListState by viewModel.conversationListState.collectAsState()
-                    val messageCount = processNewChatMessages(conversationListState)
+                    val messageCount by viewModel.messageCount.collectAsStateWithLifecycle()
 
                     ChatScreen(
                         navController = navController,
@@ -166,8 +165,7 @@ fun AppNavigation(navController: NavHostController) {
                     val userId = backStackEntry.arguments?.getString("userId") ?: ""
 
                     val viewModel = backStackEntry.sharedViewModel<ChatViewModel>(navController)
-                    val conversationListState by viewModel.conversationListState.collectAsState()
-                    val messageCount = processNewChatMessages(conversationListState)
+                    val messageCount by viewModel.messageCount.collectAsStateWithLifecycle()
 
                     HistoryScreen(
                         navController = navController,
@@ -182,8 +180,7 @@ fun AppNavigation(navController: NavHostController) {
                     val userId = backStackEntry.arguments?.getString("userId") ?: ""
 
                     val viewModel = backStackEntry.sharedViewModel<ChatViewModel>(navController)
-                    val conversationListState by viewModel.conversationListState.collectAsState()
-                    val messageCount = processNewChatMessages(conversationListState)
+                    val messageCount by viewModel.messageCount.collectAsStateWithLifecycle()
 
                     ProfileScreen(
                         navController = navController,
