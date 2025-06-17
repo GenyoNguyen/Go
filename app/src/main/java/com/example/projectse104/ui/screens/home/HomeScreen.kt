@@ -51,6 +51,7 @@ fun HomeScreen(
     navController: NavController,
     userId: String,
     userName: String = "",
+    messageCount: Int,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val rideListState by viewModel.rideListState.collectAsStateWithLifecycle()
@@ -111,7 +112,9 @@ fun HomeScreen(
                 alpha = 0.2f
             )
             Scaffold(
-                bottomBar = { BottomNavigationBar(navController, userId, 1) },
+                bottomBar = {
+                    BottomNavigationBar(navController, userId, 1, messageCount)
+                },
                 containerColor = Color.Transparent,
                 modifier = Modifier.fillMaxSize()
             ) { innerPadding ->
@@ -207,7 +210,8 @@ fun HomeScreen(
                         snapshotFlow { listState.layoutInfo }
                             .collect { layoutInfo ->
                                 val totalItems = layoutInfo.totalItemsCount
-                                val lastVisibleItem = layoutInfo.visibleItemsInfo.lastOrNull()?.index
+                                val lastVisibleItem =
+                                    layoutInfo.visibleItemsInfo.lastOrNull()?.index
                                 if (lastVisibleItem != null && lastVisibleItem >= totalItems - 1 && viewModel.hasMoreData() && !isLoadingMore) {
                                     viewModel.loadMoreRides(userId)
                                 }

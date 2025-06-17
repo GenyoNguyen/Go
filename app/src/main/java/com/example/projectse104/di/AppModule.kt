@@ -2,6 +2,7 @@ package com.example.projectse104.di
 
 import android.content.Context
 import com.example.projectse104.data.repository.ConversationRepositoryImpl
+import com.example.projectse104.data.repository.FirebaseAuthRepositoryImpl
 import com.example.projectse104.data.repository.LocationRepositoryImpl
 import com.example.projectse104.data.repository.MessageRepositoryImpl
 import com.example.projectse104.data.repository.RideOfferRepositoryImpl
@@ -11,6 +12,7 @@ import com.example.projectse104.data.repository.UserLocationRepositoryImpl
 import com.example.projectse104.data.repository.UserLoginImpl
 import com.example.projectse104.data.repository.UserRepositoryImpl
 import com.example.projectse104.domain.repository.ConversationRepository
+import com.example.projectse104.domain.repository.FirebaseAuthRepository
 import com.example.projectse104.domain.repository.LocationRepository
 import com.example.projectse104.domain.repository.MessageRepository
 import com.example.projectse104.domain.repository.RideOfferRepository
@@ -20,17 +22,17 @@ import com.example.projectse104.domain.repository.UserLocationRepository
 import com.example.projectse104.domain.repository.UserLogin
 import com.example.projectse104.domain.repository.UserRepository
 import com.example.projectse104.domain.use_case.user.ChangePasswordUseCase
+import com.example.projectse104.domain.use_case.user.FirebaseAuthUseCase
+import com.example.projectse104.domain.use_case.user.UpdateEmailVerificationUseCase
 import com.example.projectse104.domain.use_case.user.VerifyCurrentPasswordUseCase
+import com.example.projectse104.domain.use_case.validation.ValidateConfirmPassword
 import com.example.projectse104.domain.use_case.validation.ValidateEmail
 import com.example.projectse104.domain.use_case.validation.ValidateFullName
 import com.example.projectse104.domain.use_case.validation.ValidateLocation
-import com.example.projectse104.domain.use_case.validation.ValidatePhoneNumber
-import com.example.projectse104.domain.use_case.validation.ValidateConfirmPassword
 import com.example.projectse104.domain.use_case.validation.ValidatePassword
+import com.example.projectse104.domain.use_case.validation.ValidatePhoneNumber
 import com.example.projectse104.utils.DataStoreSessionManager
 import com.google.firebase.auth.FirebaseAuth
-import io.github.jan.supabase.postgrest.query.PostgrestQueryBuilder
-import io.github.jan.supabase.postgrest.postgrest
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -40,18 +42,16 @@ import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.postgrest.Postgrest
-import io.github.jan.supabase.storage.Storage
 import io.github.jan.supabase.postgrest.from
+import io.github.jan.supabase.postgrest.postgrest
+import io.github.jan.supabase.postgrest.query.PostgrestQueryBuilder
 import io.github.jan.supabase.realtime.Realtime
 import io.github.jan.supabase.realtime.channel
 import io.github.jan.supabase.realtime.realtime
 import io.github.jan.supabase.serializer.KotlinXSerializer
+import io.github.jan.supabase.storage.Storage
 import kotlinx.serialization.json.Json
 import kotlin.time.Duration.Companion.seconds
-import com.example.projectse104.data.repository.FirebaseAuthRepositoryImpl
-import com.example.projectse104.domain.repository.FirebaseAuthRepository
-import com.example.projectse104.domain.use_case.user.FirebaseAuthUseCase
-import com.example.projectse104.domain.use_case.user.UpdateEmailVerificationUseCase
 
 const val USER = "User"
 const val RIDE = "Ride"
@@ -116,7 +116,8 @@ object AppModule {
         db: SupabaseClient
     ): ConversationRepository = ConversationRepositoryImpl(
         conversationsRef = db.from(CONVERSATION),
-        realtimeChannel = db.channel("schema-db-changes")
+        conversationChannel = db.channel("conversation"),
+        messageChannel = db.channel("message")
     )
 
     @Provides
@@ -216,6 +217,7 @@ object AppModule {
     fun provideFirebaseAuthUseCase(firebaseAuthRepository: FirebaseAuthRepository): FirebaseAuthUseCase {
         return FirebaseAuthUseCase(firebaseAuthRepository)
     }
+
     @Provides
     fun provideUpdateEmailVerificationUseCase(userRepository: UserRepository): UpdateEmailVerificationUseCase {
         return UpdateEmailVerificationUseCase(userRepository)

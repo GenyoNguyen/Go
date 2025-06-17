@@ -3,10 +3,8 @@ package com.example.projectse104.ui.screens.history
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -16,8 +14,8 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -44,6 +42,7 @@ import com.example.projectse104.domain.model.RideWithRideOfferWithLocation
 fun HistoryScreen(
     navController: NavController,
     userId: String,
+    messageCount: Int,
     viewModel: HistoryViewModel = hiltViewModel()
 ) {
     val rideListState by viewModel.rideListState.collectAsStateWithLifecycle()
@@ -61,12 +60,14 @@ fun HistoryScreen(
             rides = state.data.orEmpty()
             isLoading = false
         }
+
         is Response.Failure -> {
             println("Error: ${state.e?.message}")
             errorMessage = "Không thể tải danh sách chuyến đi. Vui lòng thử lại!"
             showErrorToast = true
             isLoading = false
         }
+
         is Response.Loading, is Response.Idle -> {
             println("State: Loading or Idle")
         }
@@ -93,7 +94,7 @@ fun HistoryScreen(
         } else {
             Scaffold(
                 bottomBar = {
-                    BottomNavigationBar(navController, userId, 3)
+                    BottomNavigationBar(navController, userId, 3, messageCount)
                 },
                 containerColor = Color.Transparent,
                 modifier = Modifier.fillMaxSize()
@@ -183,7 +184,8 @@ fun HistoryScreen(
                         snapshotFlow { listState.layoutInfo }
                             .collect { layoutInfo ->
                                 val totalItems = layoutInfo.totalItemsCount
-                                val lastVisibleItem = layoutInfo.visibleItemsInfo.lastOrNull()?.index
+                                val lastVisibleItem =
+                                    layoutInfo.visibleItemsInfo.lastOrNull()?.index
                                 if (lastVisibleItem != null && lastVisibleItem >= totalItems - 2 && viewModel.hasMoreData() && !isLoadingMore) {
                                     println("Loading more rides at index: $lastVisibleItem, total: $totalItems")
                                     viewModel.loadMoreRides(userId)

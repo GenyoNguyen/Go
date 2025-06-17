@@ -48,6 +48,10 @@ class GetConversationListWithLastMessageUseCase @Inject constructor(
                             )
                         }
 
+                        is Response.Failure -> {
+                            println("Failed to get last message for conversation ${conversation.id}: ${lastMessage.e}")
+                        }
+
                         else -> continue
                     }
                 }

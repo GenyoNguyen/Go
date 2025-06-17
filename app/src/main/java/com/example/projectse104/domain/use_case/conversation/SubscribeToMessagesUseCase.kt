@@ -7,5 +7,5 @@ import javax.inject.Inject
 
 class SubscribeToMessagesUseCase @Inject constructor(private val conversationRepository: ConversationRepository) {
     suspend operator fun invoke(conversationId: String): Flow<Message> =
-        conversationRepository.subscribeToMessages(conversationId)
+        conversationRepository.subscribeToMessagesInConversation(conversationId)
 }

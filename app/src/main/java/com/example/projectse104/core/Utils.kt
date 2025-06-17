@@ -3,6 +3,7 @@ package com.example.projectse104.core
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
+import com.example.projectse104.domain.model.ConversationWithLastMessage
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -25,4 +26,18 @@ fun Date?.toCustomString(default: String = "N/A"): String {
     } else {
         default
     }
+}
+
+fun processNewChatMessages(
+    conversations: List<ConversationWithLastMessage>
+): Int {
+    var unreadCount = 0
+    conversations.forEach { conversation ->
+        // Check if the last message is unread
+        if (conversation.lastMessage?.isRead == false) {
+            unreadCount++
+        }
+    }
+    println("Total unread messages: $unreadCount")
+    return unreadCount
 }

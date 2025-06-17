@@ -17,5 +17,7 @@ interface ConversationRepository {
         secondUserId: String
     ): ConversationResponse
 
-    suspend fun subscribeToMessages(conversationId: String): Flow<Message>
+    suspend fun subscribeToMessagesInConversation(conversationId: String): Flow<Message>
+    suspend fun subscribeToConversations(userId: String): Flow<Conversation>
+    suspend fun subscribeToMessages(): Flow<Message>
 }

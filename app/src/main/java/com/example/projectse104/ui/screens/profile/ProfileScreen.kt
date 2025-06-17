@@ -3,9 +3,18 @@ package com.example.projectse104.ui.screens.profile
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
@@ -30,14 +39,14 @@ import com.example.projectse104.ui.screens.profile.Component.ProfileOption
 import com.example.projectse104.ui.screens.profile.Component.ShimmerProfileScreen
 import com.example.projectse104.utils.DataStoreSessionManager
 import kotlinx.coroutines.launch
-import androidx.compose.runtime.LaunchedEffect
 
 @Composable
 fun ProfileScreen(
     navController: NavController,
     userId: String,
     viewModel: ProfileViewModel = hiltViewModel(),
-    sessionManager: DataStoreSessionManager
+    sessionManager: DataStoreSessionManager,
+    messageCount: Int
 ) {
     val userState by viewModel.userState.collectAsStateWithLifecycle()
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
@@ -63,21 +72,25 @@ fun ProfileScreen(
             }
             viewModel.disableLoading()
         }
+
         is Response.Failure -> {
             ToastMessage(
                 message = "Không thể tải dữ liệu. Vui lòng thử lại!",
                 show = true
             )
         }
+
         else -> {}
     }
     when (avatarUrl) {
         is Response.Success<String> -> {
             profilePicUrl = avatarUrl.data
         }
+
         is Response.Failure -> {
             profilePicUrl = null
         }
+
         else -> {
             profilePicUrl = null
         }
@@ -175,7 +188,7 @@ fun ProfileScreen(
                 }
             }
             Spacer(modifier = Modifier.weight(1f))
-            BottomNavigationBar(navController, userId, 4)
+            BottomNavigationBar(navController, userId, 4, messageCount)
         }
     }
 }
