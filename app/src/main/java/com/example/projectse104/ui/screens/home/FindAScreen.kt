@@ -16,10 +16,13 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -29,69 +32,71 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.projectse104.Component.BottomNavigationBar
 import com.example.projectse104.Component.RideItem
 import com.example.projectse104.Component.ToastMessage
 import com.example.projectse104.R
 import com.example.projectse104.core.Response
+import com.example.projectse104.core.toCustomString
+import com.example.projectse104.domain.model.RideOfferWithLocation
 import com.example.projectse104.domain.model.User
 import com.example.projectse104.ui.screens.home.Component.HomeHeader
 import com.example.projectse104.ui.screens.home.Component.SearchBar
 import com.example.projectse104.ui.screens.home.Component.TopNavBar
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.projectse104.core.toCustomString
-import com.example.projectse104.domain.model.RideOfferWithLocation
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.snapshotFlow
 
 @Composable
 fun FindARideScreen(
     navController: NavController,
     userId: String,
     userName: String = "",
-    viewModel: FindARideVIewModel = hiltViewModel()
+    viewModel: FindARideViewModel = hiltViewModel()
 ) {
     var searchText by remember { mutableStateOf(TextFieldValue("")) }
     val rideOfferListState by viewModel.rideOfferListState.collectAsStateWithLifecycle()
+    val filteredRides by viewModel.filteredRides.collectAsStateWithLifecycle()
     val isLoadingMore by viewModel.isLoadingMore.collectAsStateWithLifecycle()
     val userState by viewModel.user.collectAsStateWithLifecycle()
     val avatarUrls by viewModel.avatarUrls.collectAsStateWithLifecycle()
-    var rides = emptyList<RideOfferWithLocation>()
-    var finalUserName = userName.split(" ").last()
-    var showErrorToast = false
-    var errorMessage = ""
+    var finalUserName by remember { mutableStateOf(userName.split(" ").last()) }
+    var showErrorToast by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf("") }
 
-    // Handle userState
-    if (finalUserName.isEmpty()) {
-        when (val state = userState) {
-            is Response.Success<User> -> {
-                finalUserName = state.data?.fullName.toString().split(" ").last()
+    // Xử lý userState
+    LaunchedEffect(userState) {
+        if (finalUserName.isEmpty()) {
+            when (val state = userState) {
+                is Response.Success<User> -> {
+                    finalUserName = state.data?.fullName.toString().split(" ").last()
+                }
+                is Response.Failure -> {
+                    errorMessage = "Không thể tải thông tin người dùng. Vui lòng thử lại!"
+                    showErrorToast = true
+                }
+                else -> {}
             }
+        }
+    }
+
+    // Xử lý rideOfferListState
+    LaunchedEffect(rideOfferListState) {
+        when (val state = rideOfferListState) {
             is Response.Failure -> {
-                errorMessage = "Không thể tải thông tin người dùng. Vui lòng thử lại!"
+                errorMessage = "Không thể tải danh sách chuyến đi. Vui lòng thử lại!"
                 showErrorToast = true
             }
             else -> {}
         }
     }
 
-    // Handle rideListState
-    when (val state = rideOfferListState) {
-        is Response.Success<List<RideOfferWithLocation>> -> {
-            rides = state.data.orEmpty()
-        }
-        is Response.Failure -> {
-            errorMessage = "Không thể tải danh sách chuyến đi. Vui lòng thử lại!"
-            showErrorToast = true
-        }
-        is Response.Loading, is Response.Idle -> {}
-    }
-
     if (showErrorToast) {
         ToastMessage(message = errorMessage, show = true)
+    }
+
+    LaunchedEffect(searchText) {
+        viewModel.filterRides(searchText.text)
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -103,9 +108,7 @@ fun FindARideScreen(
             alpha = 0.2f
         )
         Scaffold(
-            bottomBar = {
-                BottomNavigationBar(navController, userId, 1)
-            },
+            bottomBar = { BottomNavigationBar(navController, userId, 1) },
             containerColor = Color.Transparent,
             modifier = Modifier.fillMaxSize()
         ) { innerPadding ->
@@ -130,13 +133,6 @@ fun FindARideScreen(
                     Spacer(modifier = Modifier.height(16.dp))
                 }
                 val listState = rememberLazyListState()
-                val filteredRides by remember(rides, searchText) {
-                    mutableStateOf(rides.filter { ride ->
-                        val searchQuery = searchText.text.trim().lowercase()
-                        ride.startLocation.toString().lowercase().contains(searchQuery) ||
-                                ride.endLocation.toString().lowercase().contains(searchQuery)
-                    })
-                }
                 println("Rendering LazyColumn with ${filteredRides.size} items")
                 LazyColumn(
                     state = listState,
@@ -163,14 +159,14 @@ fun FindARideScreen(
                             estimatedDeparture = estimatedDeparture,
                             fromLocation = fromLocation,
                             toLocation = toLocation,
-                            avatarResId = profilePicUrl, // Avatar của người lái xe
+                            avatarResId = profilePicUrl,
                             route = "ride_details",
                             userId = userId,
-                            riderId = ride.rideOffer.userId, // Pass riderId for contact feature
+                            riderId = ride.rideOffer.userId,
                             addGoButton = "yes"
                         )
                     }
-                    if (filteredRides.isEmpty() && !isLoadingMore) {
+                    if (filteredRides.isEmpty() && rideOfferListState !is Response.Loading) {
                         item {
                             Column(
                                 modifier = Modifier.padding(16.dp),
@@ -181,14 +177,6 @@ fun FindARideScreen(
                                     color = Color.Gray,
                                     style = TextStyle(fontSize = 16.sp)
                                 )
-                                if (viewModel.hasMoreData()) {
-                                    Button(
-                                        onClick = { viewModel.loadMoreRides(userId) },
-                                        modifier = Modifier.padding(top = 8.dp)
-                                    ) {
-                                        Text("Tải thêm")
-                                    }
-                                }
                             }
                         }
                     }

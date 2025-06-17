@@ -41,11 +41,13 @@ fun RideCircleScreen(
 ) {
     val favouriteRiderListState by viewModel.favouriteRiderListState.collectAsStateWithLifecycle()
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
-
-    var ridesTaken: String = "27"
-    var ridesGiven: String = "36"
-    var trustScore: String = "209"
+    val rideStatisticsState by viewModel.rideStatisticsState.collectAsStateWithLifecycle()
+    val userState by viewModel.userState.collectAsStateWithLifecycle()
+    var ridesTaken: String = "0"
+    var ridesGiven: String = "0"
+    var trustScore: String = "0"
     var avatarID: Int = R.drawable.avatar_1
+    var avatarUrl: String = ""
     var riders: List<User> = mutableListOf()
     when (val state = favouriteRiderListState) {
         is Response.Success<List<User>> -> {
@@ -61,6 +63,37 @@ fun RideCircleScreen(
             )
         }
 
+        else -> {}
+    }
+
+    when (val stats = rideStatisticsState) {
+        is Response.Success -> {
+            stats.data?.let {
+                ridesTaken = it.rideTaken.toString()
+                ridesGiven = it.rideGiven.toString()
+                trustScore = it.trustScore.toString()
+            }
+        }
+        is Response.Failure -> {
+            ToastMessage(
+                message = stats.e?.message.toString(),
+                show = true
+            )
+        }
+        else -> {}
+    }
+    when (val stats = userState) {
+        is Response.Success -> {
+            stats.data?.let {
+                avatarUrl = it.profilePic ?: ""
+            }
+        }
+        is Response.Failure -> {
+            ToastMessage(
+                message = stats.e?.message.toString(),
+                show = true
+            )
+        }
         else -> {}
     }
 
@@ -83,7 +116,7 @@ fun RideCircleScreen(
                 Spacer(modifier = Modifier.height(20.dp))
 
                 RideCircleDetails(
-                    avatarID = avatarID,
+                    avatarURL = avatarUrl,
                     trustScore = trustScore,
                     ridesTaken = ridesTaken,
                     ridesGiven = ridesGiven
@@ -124,8 +157,8 @@ fun RideCircleScreen(
                             navController,
                             userId,
                             rider.fullName,
-                            R.drawable.avatar_2,
-                            "conversationId"
+                            rider.profilePic ?: "",
+                            rider.id ?: ""
                         )
                     }
                 }

@@ -1,7 +1,10 @@
 package com.example.projectse104.data.repository
 
 import com.example.projectse104.core.Response
+import com.example.projectse104.domain.model.RideOffer
+import com.example.projectse104.domain.model.UserLocation
 import com.example.projectse104.domain.model.UserLocationWithLocation
+import com.example.projectse104.domain.repository.AddUserLocationResponse
 import com.example.projectse104.domain.repository.UserLocationRepository
 import com.example.projectse104.domain.repository.UserLocationWithLocationListResponse
 import io.github.jan.supabase.postgrest.query.Columns
@@ -22,4 +25,10 @@ class UserLocationRepositoryImpl(
         } catch (e: Exception) {
             Response.Failure(e)
         }
+    override suspend fun addUserLocation(userLocation: UserLocation): AddUserLocationResponse = try {
+        userLocationRef.insert(userLocation)
+        Response.Success(Unit)
+    } catch (e: Exception) {
+        Response.Failure(e)
+    }
 }

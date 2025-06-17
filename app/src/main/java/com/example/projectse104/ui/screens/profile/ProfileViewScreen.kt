@@ -27,6 +27,7 @@ import com.example.projectse104.Component.ToastMessage
 import com.example.projectse104.R
 import com.example.projectse104.core.Response
 import com.example.projectse104.domain.model.User
+import com.example.projectse104.domain.use_case.ride.RideStatistics
 import com.example.projectse104.ui.screens.profile.Component.RecentAccompany
 import com.example.projectse104.ui.screens.profile.Component.ShimmerProfileViewScreen
 import com.example.projectse104.ui.screens.profile.Component.ViewRideDetails
@@ -37,11 +38,14 @@ fun ProfileViewScreen(
     navController: NavController,
     userId: String,
     hideNav: String = "yes",
-    viewModel: ProfileViewModel = hiltViewModel()
+    viewModel: ProfileViewViewModel = hiltViewModel()
 ) {
     // Thu thập trạng thái từ ViewModel
     val userState = viewModel.userState.collectAsState().value
     val avatarUrl = viewModel.avatarUrl.collectAsState().value
+    val rideStatistics = viewModel.rideStatistics.collectAsState().value
+//    val recentAccompanies = //given by viewmodel
+
     val isLoading = viewModel.isLoading.collectAsState().value
 
     // Khởi tạo các biến trạng thái
@@ -55,21 +59,13 @@ fun ProfileViewScreen(
     var loadingFailed: Boolean = false
 
     // Danh sách accompanies (có thể lấy từ API hoặc ViewModel sau này)
-    val accompanies: List<List<Any>> = listOf(
-        listOf(R.drawable.avatar_1, "Nguyễn Hữu Dũng"),
-        listOf(R.drawable.avatar_2, "Nguyễn Phong Huy")
-    )
-
+    var accompanies: List<User?> = emptyList()
     // Xử lý trạng thái người dùng
     when (userState) {
         is Response.Success<User> -> {
             userFullName = userState.data?.fullName.orEmpty()
             rating = userState.data?.overallRating?.toString().orEmpty()
             position = userState.data?.location.orEmpty()
-            // Giả sử ridesTaken, ridesGiven, trustScore được cung cấp từ User hoặc API
-            ridesTaken = "27" // Thay thế bằng dữ liệu thực từ User nếu có
-            ridesGiven = "36"
-            trustScore = "209"
             loadingFailed = false
         }
         is Response.Loading -> {
@@ -80,6 +76,23 @@ fun ProfileViewScreen(
         }
         else -> {
             loadingFailed = true
+        }
+    }
+
+    // Xử lý trạng thái thống kê chuyến đi
+    when (rideStatistics) {
+        is Response.Success<RideStatistics> -> {
+            ridesTaken = rideStatistics.data?.rideTaken?.toString() ?: "0"
+            ridesGiven = rideStatistics.data?.rideGiven?.toString() ?: "0"
+            trustScore = rideStatistics.data?.trustScore?.toString() ?: "0"
+            accompanies = rideStatistics.data?.last2ridesUserId ?: emptyList()
+            loadingFailed = false
+        }
+        is Response.Failure -> {
+            loadingFailed = true
+        }
+        else -> {
+            // Không làm gì nếu trạng thái là null hoặc Loading
         }
     }
 
@@ -149,13 +162,9 @@ fun ProfileViewScreen(
             }
             Spacer(modifier = Modifier.height(20.dp))
             for (accompany in accompanies) {
-                val avatarResId: Int = when (val value = accompany[0]) {
-                    is Int -> value
-                    is String -> value.toIntOrNull() ?: 0
-                    else -> 0
-                }
-                val accompanyName: String = accompany[1].toString()
-                RecentAccompany(avatarResId, accompanyName)
+                val avatarURL: String = accompany?.profilePic.toString()
+                val accompanyName: String = accompany?.fullName.toString()
+                RecentAccompany(avatarURL, accompanyName)
             }
             Spacer(modifier = Modifier.weight(1f))
             if (hideNav == "yes") {

@@ -43,18 +43,18 @@ class RideRepositoryImpl(
     override suspend fun getRideListGivenPassenger(passengerId: String): RideListResponse =
         try {
             println("Lmao")
-            val rideList = ridesRef.select() {
+            val rideList = ridesRef.select {
                 filter {
                     eq("passengerId", passengerId)
                 }
                 order(column = "departTime", order = Order.DESCENDING)
             }.decodeList<Ride>()
-
             Response.Success(rideList)
         } catch (e: Exception) {
-            print("Exception: $e")
+            println("Exception: $e")
             Response.Failure(e)
         }
+
     override suspend fun getRideListGivenPassengerPaginated(userId: String, from: Long, to: Long): Response<List<Ride>> =
         try {
             println("Fetching rides for passengerId: $userId, from: $from, to: $to")
@@ -72,65 +72,60 @@ class RideRepositoryImpl(
             Response.Failure(e)
         }
 
-override suspend fun getRideListByRideOfferIds(rideOfferIds: List<String>,from: Long, to: Long): RideListResponse =
-    try {
-        val ridelist = ridesRef.select {
-            filter {
-                isIn("rideOfferId",rideOfferIds)
+    override suspend fun getRideListByRideOfferIds(rideOfferIds: List<String>, from: Long, to: Long): RideListResponse =
+        try {
+            println("Fetching rides for rideOfferIds: $rideOfferIds, from: $from, to: $to")
+            val rides = if (rideOfferIds.isNotEmpty()) {
+                ridesRef.select {
+                    filter {
+                        isIn("rideOfferId", rideOfferIds)
+                    }
+                    order(column = "departTime", order = Order.DESCENDING)
+                    range(from, to)
+                }.decodeList<Ride>()
+            } else {
+                emptyList()
             }
-        }.decodeList<Ride>()
-        val rideIds = ridelist.map { it.id }
-
-        print("RIDE IDS IN THIS FUNCTION: $rideIds")
-        val rides = if (rideIds.isNotEmpty()) {
-            ridesRef.select {
-                filter {
-                    isIn("id",rideIds)
-                }
-                order(column = "departTime", order = Order.DESCENDING)
-                range(from, to)
-            }.decodeList<Ride>()
-        } else {
-            emptyList()
+            println("RIDE IDS IN THIS FUNCTION: ${rides.map { it.id }}")
+            Response.Success(rides)
+        } catch (e: Exception) {
+            println("Exception: $e")
+            Response.Failure(e)
         }
-        Response.Success(rides)
-    } catch (e: Exception) {
-        print("An error occured")
-        Response.Failure(e)
-    }
+    override suspend fun getSuccessRideList(): RideListResponse =
+        try {
+            val rides =
+                ridesRef.select {
+                    filter {
+                        eq("status", "SUCCESS")
+                    }
+                    order(column = "departTime", order = Order.DESCENDING)
+                }.decodeList<Ride>()
+            Response.Success(rides)
+        } catch (e: Exception) {
+            println("Exception: $e")
+            Response.Failure(e)
+        }
+
     override suspend fun getRideListGivenDriver(driverId: String): RideListResponse =
         try {
-        println("Lmao")
-        val rideList = ridesRef.select() {
-            filter {
-                eq("driverId", driverId)
-            }
-            order(column = "departTime", order = Order.DESCENDING)
-        }.decodeList<Ride>()
-
-        Response.Success(rideList)
-    } catch (e: Exception) {
-        print("Exception: $e")
-        Response.Failure(e)
-    }
-//    override suspend fun getRideListGivenDriver(driverId: String): RideListResponse = try {
-//        val rideList = ridesRef.select {
-//            filter {
-//                Ride::driverId eq driverId
-//            }
-//            order(column = Ride::departTime.toString(), order = Order.DESCENDING)
-//        }.decodeList<Ride>()
-//
-//        Response.Success(rideList)
-//    } catch (e: Exception) {
-//        Response.Failure(e)
-//    }
-
+            println("Lmao")
+            val rideList = ridesRef.select {
+                filter {
+                    eq("driverId", driverId)
+                }
+                order(column = "departTime", order = Order.DESCENDING)
+            }.decodeList<Ride>()
+            Response.Success(rideList)
+        } catch (e: Exception) {
+            println("Exception: $e")
+            Response.Failure(e)
+        }
 
     override suspend fun getRide(rideId: String): RideResponse = try {
         val ride = ridesRef.select {
             filter {
-                Ride::id eq rideId
+                eq("id", rideId)
             }
         }.decodeSingle<Ride>()
         Response.Success(ride)
@@ -155,12 +150,11 @@ override suspend fun getRideListByRideOfferIds(rideOfferIds: List<String>,from: 
             }
         }) {
             filter {
-                Ride::id eq rideId
+                eq("id", rideId)
             }
         }
         Response.Success(Unit)
     } catch (e: Exception) {
         Response.Failure(e)
     }
-
 }
