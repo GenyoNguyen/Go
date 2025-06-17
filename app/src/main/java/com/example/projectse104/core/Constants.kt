@@ -56,5 +56,6 @@ const val RIDE_NUMBER_FIELD = "rideNo"
 enum class RideStatus(val value: String) {
     SUCCESS("success"),
     CANCELLED("cancelled"),
-    PENDING("pending");
+    PENDING("pending"),
+    ONGOING("ongoing");
 }

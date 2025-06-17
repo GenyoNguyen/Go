@@ -8,6 +8,7 @@ import com.example.projectse104.core.USER_ID_FIELD
 import com.example.projectse104.domain.model.RideWithRideOfferWithLocation
 import com.example.projectse104.domain.repository.UserResponse
 import com.example.projectse104.domain.use_case.ride.GetRidesHomeUseCase
+import com.example.projectse104.domain.use_case.ride.TriggerRideUseCase
 import com.example.projectse104.domain.use_case.user.GetUserUseCase
 import com.example.projectse104.domain.use_case.user.LoadUserAva
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,9 +26,11 @@ class HomeViewModel @Inject constructor(
     private val getRidesHomeUseCase: GetRidesHomeUseCase,
     private val getUserUseCase: GetUserUseCase,
     private val loadUserAva: LoadUserAva,
+    private val triggerRideUseCase: TriggerRideUseCase,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
-    private val _rideListState = MutableStateFlow<Response<List<RideWithRideOfferWithLocation>>>(Response.Idle)
+    private val _rideListState =
+        MutableStateFlow<Response<List<RideWithRideOfferWithLocation>>>(Response.Idle)
     private val _isLoadingMore = MutableStateFlow(false)
     private val _user = MutableStateFlow<UserResponse>(Response.Loading)
     private val _avatarUrls = MutableStateFlow<Map<String, Response<String>>>(emptyMap())
@@ -78,6 +81,7 @@ class HomeViewModel @Inject constructor(
                                 _isLoadingMore.value = false
                             }
                         }
+
                         is Response.Failure -> {
                             println("Error: ${result.e?.message}")
                             withContext(Dispatchers.Main) {
@@ -85,6 +89,7 @@ class HomeViewModel @Inject constructor(
                                 _isLoadingMore.value = false
                             }
                         }
+
                         is Response.Loading -> println("State: Loading")
                         is Response.Idle -> {
                             println("State: Idle")
@@ -110,6 +115,18 @@ class HomeViewModel @Inject constructor(
                     put(driverId, result)
                 }
             }
+        }
+    }
+
+    fun startRide(rideId: String) {
+        viewModelScope.launch {
+            triggerRideUseCase(rideId, true)
+        }
+    }
+
+    fun endRide(rideId: String) {
+        viewModelScope.launch {
+            triggerRideUseCase(rideId, false)
         }
     }
 

@@ -25,7 +25,8 @@ class OfferARideVIewModel @Inject constructor(
     private val getUserUseCase: GetUserUseCase,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
-    private val _rideOfferListState = MutableStateFlow<Response<List<RideOfferWithLocation>>>(Response.Idle)
+    private val _rideOfferListState =
+        MutableStateFlow<Response<List<RideOfferWithLocation>>>(Response.Idle)
     private val _isLoadingMore = MutableStateFlow(false)
     private val _user = MutableStateFlow<UserResponse>(Response.Loading)
     val rideOfferListState = _rideOfferListState.asStateFlow()
@@ -70,14 +71,17 @@ class OfferARideVIewModel @Inject constructor(
                         _rideOfferListState.value = Response.Success(allRideOffers.toList())
                         _isLoadingMore.value = false
                     }
+
                     is Response.Failure -> {
                         println("Error: ${result.e?.message}")
                         _rideOfferListState.value = result
                         _isLoadingMore.value = false
                     }
+
                     is Response.Loading -> {
                         println("State: Loading")
                     }
+
                     is Response.Idle -> {
                         println("State: Idle")
                         _rideOfferListState.value = Response.Idle

@@ -1,7 +1,9 @@
 package com.example.projectse104.data.repository
 
+import android.util.Log
 import com.example.projectse104.core.Response
 import com.example.projectse104.domain.model.Ride
+import com.example.projectse104.domain.model.User
 import com.example.projectse104.domain.repository.AddRideResponse
 import com.example.projectse104.domain.repository.RideListResponse
 import com.example.projectse104.domain.repository.RideRepository
@@ -55,7 +57,11 @@ class RideRepositoryImpl(
             Response.Failure(e)
         }
 
-    override suspend fun getRideListGivenPassengerPaginated(userId: String, from: Long, to: Long): Response<List<Ride>> =
+    override suspend fun getRideListGivenPassengerPaginated(
+        userId: String,
+        from: Long,
+        to: Long
+    ): Response<List<Ride>> =
         try {
             println("Fetching rides for passengerId: $userId, from: $from, to: $to")
             val rideList = ridesRef.select {
@@ -72,7 +78,11 @@ class RideRepositoryImpl(
             Response.Failure(e)
         }
 
-    override suspend fun getRideListByRideOfferIds(rideOfferIds: List<String>, from: Long, to: Long): RideListResponse =
+    override suspend fun getRideListByRideOfferIds(
+        rideOfferIds: List<String>,
+        from: Long,
+        to: Long
+    ): RideListResponse =
         try {
             println("Fetching rides for rideOfferIds: $rideOfferIds, from: $from, to: $to")
             val rides = if (rideOfferIds.isNotEmpty()) {
@@ -92,6 +102,7 @@ class RideRepositoryImpl(
             println("Exception: $e")
             Response.Failure(e)
         }
+
     override suspend fun getSuccessRideList(): RideListResponse =
         try {
             val rides =
@@ -144,7 +155,8 @@ class RideRepositoryImpl(
         rideId: String,
         rideUpdate: Map<String, String>
     ): UpdateRideResponse = try {
-        ridesRef.update({
+        Log.d("RideRepository", "Updating ride with map: $rideUpdate")
+        val user = ridesRef.update({
             for ((key, value) in rideUpdate) {
                 set(key, value)
             }
@@ -152,9 +164,11 @@ class RideRepositoryImpl(
             filter {
                 eq("id", rideId)
             }
-        }
+        }.decodeSingle<User>()
+        Log.d("RideRepository", "Updated ride: $user")
         Response.Success(Unit)
     } catch (e: Exception) {
+        Log.d("RideRepository", "Cannot updated ride: ${e.message}")
         Response.Failure(e)
     }
 }
