@@ -26,7 +26,7 @@ class GetRideHistoryUseCase @Inject constructor(
                 is Response.Success<List<Ride>> -> {
                     println("Fetched ${rideListResponse.data?.size} rides")
                     val filteredRideList = rideListResponse.data?.filter {
-                        it.status == RideStatus.SUCCESS
+                        it.status == RideStatus.SUCCESS || it.status==RideStatus.CANCELLED
                     } ?: emptyList()
                     println("Filtered ${filteredRideList.size} rides with status SUCCESS")
                     val ridesWithLocations = mutableListOf<RideWithRideOfferWithLocation>()

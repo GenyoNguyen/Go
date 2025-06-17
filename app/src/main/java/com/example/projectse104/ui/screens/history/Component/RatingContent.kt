@@ -38,12 +38,12 @@ fun RatingContent(
                 .clip(CircleShape)
         )
         Column() {
-            Text(
-                text = "+$trustScore trust scores",
-                fontSize = 14.sp,
-                color = Color(0xFF35B82A),
-                modifier = Modifier.offset(x = -10.dp)
-            )
+//            Text(
+//                text = "+$trustScore trust scores",
+//                fontSize = 14.sp,
+//                color = Color(0xFF35B82A),
+//                modifier = Modifier.offset(x = -10.dp)
+//            )
             Text(
                 text = "+$keCoins Ké coins",
                 fontSize = 14.sp,

@@ -21,7 +21,8 @@ data class RideStatistics(
     val rideGiven: Int,
     val rideTaken: Int,
     val trustScore: Int,
-    val last2ridesUserId: List<User?>
+    val last2ridesUserId: List<User?>,
+    val rating: Double
 )
 
 class GetRideStatisticsUseCase @Inject constructor(
@@ -53,6 +54,15 @@ class GetRideStatisticsUseCase @Inject constructor(
                 rideOffer?.let { RideRideOffer(ride, it) }
             }
             val rideGivenList = rideRideOffers.filter { it.rideOffer.userId == userId }
+            var rating=5.0
+            var count=1
+            for (ride in rideGivenList) {
+                if (ride.ride.rating != null) {
+                    rating += ride.ride.rating
+                    count++
+                }
+            }
+            rating /= count
             val rideTakenList = rideRideOffers.filter { it.ride.passengerId == userId }
             val rideGiven = rideGivenList.size
             val rideTaken = rideTakenList.size
@@ -95,7 +105,8 @@ class GetRideStatisticsUseCase @Inject constructor(
                     rideGiven = rideGiven,
                     rideTaken = rideTaken,
                     trustScore = trustScore.toInt(),
-                    last2ridesUserId = last2ridesUser
+                    last2ridesUserId = last2ridesUser,
+                    rating=rating
                 )
             )
         } catch (e: Exception) {

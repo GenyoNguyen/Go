@@ -107,13 +107,13 @@ fun RideDetailsRatingScreen(
             }
 
             Spacer(modifier = Modifier.height(20.dp))
-
             OverviewRating(
                 navController,
                 state = "rating",
                 userId,
                 rideId,
             )
+
 
             Spacer(modifier = Modifier.height(20.dp))
 

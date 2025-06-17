@@ -57,6 +57,7 @@ fun ProfileViewScreen(
     var trustScore: String = "0"
     var profilePicUrl: String? = null
     var loadingFailed: Boolean = false
+    var userRating:Double = 5.0
 
     // Danh sách accompanies (có thể lấy từ API hoặc ViewModel sau này)
     var accompanies: List<User?> = emptyList()
@@ -86,6 +87,7 @@ fun ProfileViewScreen(
             ridesGiven = rideStatistics.data?.rideGiven?.toString() ?: "0"
             trustScore = rideStatistics.data?.trustScore?.toString() ?: "0"
             accompanies = rideStatistics.data?.last2ridesUserId ?: emptyList()
+            userRating = rideStatistics.data?.rating ?: 0.0
             loadingFailed = false
         }
         is Response.Failure -> {
@@ -130,7 +132,7 @@ fun ProfileViewScreen(
             ViewUserDetails(
                 profilePicUrl = profilePicUrl,
                 userFullName = userFullName,
-                rating = rating,
+                rating = userRating.toString(),
                 position = position
             )
             Spacer(modifier = Modifier.height(20.dp))

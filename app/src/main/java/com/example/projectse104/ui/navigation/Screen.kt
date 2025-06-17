@@ -42,5 +42,6 @@ sealed class Screen(val route: String) {
     object FAQDetail : Screen("faq_detail/{index}")
     object AddNewAddress : Screen("add_new_address/{userId}")
     object ChangePassWord: Screen("change_password/{userId}")
+    object RideRating : Screen("ride_rating/{userId}/{rideId}")
 }
 

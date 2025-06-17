@@ -158,7 +158,12 @@ class RideRepositoryImpl(
         Log.d("RideRepository", "Updating ride with map: $rideUpdate")
         val user = ridesRef.update({
             for ((key, value) in rideUpdate) {
-                set(key, value)
+                if(key=="rating") {
+                    set(key, value.toFloat())
+                }
+                else {
+                    set(key, value)
+                }
             }
         }) {
             filter {
