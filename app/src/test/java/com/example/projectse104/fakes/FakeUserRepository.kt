@@ -64,4 +64,11 @@ class FakeUserRepository : UserRepository {
     ): UploadProfilePicResponse {
         TODO("Not yet implemented")
     }
+
+    override suspend fun updateEmailVerificationStatus(
+        firebaseUid: String,
+        isVerified: Boolean
+    ): Response<Unit> {
+        TODO("Not yet implemented")
+    }
 }
