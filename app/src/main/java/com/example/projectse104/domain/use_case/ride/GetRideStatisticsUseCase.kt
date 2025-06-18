@@ -9,6 +9,7 @@ import com.example.projectse104.domain.repository.RideRepository
 import com.example.projectse104.domain.repository.RideOfferRepository
 import com.example.projectse104.domain.repository.UserRepository
 import javax.inject.Inject
+import kotlin.math.roundToInt
 
 // Data class để lưu cặp Ride và RideOffer
 data class RideRideOffer(
@@ -54,7 +55,7 @@ class GetRideStatisticsUseCase @Inject constructor(
                 rideOffer?.let { RideRideOffer(ride, it) }
             }
             val rideGivenList = rideRideOffers.filter { it.rideOffer.userId == userId }
-            var rating=5.0
+            var rating= 5.0
             var count=1
             for (ride in rideGivenList) {
                 if (ride.ride.rating != null) {

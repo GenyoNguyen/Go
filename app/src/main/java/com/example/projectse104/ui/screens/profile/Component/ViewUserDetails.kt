@@ -91,7 +91,7 @@ fun ViewUserDetails(
 
             // Điểm đánh giá
             Text(
-                text = "Rating: $rating/5.0",
+                text = "Rating: ${String.format("%.1f", rating.toDouble())}/5.0",
                 fontSize = 16.sp,
                 color = Color(0xFFBEB204),
                 fontWeight = FontWeight.SemiBold
