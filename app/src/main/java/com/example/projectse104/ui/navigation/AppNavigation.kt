@@ -35,6 +35,7 @@ import com.example.projectse104.ui.screens.home.AddNewOfferScreen1
 import com.example.projectse104.ui.screens.home.AddNewOfferScreen2
 import com.example.projectse104.ui.screens.home.AddNewOfferScreen3
 import com.example.projectse104.ui.screens.home.AddNewOfferScreen4
+import com.example.projectse104.ui.screens.home.RideRatingScreen
 import com.example.projectse104.ui.screens.home.AddNewOfferSuccessfullyScreen
 import com.example.projectse104.ui.screens.home.BookingSuccessfulScreen
 import com.example.projectse104.ui.screens.home.ConfirmRequestScreen
@@ -141,6 +142,22 @@ fun AppNavigation(navController: NavHostController) {
                         userId = userId,
                         userName = userName,
                         messageCount = messageCount
+                    )
+                }
+                composable(
+                    Screen.RideRating.route,
+                    arguments = listOf(
+                        navArgument("userId") { type = NavType.StringType },
+                        navArgument("rideId") { type = NavType.StringType }
+)
+                ) { backStackEntry ->
+                    val userId = backStackEntry.arguments?.getString("userId") ?: ""
+                    val rideId = backStackEntry.arguments?.getString("rideId") ?: ""
+
+                    RideRatingScreen(
+                        navController = navController,
+                        userId = userId,
+                        rideId=rideId
                     )
                 }
                 composable(

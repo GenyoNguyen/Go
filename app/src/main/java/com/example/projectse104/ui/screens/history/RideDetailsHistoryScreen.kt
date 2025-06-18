@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -29,6 +31,9 @@ import com.example.projectse104.ui.screens.history.Component.OverviewRating
 import com.example.projectse104.ui.screens.history.Component.RideContent
 import com.example.projectse104.ui.screens.home.Component.OsmMapView
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.ui.graphics.Color
+import com.example.projectse104.core.RideStatus
 
 @Composable
 fun RideDetailsHistoryScreen(
@@ -75,14 +80,17 @@ fun RideDetailsHistoryScreen(
             Spacer(modifier = Modifier.height(20.dp))
 
             // Header with tabs (Overview, Rating)
-            OverviewRating(
-                navController,
-                state = "overview",
-                userId,
-                rideId,
-            )
-            Spacer(modifier = Modifier.height(24.dp))
+            if (ride?.ride?.status != RideStatus.CANCELLED && ride?.ride?.rating != null) {
 
+                OverviewRating(
+                    navController,
+                    state = "overview",
+                    userId,
+                    rideId,
+                )
+
+                Spacer(modifier = Modifier.height(24.dp))
+            }
             // Map view
             ride?.let {
                 OsmMapView(
@@ -114,6 +122,20 @@ fun RideDetailsHistoryScreen(
                 status = ride?.ride?.status.toString(),
                 distance = distance
             )
+            Spacer(modifier = Modifier.height(12.dp))
+            if(ride?.ride?.status != RideStatus.CANCELLED && ride?.ride?.rating == null
+                && ride?.ride?.passengerId == userId){
+                Button(
+                    onClick = {
+                        navController.navigate("ride_rating/$userId/$rideId")
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8FC79A)),
+
+                    ) {
+                    Text("Rate this ride")
+                }
+            }
         }
     }
 }

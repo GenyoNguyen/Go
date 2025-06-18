@@ -105,6 +105,7 @@ fun HomeScreen(
         ToastMessage(message = errorMessage, show = true)
     }
 
+
     if (isLoading) {
         ShimmerHomeScreen(navController, userId, 1, 1, finalUserName)
     } else {
@@ -150,7 +151,7 @@ fun HomeScreen(
                     ) {
                         items(rides, key = { it.ride.id }) { ride ->
                             val rideNo = ride.rideOffer.rideCode
-                            val estimatedDeparture = ride.ride.departTime.toCustomString()
+                            val estimatedDeparture = ride.rideOffer.estimatedDepartTime.toCustomString()
                             val fromLocation = ride.startLocation
                             val toLocation = ride.endLocation
                             val avatarUrl = avatarUrls[ride.rideOffer.userId]

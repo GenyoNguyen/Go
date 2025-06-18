@@ -106,9 +106,9 @@ class SignupViewModel @Inject constructor(
             password = state.password, // Lưu mật khẩu mã hóa
             phoneNumber = null,
             location = null,
-            profilePic = null,
-            overallRating = 0.0f,
-            coins = 0,
+            profilePic = "https://ouanezsrnbseuupwngww.supabase.co/storage/v1/object/public/profile-picture//avatar_1.png",
+            overallRating = 5.0f,
+            coins = 100,
             userCode = UUID.randomUUID().toString().substring(0, 8),
             vehicleId = null,
             is_email_verified = false,
