@@ -25,7 +25,6 @@ class FakeUserRepository : UserRepository {
 
     private var shouldReturnNetworkError = false
 
-
     fun setShouldReturnNetworkError(value: Boolean) {
         shouldReturnNetworkError = value
     }
@@ -71,4 +70,5 @@ class FakeUserRepository : UserRepository {
     ): Response<Unit> {
         TODO("Not yet implemented")
     }
+
 }
