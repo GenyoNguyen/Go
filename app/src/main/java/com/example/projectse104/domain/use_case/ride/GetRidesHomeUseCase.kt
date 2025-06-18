@@ -75,8 +75,10 @@ class GetRidesHomeUseCase @Inject constructor(
                         }
                     }
 
-                    val filteredRideList =
-                        combinedRideList.filter { it.status != RideStatus.SUCCESS }
+                    val filteredRideList = combinedRideList.filter {
+                        it.status != RideStatus
+                            .SUCCESS && it.status != RideStatus.CANCELLED
+                    }
                     val ridesWithLocations = mutableListOf<RideWithRideOfferWithLocation>()
                     val rideOfferCache = mutableMapOf<String, RideOffer>()
                     val locationIds = mutableSetOf<String>()
@@ -120,10 +122,10 @@ class GetRidesHomeUseCase @Inject constructor(
                             rideOfferCache[id] ?: throw Exception("RideOffer not found in cache")
                         } ?: throw Exception("Không tìm thấy RideOffer")
 
-                        val startLocation = rideOffer.startLocationId.let { locationMap[it]?.name }
-                            ?: ""
+                        val startLocation =
+                            rideOffer.startLocationId?.let { locationMap[it]?.name } ?: ""
                         val endLocation =
-                            rideOffer.endLocationId.let { locationMap[it]?.name } ?: ""
+                            rideOffer.endLocationId?.let { locationMap[it]?.name } ?: ""
 
                         ridesWithLocations.add(
                             RideWithRideOfferWithLocation(
