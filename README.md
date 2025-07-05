@@ -47,7 +47,7 @@ See our [Alpha Release Notes](https://github.com/GenyoNguyen/Go/releases/tag/v0.
 
 ### Minimum Requirements
 
-- **Android 8.0 (API 26)** or higher  
+- **Android 7.0 (API 24)** or higher  
 - **Google Play Services** installed  
 - Internet connection (Wi-Fi or mobile data)
 
