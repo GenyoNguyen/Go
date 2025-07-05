@@ -1,6 +1,7 @@
 package com.example.projectse104.di
 
 import android.content.Context
+import com.example.projectse104.BuildConfig
 import com.example.projectse104.data.repository.ConversationRepositoryImpl
 import com.example.projectse104.data.repository.FirebaseAuthRepositoryImpl
 import com.example.projectse104.data.repository.LocationRepositoryImpl
@@ -74,8 +75,8 @@ object AppModule {
     @Provides
     fun provideSupabaseClient(): SupabaseClient {
         return createSupabaseClient(
-            supabaseUrl = "https://ouanezsrnbseuupwngww.supabase.co",
-            supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im91YW5lenNybmJzZXV1cHduZ3d3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDM0MzIwMTcsImV4cCI6MjA1OTAwODAxN30.ovsvvFYTUUM2f6HkrjKC2qhHS2IRUeH6TUiGTfsOEAg"
+            supabaseUrl = BuildConfig.SUPABASE_URL,
+            supabaseKey = BuildConfig.SUPABASE_API_KEY
         ) {
             install(Postgrest) {
                 serializer = KotlinXSerializer(json)
