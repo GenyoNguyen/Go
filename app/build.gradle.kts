@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -10,6 +12,14 @@ plugins {
 
 
     kotlin("plugin.serialization") version "2.0.0"
+}
+
+val localProps = Properties()
+val file = File(rootProject.rootDir, "local.properties")
+if (file.exists() && file.isFile) {
+    file.inputStream().use {
+        localProps.load(it)
+    }
 }
 
 android {
@@ -33,6 +43,29 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            buildConfigField(
+                "String",
+                "SUPABASE_API_KEY",
+                localProps.getProperty("SUPABASE_API_KEY")
+            )
+            buildConfigField(
+                "String",
+                "SUPABASE_URL",
+                localProps.getProperty("SUPABASE_URL")
+            )
+        }
+
+        debug {
+            buildConfigField(
+                "String",
+                "SUPABASE_API_KEY",
+                localProps.getProperty("SUPABASE_API_KEY")
+            )
+            buildConfigField(
+                "String",
+                "SUPABASE_URL",
+                localProps.getProperty("SUPABASE_URL")
+            )
         }
     }
     compileOptions {
@@ -44,6 +77,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
